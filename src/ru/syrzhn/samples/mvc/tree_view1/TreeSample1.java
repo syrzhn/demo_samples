@@ -83,7 +83,10 @@ public class TreeSample1 implements Viewer.IForm {
 		controller = new Controller(this);
 		viewer = controller.getViewer();
  
+		long start = System.currentTimeMillis();
 		createContents();
+		long end = System.currentTimeMillis();
+		printMessage("Time to fill the tree in millis: ".concat(String.valueOf(end - start)));
 		
 		viewer.getTestData(tree);
 		
