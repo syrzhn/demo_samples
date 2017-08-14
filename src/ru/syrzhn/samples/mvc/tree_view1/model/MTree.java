@@ -12,6 +12,22 @@ public class MTree {
 	public Map<String, MNode> mAllNodes;
 	private int mLevels, mRows;
 	
+	public MNode findNode(String ID) {
+		List<IDentifier> path = new IDentifier(null).parse(ID);
+		MNode node = null; int n = path.size();
+		for (int i = 0; i < n; i++) {
+			int row = Integer.valueOf( path.get(i).mRow );
+			if (i == 0) 
+				node = mAllNodes.get(path.get(i).getID());
+			else {
+				List<MNode> children = node.getChildren();
+				node = children.get(row);
+			}
+			if (i == n - 1 && node.mID.equals(ID)) return node;
+		}
+		return null;
+	}	
+
 	public MTree(final int levels, final int rows) {
 		mAllNodes = new HashMap<String, MNode>();
 		mLevels = levels;
@@ -69,22 +85,6 @@ public class MTree {
 		}
 	}
 	
-	public MNode findNode(String ID) {
-		List<IDentifier> path = new IDentifier(null).parse(ID);
-		MNode node = null; int n = path.size();
-		for (int i = 0; i < n; i++) {
-			int row = Integer.valueOf( path.get(i).mRow );
-			if (i == 0) 
-				node = mAllNodes.get(path.get(i).getID());
-			else {
-				List<MNode> children = node.getChildren();
-				node = children.get(row);
-			}
-			if (i == n - 1 && node.mID.equals(ID)) return node;
-		}
-		return null;
-	}	
-
 	public String[] disposeChild(String ID) {
 		MNode node = findNode(ID);
 		if (node == null) throw new RuntimeException("Can't find the node by identifier - \"".concat(ID).concat("\"!"));
