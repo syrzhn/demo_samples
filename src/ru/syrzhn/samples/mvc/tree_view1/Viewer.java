@@ -17,6 +17,7 @@ public class Viewer {
 		void printMessage(String msg);
 		void printMessage(String[] msgs);
 		void updateState(State state);
+		Controller getController();
 		class State {
 			public String caption;
 			public State(String[] args) {
@@ -28,13 +29,10 @@ public class Viewer {
 	
 	public IForm mForm;
 	
-	private Controller mController;
-
 	public TreeItem mCurrentItem;
 
-	public Viewer(IForm form, Controller controller) {
+	public Viewer(IForm form) {
 		mForm = form;
-		mController = controller;
 	}
 
 	public Listener getTableEventListener(final int eventType) {
@@ -47,16 +45,16 @@ public class Viewer {
 				mCurrentItem = (TreeItem) event.item;
 				switch (mEventType) {
 				case SWT.Collapse:
-					mController.setDataOnCollapse(Viewer.this);
+					mForm.getController().setDataOnCollapse(Viewer.this);
 					break;
 				case SWT.Expand:
-					mController.setDataOnExpand(Viewer.this);
+					mForm.getController().setDataOnExpand(Viewer.this);
 					break;
 				case SWT.Selection:
 					if (event.detail == SWT.CHECK) 
-						mController.setDataOnCheck(Viewer.this);
+						mForm.getController().setDataOnCheck(Viewer.this);
 					else
-						mController.setDataOnSelection(Viewer.this);
+						mForm.getController().setDataOnSelection(Viewer.this);
 					break;
 				}
 			}		
@@ -76,7 +74,7 @@ public class Viewer {
 	
 	private void insertTestData(final TreeItem treeItem) {
 		TreeItem newItem = new TreeItem(treeItem, 0);
-		IData data = mController.setData(this);
+		IData data = mForm.getController().setData(this);
 		newItem.setText(data.toString());
 	}
 
@@ -92,12 +90,12 @@ public class Viewer {
 	}
 	
 	private void disposeData(TreeItem mCurrentItem) {
-		mController.disposeData(this);
+		mForm.getController().disposeData(this);
 	}
 	
 	public void getTestData(final Tree tree) {
 		IData data0[];
-		data0 = mController.getData(null);
+		data0 = mForm.getController().getData(null);
 		for (IData d0 : data0) {
 			TreeItem item = new TreeItem(tree, 0);
 			item.setText(d0.toString());

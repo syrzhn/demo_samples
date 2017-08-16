@@ -57,6 +57,11 @@ public class TreeSample1 implements Viewer.IForm {
 	public void printMessage(String msg) {
 		System.out.println(msg);
 	}
+	
+	@Override
+	public Controller getController() {
+		return controller;
+	}
 
 	/**
 	 * Launch the application.
@@ -79,9 +84,9 @@ public class TreeSample1 implements Viewer.IForm {
 	public void open() {
 		display = Display.getDefault();
 		
-		controller = new Controller(this);
-		viewer = controller.getViewer();
- 
+		viewer = new Viewer(this); 
+		controller = new Controller(viewer);
+
 		long start = System.currentTimeMillis();
 		createContents();
 		long end = System.currentTimeMillis();

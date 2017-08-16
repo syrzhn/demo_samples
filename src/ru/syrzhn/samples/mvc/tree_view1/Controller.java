@@ -1,6 +1,5 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
-import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm;
 import ru.syrzhn.samples.mvc.tree_view1.model.MNode;
 import ru.syrzhn.samples.mvc.tree_view1.model.Model;
 
@@ -10,13 +9,9 @@ public class Controller {
 	
 	private Model mModel;
 	
-	public Controller(IForm form) {
-		mViewer = new Viewer(form, this);
+	public Controller(Viewer viewer) {
 		mModel = new Model(3, 3);
-	}
-	
-	public Viewer getViewer() {
-		return mViewer;
+		mViewer = viewer;
 	}
 	
 	public IData setData(Viewer viewer) {
