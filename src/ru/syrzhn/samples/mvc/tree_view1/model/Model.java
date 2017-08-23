@@ -1,6 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 public class Model {
 	
@@ -32,10 +33,10 @@ public class Model {
 	}
 	
 	static {
-		messBuff = new ArrayList<String>();
+		messBuff = new Stack<String>();
 	}
 
-	public static ArrayList<String> messBuff;
+	public static List<String> messBuff;
 
 	public MTree mTree;
 }

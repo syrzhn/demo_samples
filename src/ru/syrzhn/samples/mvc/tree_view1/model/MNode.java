@@ -1,6 +1,5 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
-import java.util.List;
 import java.util.Stack;
 
 /** @author syrzhn */
@@ -59,34 +58,11 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		return mChildren;
 	}
 	
-	public void addChildren(List<MNode> children) {
-		mChildren.addAll(children);
-	}
-	
 	public String addChild(MNode child) {
 		mChildren.add(child);
 		return child.mID.concat(" has appeared in the tree");
 	}
 	
-	public MNode hasChild(String ID) {
-		for (MNode node : mChildren) {
-			if (node.mID.equals(ID)) return node;
-		}
-		return null;
-	}
-	
-	public MNode getAncestor() {
-		return mAncestors.peek();
-	}
-	
-	public Stack<MNode> getAncestors() {
-		return mAncestors;
-	}
-
-	public void addAncestor(MNode ancestor) {
-		mAncestors.add(ancestor);
-	}
-
 	@Override
 	public int compareTo(MNode arg0) {
 		if (this.mID.equals(arg0.mID))
