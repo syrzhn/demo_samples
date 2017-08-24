@@ -59,6 +59,11 @@ public class Controller {
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
 		return new TreeData(parent).getData();
 	}
+
+	public IData[] getNodeData(String ID) {
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
+		return new TreeData(ID).getData();
+	}
 	
 	public class TreeData implements IData {
 		private String    mID;
@@ -74,7 +79,11 @@ public class Controller {
 			}
 		}
 		public TreeData(String ID) {
+			if (ID == null) return;
 			mID = ID;
+			MNode node = mModel.mTree.findNode(ID);
+			if (node == null) return;
+			mData = mModel.getTreeData(node);
 		}
 		public IData[] getData() {
 			TreeData arg[] = new TreeData[mData.length];

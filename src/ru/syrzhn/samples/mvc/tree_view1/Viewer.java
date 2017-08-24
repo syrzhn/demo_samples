@@ -83,32 +83,45 @@ public class Viewer {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (mCurrentItem == null) return;
+				TreeItem parent = mCurrentItem.getParentItem();
 				disposeData(mCurrentItem);
 				mCurrentItem.dispose();
+				parent.removeAll();
+				getData(parent);
 			}
 		};
+	}
+	
+	public void getData(final TreeItem Item) {
+		IData data0[];
+		data0 = mForm.getController().getNodeData(Item.getText(0));
+		for (IData d0 : data0) {
+			TreeItem item = new TreeItem(Item, 0);
+			item.setText(d0.toString());
+			getData(item, d0);
+		}
 	}
 	
 	private void disposeData(TreeItem mCurrentItem) {
 		mForm.getController().disposeData(this);
 	}
 	
-	public void getTestData(final Tree tree) {
+	public void getData(final Tree tree) {
 		IData data0[];
 		data0 = mForm.getController().getData(null);
 		for (IData d0 : data0) {
 			TreeItem item = new TreeItem(tree, 0);
 			item.setText(d0.toString());
-			getTestData(item, d0);
+			getData(item, d0);
 		}
 	}
 	
-	private void getTestData(final TreeItem item, IData data) {
+	private void getData(final TreeItem item, IData data) {
 		IData data1[] = data.getChildren(data);
 		for (IData d : data1) {
 			TreeItem dItem = new TreeItem(item, 0);
 			dItem.setText(d.toString());
-			getTestData(dItem, d);
+			getData(dItem, d);
 		}
 	}
 }

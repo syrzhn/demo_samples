@@ -24,6 +24,10 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		return str;
 	}
 	
+	public String getPath() {
+		return mAncestors.peek().mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
+	}
+	
 	public MNode(MNode parent, int row) {
 		mRow = row;
 		mChildren = new Stack<MNode>();

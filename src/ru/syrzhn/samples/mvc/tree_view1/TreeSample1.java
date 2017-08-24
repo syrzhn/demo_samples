@@ -92,7 +92,7 @@ public class TreeSample1 implements Viewer.IForm {
 		long end = System.currentTimeMillis();
 		printMessage("Time to fill the tree in millis: ".concat(String.valueOf(end - start)));
 		
-		viewer.getTestData(tree);
+		viewer.getData(tree);
 		
 		shlTreeSample.open();
 		shlTreeSample.layout();

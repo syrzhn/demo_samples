@@ -93,8 +93,17 @@ public class MTree {
 	}
 	
 	private String disposeNode(MNode node) {
-		if (node.getLevel() > 1)
-			node.mAncestors.peek().mChildren.remove(node.mRow);
+		if (node.getLevel() > 1) {
+			MNode parent = node.mAncestors.peek();
+			int nodeRow = node.mRow;
+			Stack<MNode> children = node.mAncestors.peek().mChildren;
+			children.remove(node.mRow);
+			for (int i = nodeRow + 1; i < parent.mChildren.size(); i++) {
+				MNode n = parent.mChildren.get(i);
+				n.mRow--;
+				n.mID = n.getPath();
+			}
+		}
 		return node.leave();
 	}
 
