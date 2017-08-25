@@ -92,9 +92,13 @@ public class Viewer {
 		};
 	}
 	
+	private void disposeData(TreeItem mCurrentItem) {
+		mForm.getController().disposeData(this);
+	}
+	
 	public void getData(final TreeItem Item) {
 		IData data0[];
-		data0 = mForm.getController().getNodeData(Item.getText(0));
+		data0 = mForm.getController().getData(Item.getText(0));
 		for (IData d0 : data0) {
 			TreeItem item = new TreeItem(Item, 0);
 			item.setText(d0.toString());
@@ -102,13 +106,9 @@ public class Viewer {
 		}
 	}
 	
-	private void disposeData(TreeItem mCurrentItem) {
-		mForm.getController().disposeData(this);
-	}
-	
 	public void getData(final Tree tree) {
 		IData data0[];
-		data0 = mForm.getController().getData(null);
+		data0 = mForm.getController().getData();
 		for (IData d0 : data0) {
 			TreeItem item = new TreeItem(tree, 0);
 			item.setText(d0.toString());

@@ -60,7 +60,12 @@ public class Controller {
 		return new TreeData(parent).getData();
 	}
 
-	public IData[] getNodeData(String ID) {
+	public IData[] getData() {
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
+		return new TreeData().getData();
+	}
+
+	public IData[] getData(String ID) {
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
 		return new TreeData(ID).getData();
 	}
@@ -77,6 +82,9 @@ public class Controller {
 				if (node == null) return;
 				mData = mModel.getTreeData(node);
 			}
+		}
+		public TreeData() {
+			mData = mModel.getTreeData(null);
 		}
 		public TreeData(String ID) {
 			if (ID == null) return;

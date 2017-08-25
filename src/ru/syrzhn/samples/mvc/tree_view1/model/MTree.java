@@ -98,7 +98,7 @@ public class MTree {
 			int nodeRow = node.mRow;
 			Stack<MNode> children = node.mAncestors.peek().mChildren;
 			children.remove(node.mRow);
-			for (int i = nodeRow + 1; i < parent.mChildren.size(); i++) {
+			for (int i = nodeRow; i < parent.mChildren.size(); i++) {
 				MNode n = parent.mChildren.get(i);
 				n.mRow--;
 				n.mID = n.getPath();
