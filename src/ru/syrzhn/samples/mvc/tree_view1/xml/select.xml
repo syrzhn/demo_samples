@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<select-expression type="expression">
+	<WITH type="keyword">
+		<RECURSIVE type="keyword" />
+		<common-table-expression type="exspression" />
+	</WITH>
+	<select-core type="expression">
+		<SELECT type="keyword" />
+		<DISTINCT type="keyword" />
+		<ALL type="keyword" />
+		<result-column type="expression">
+			<column-name type="string" />
+			<separator type="char">,</separator>
+			<result-column/>
+		</result-column>
+	</select-core>
+</select-expression>

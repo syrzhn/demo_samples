@@ -25,7 +25,7 @@ public class Controller {
 	}
 
 	public void disposeData(Viewer viewer) {
-		String str = viewer.mCurrentItem.toString();
+		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
 		mViewer.mForm.printMessage(mModel.mTree.disposeChild(viewer.mCurrentItem.getText(0))); Model.messBuff.clear();
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
