@@ -57,6 +57,11 @@ public class TreeSample1 implements Viewer.IForm {
 	public void printMessage(String msg) {
 		System.out.println(msg);
 	}
+
+	@Override
+	public Display getDisplay() {
+		return display;
+	}
 	
 	@Override
 	public Controller getController() {
@@ -87,10 +92,7 @@ public class TreeSample1 implements Viewer.IForm {
 		viewer = new Viewer(this); 
 		controller = new Controller(viewer);
 
-		long start = System.currentTimeMillis();
 		createContents();
-		long end = System.currentTimeMillis();
-		printMessage("Time to fill the tree in millis: ".concat(String.valueOf(end - start)));
 		
 		viewer.getData(tree);
 		

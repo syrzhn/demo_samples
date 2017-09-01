@@ -14,40 +14,44 @@ public class Controller {
 		mViewer = viewer;
 	}
 	
-	public IData setData(Viewer viewer) {
-		String str = viewer.mCurrentItem.toString();
+	public void setViewer(Viewer viewer) {
+		mViewer = viewer;
+	}
+	
+	public IData setData() {
+		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Adding new node to ".concat(str));
-		str = viewer.mCurrentItem.getText(0);
+		str = mViewer.mCurrentItem.getText(0);
 		MNode node = mModel.mTree.addChild(str);
 		mViewer.mForm.printMessage(Model.messBuff.toArray( new String[ Model.messBuff.size() ] )); Model.messBuff.clear();
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
 		return new TreeData(node.mID);
 	}
 
-	public void disposeData(Viewer viewer) {
+	public void disposeData() {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
-		mViewer.mForm.printMessage(mModel.mTree.disposeChild(viewer.mCurrentItem.getText(0))); Model.messBuff.clear();
+		mViewer.mForm.printMessage(mModel.mTree.disposeChild(mViewer.mCurrentItem.getText(0))); Model.messBuff.clear();
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
 	}
 
-	public void setDataOnCollapse(Viewer viewer) {
-		String str = viewer.mCurrentItem.toString() + " was collapsed";
+	public void setDataOnCollapse() {
+		String str = mViewer.mCurrentItem.toString() + " was collapsed";
 		mViewer.mForm.printMessage(str);
 	}
 
-	public void setDataOnExpand(Viewer viewer) {
-		String str = viewer.mCurrentItem.toString() + " was expanded";
+	public void setDataOnExpand() {
+		String str = mViewer.mCurrentItem.toString() + " was expanded";
 		mViewer.mForm.printMessage(str);
 	}
 
-	public void setDataOnSelection(Viewer viewer) {
-		String str = viewer.mCurrentItem.toString() + " was selected";
+	public void setDataOnSelection() {
+		String str = mViewer.mCurrentItem.toString() + " was selected";
 		mViewer.mForm.printMessage(str);
 	}
 
-	public void setDataOnCheck(Viewer viewer) {
-		String str = viewer.mCurrentItem.toString() + (viewer.mCurrentItem.getChecked() ? " was checked" : " was unchecked");
+	public void setDataOnCheck() {
+		String str = mViewer.mCurrentItem.toString() + (mViewer.mCurrentItem.getChecked() ? " was checked" : " was unchecked");
 		mViewer.mForm.printMessage(str);
 	}
 	

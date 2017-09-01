@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <select-expression type="expression">
-	<WITH type="keyword">
-		<RECURSIVE type="keyword" />
+	<with type="keyword" syntax="WITH">
+		<recursive type="keyword" syntax="RECURSIVE" />
 		<common-table-expression type="exspression" />
-	</WITH>
+	</with>
 	<select-core type="expression">
-		<SELECT type="keyword" />
-		<DISTINCT type="keyword" />
-		<ALL type="keyword" />
+		<select type="keyword" syntax="SELECT" />
+		<distinct type="keyword" syntax="DISTINCT" />
+		<all type="keyword" syntax="ALL" />
 		<result-column type="expression">
 			<column-name type="string" />
 			<separator type="char">,</separator>
-			<result-column/>
+			<result-column />
 		</result-column>
 	</select-core>
 </select-expression>

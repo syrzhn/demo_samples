@@ -3,6 +3,7 @@ package ru.syrzhn.samples.mvc.tree_view1;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
@@ -18,6 +19,7 @@ public class Viewer {
 		void printMessage(String[] msgs);
 		void updateState(State state);
 		Controller getController();
+		Display getDisplay();
 		class State {
 			public String caption;
 			public State(String[] args) {
@@ -28,8 +30,8 @@ public class Viewer {
 	}
 	
 	public IForm mForm;
-	
 	public TreeItem mCurrentItem;
+	private volatile boolean isBusy;
 
 	public Viewer(IForm form) {
 		mForm = form;
@@ -42,19 +44,20 @@ public class Viewer {
 			
 			@Override
 			public void handleEvent(Event event) {
+				if (isBusy) return;
 				mCurrentItem = (TreeItem) event.item;
 				switch (mEventType) {
 				case SWT.Collapse:
-					mForm.getController().setDataOnCollapse(Viewer.this);
+					mForm.getController().setDataOnCollapse();
 					break;
 				case SWT.Expand:
-					mForm.getController().setDataOnExpand(Viewer.this);
+					mForm.getController().setDataOnExpand();
 					break;
 				case SWT.Selection:
 					if (event.detail == SWT.CHECK) 
-						mForm.getController().setDataOnCheck(Viewer.this);
+						mForm.getController().setDataOnCheck();
 					else
-						mForm.getController().setDataOnSelection(Viewer.this);
+						mForm.getController().setDataOnSelection();
 					break;
 				}
 			}		
@@ -65,6 +68,7 @@ public class Viewer {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
+				if (isBusy) return;
 				if (mCurrentItem == null) return;
 				insertTestData(mCurrentItem);
 				mCurrentItem.setExpanded(true);
@@ -73,8 +77,9 @@ public class Viewer {
 	}
 	
 	private void insertTestData(final TreeItem treeItem) {
+		if (isBusy) return;
 		TreeItem newItem = new TreeItem(treeItem, 0);
-		IData data = mForm.getController().setData(this);
+		IData data = mForm.getController().setData();
 		newItem.setText(data.toString());
 	}
 
@@ -82,6 +87,7 @@ public class Viewer {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
+				if (isBusy) return;
 				if (mCurrentItem == null) return;
 				TreeItem parent = mCurrentItem.getParentItem();
 				disposeData(mCurrentItem);
@@ -93,35 +99,78 @@ public class Viewer {
 	}
 	
 	private void disposeData(TreeItem mCurrentItem) {
-		mForm.getController().disposeData(this);
+		mForm.getController().disposeData();
+	}
+	
+	private abstract class Task extends Thread {
+		protected abstract void doTask();
+		public void run() {
+			isBusy = true;
+			long start = System.currentTimeMillis();
+			doTask();
+			isBusy = false;
+			long end = System.currentTimeMillis();
+			mForm.printMessage("Time to fill the tree in millis: ".concat(String.valueOf(end - start)));
+		}
+	}
+	
+	private abstract class GetDataTask extends Task {
+		
 	}
 	
 	public void getData(final TreeItem Item) {
-		IData data0[];
-		data0 = mForm.getController().getData(Item.getText(0));
-		for (IData d0 : data0) {
-			TreeItem item = new TreeItem(Item, 0);
-			item.setText(d0.toString());
-			getData(item, d0);
-		}
+		Task t = new Task() {
+			@Override
+			protected void doTask() {
+				IData data0[] = mForm.getController().getData(Item.getText(0));
+				mForm.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						for (IData d0 : data0) {
+							TreeItem item = new TreeItem(Item, 0);
+							item.setText(d0.toString());
+							getData(item, d0);
+						}
+					}
+				});
+			}			
+			private void getData(final TreeItem item, IData data) {
+				IData data1[] = data.getChildren(data);
+				for (IData d : data1) {
+					TreeItem dItem = new TreeItem(item, 0);
+					dItem.setText(d.toString());
+					getData(dItem, d);
+				}
+			}
+		};
+		t.start();
 	}
 	
 	public void getData(final Tree tree) {
-		IData data0[];
-		data0 = mForm.getController().getData();
-		for (IData d0 : data0) {
-			TreeItem item = new TreeItem(tree, 0);
-			item.setText(d0.toString());
-			getData(item, d0);
-		}
-	}
-	
-	private void getData(final TreeItem item, IData data) {
-		IData data1[] = data.getChildren(data);
-		for (IData d : data1) {
-			TreeItem dItem = new TreeItem(item, 0);
-			dItem.setText(d.toString());
-			getData(dItem, d);
-		}
+		Task t = new Task() {
+			@Override
+			protected void doTask() {
+				IData data0[] = mForm.getController().getData();
+				mForm.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						for (IData d0 : data0) {
+							TreeItem item = new TreeItem(tree, 0);
+							item.setText(d0.toString());
+							getData(item, d0);
+						}
+					}
+				});
+			}			
+			private void getData(final TreeItem item, IData data) {
+				IData data1[] = data.getChildren(data);
+				for (IData d : data1) {
+					TreeItem dItem = new TreeItem(item, 0);
+					dItem.setText(d.toString());
+					getData(dItem, d);
+				}
+			}
+		};
+		t.start();
 	}
 }
