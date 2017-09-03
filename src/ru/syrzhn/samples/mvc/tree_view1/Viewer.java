@@ -122,10 +122,10 @@ public class Viewer {
 		Task t = new Task() {
 			@Override
 			protected void doTask() {
-				IData data0[] = mForm.getController().getData(Item.getText(0));
 				mForm.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
+						IData data0[] = mForm.getController().getData(Item.getText(0));
 						for (IData d0 : data0) {
 							TreeItem item = new TreeItem(Item, 0);
 							item.setText(d0.toString());
@@ -136,11 +136,16 @@ public class Viewer {
 			}			
 			private void getData(final TreeItem item, IData data) {
 				IData data1[] = data.getChildren(data);
-				for (IData d : data1) {
-					TreeItem dItem = new TreeItem(item, 0);
-					dItem.setText(d.toString());
-					getData(dItem, d);
-				}
+				mForm.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						for (IData d : data1) {
+							TreeItem dItem = new TreeItem(item, 0);
+							dItem.setText(d.toString());
+							getData(dItem, d);
+						}
+					}
+				});				
 			}
 		};
 		t.start();
@@ -150,10 +155,10 @@ public class Viewer {
 		Task t = new Task() {
 			@Override
 			protected void doTask() {
-				IData data0[] = mForm.getController().getData();
 				mForm.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
+						IData data0[] = mForm.getController().getData();
 						for (IData d0 : data0) {
 							TreeItem item = new TreeItem(tree, 0);
 							item.setText(d0.toString());
@@ -164,11 +169,16 @@ public class Viewer {
 			}			
 			private void getData(final TreeItem item, IData data) {
 				IData data1[] = data.getChildren(data);
-				for (IData d : data1) {
-					TreeItem dItem = new TreeItem(item, 0);
-					dItem.setText(d.toString());
-					getData(dItem, d);
-				}
+				mForm.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						for (IData d : data1) {
+							TreeItem dItem = new TreeItem(item, 0);
+							dItem.setText(d.toString());
+							getData(dItem, d);
+						}
+					}
+				});				
 			}
 		};
 		t.start();
