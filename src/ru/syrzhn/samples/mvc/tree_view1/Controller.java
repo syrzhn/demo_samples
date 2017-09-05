@@ -18,14 +18,14 @@ public class Controller {
 		mViewer = viewer;
 	}
 	
-	public IData setData() {
+	public ISource setData() {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Adding new node to ".concat(str));
 		str = mViewer.mCurrentItem.getText(0);
 		MNode node = mModel.mTree.addChild(str);
 		mViewer.mForm.printMessage(Model.messBuff.toArray( new String[ Model.messBuff.size() ] )); Model.messBuff.clear();
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
-		return new TreeData(node.mID);
+		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")} ));
+		return new TreeSource(node.mID);
 	}
 
 	public void disposeData() {
@@ -55,29 +55,31 @@ public class Controller {
 		mViewer.mForm.printMessage(str);
 	}
 	
-	public interface IData {
-		IData[] getChildren(IData parent);
+	public interface ISource {
+		ISource[] getChildren(ISource parent);
+		Object  getData();
 	}
 	
-	public IData[] getData(IData parent) {
+	public ISource[] getSource(ISource parent) {
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
-		return new TreeData(parent).getData();
+		return new TreeSource(parent).getBeginDataSet();
 	}
 
-	public IData[] getData() {
+	public ISource[] getSource() {
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
-		return new TreeData().getData();
+		return new TreeSource().getBeginDataSet();
 	}
 
-	public IData[] getData(String ID) {
+	public ISource[] getSource(String ID) {
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
-		return new TreeData(ID).getData();
+		return new TreeSource(ID).getBeginDataSet();
 	}
 	
-	public class TreeData implements IData {
+	public class TreeSource implements ISource {
 		private String    mID;
-		private MNode mData[];		
-		public TreeData(IData parent) {
+		private MNode mData[];
+		private MNode data;
+		public TreeSource(ISource parent) {
 			if (parent == null) {
 				mData = mModel.getTreeData(null);
 			}
@@ -87,31 +89,32 @@ public class Controller {
 				mData = mModel.getTreeData(node);
 			}
 		}
-		public TreeData() {
+		public TreeSource() {
 			mData = mModel.getTreeData(null);
 		}
-		public TreeData(String ID) {
+		public TreeSource(String ID) {
 			if (ID == null) return;
 			mID = ID;
-			MNode node = mModel.mTree.findNode(ID);
-			if (node == null) return;
-			mData = mModel.getTreeData(node);
+			data = mModel.mTree.findNode(mID);
+			if (data == null) return;
+			mData = mModel.getTreeData(data);
 		}
-		public IData[] getData() {
-			TreeData arg[] = new TreeData[mData.length];
+		public MNode getData() {return data;}
+		public ISource[] getBeginDataSet() {
+			TreeSource arg[] = new TreeSource[mData.length];
 			for (int i = 0; i < mData.length; i++) {
-				arg[i] = new TreeData(mData[i].toString());
+				arg[i] = new TreeSource(mData[i].toString());
 			}
 			return arg;
 		}
 		@Override
-		public IData[] getChildren(IData parent) {
+		public ISource[] getChildren(ISource parent) {
 			MNode node = mModel.mTree.findNode(parent.toString());
 			if (node == null) return null;
 			mData = mModel.getTreeData(node);
-			TreeData ret[] = new TreeData[mData.length];
+			TreeSource ret[] = new TreeSource[mData.length];
 			for (int i = 0; i < mData.length; i++) {
-				ret[i] = new TreeData(mData[i].toString());
+				ret[i] = new TreeSource(mData[i].toString());
 			}
 			return ret;
 		}

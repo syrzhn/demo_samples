@@ -148,8 +148,12 @@ public class TreeSample1 implements Viewer.IForm {
 		tree.addListener(SWT.Selection, viewer.getTableEventListener(SWT.Selection));
 		
 		TreeColumn trclmnId = new TreeColumn(tree, SWT.NONE);
-		trclmnId.setWidth(450);
+		trclmnId.setWidth(400);
 		trclmnId.setText("ID");
+		
+		TreeColumn trclmnPath = new TreeColumn(tree, SWT.NONE);
+		trclmnPath.setWidth(300);
+		trclmnPath.setText("Path");
 		
 		TreeColumn trclmnData = new TreeColumn(tree, SWT.NONE);
 		trclmnData.setWidth(200);

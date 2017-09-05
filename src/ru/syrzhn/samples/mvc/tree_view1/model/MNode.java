@@ -24,8 +24,21 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		return str;
 	}
 	
+	public String path;
 	public String getPath() {
-		return mAncestors.peek().mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
+		return path;
+	}
+	
+	public MNode setPath() {
+		path = "";
+		for (int i = 0; i < mAncestors.size(); i++) {
+			MNode ancestor = mAncestors.get(i);
+			String level = Model.getLevelName( ancestor.getLevel() ),
+					 row = String.valueOf(ancestor.mRow);
+			path = path.concat(level).concat(row);
+		}
+		path = path.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
+		return this;
 	}
 	
 	public MNode(MNode parent, int row) {
@@ -39,6 +52,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 			mID = parent.mID;
 		}
 		mID = mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
+		setPath();
 	}
 
 	public MNode(MNode parent) {
@@ -56,6 +70,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		mID = parent.mID;
 	
 		mID = mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
+		setPath();
 	}
 
 	public Stack<MNode> getChildren() {

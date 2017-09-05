@@ -101,7 +101,7 @@ public class MTree {
 			for (int i = nodeRow; i < parent.mChildren.size(); i++) {
 				MNode n = parent.mChildren.get(i);
 				n.mRow--;
-				n.mID = n.getPath();
+				n.mID = n.setPath().getPath();
 			}
 		}
 		return node.leave();
