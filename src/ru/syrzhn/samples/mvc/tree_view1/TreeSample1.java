@@ -94,7 +94,7 @@ public class TreeSample1 implements Viewer.IForm {
 
 		createContents();
 		
-		viewer.getData(tree);
+		viewer.getItemsFromMTree(tree);
 		
 		shlTreeSample.open();
 		shlTreeSample.layout();
@@ -118,13 +118,13 @@ public class TreeSample1 implements Viewer.IForm {
 		ToolBar toolBar = new ToolBar(shlTreeSample, SWT.FLAT | SWT.RIGHT);
 		toolBar.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		
-		ToolItem tltmNew = new ToolItem(toolBar, SWT.NONE);
-		tltmNew.addSelectionListener(viewer.getNewSelectionAdapter());
-		tltmNew.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/new1.png"));
+		ToolItem tltmNewItem = new ToolItem(toolBar, SWT.NONE);
+		tltmNewItem.addSelectionListener(viewer.getNewItemSelectionAdapter());
+		tltmNewItem.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/new1.png"));
 		
-		ToolItem tltmDelete = new ToolItem(toolBar, SWT.NONE);
-		tltmDelete.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
-		tltmDelete.addSelectionListener(viewer.getDeleteSelectionAdapter());
+		ToolItem tltmDeleteItem = new ToolItem(toolBar, SWT.NONE);
+		tltmDeleteItem.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
+		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
 		
 		txtSearch = new Text(shlTreeSample, SWT.BORDER);
 		txtSearch.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));

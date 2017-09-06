@@ -37,7 +37,7 @@ public class MTree {
 		Stack<MNode> level = new Stack<MNode>();
 		for (int j = 0; j < mRows; j++) {
 			MNode nodeJ = new MNode(null, j);
-			nodeJ.parent = this;
+			nodeJ.mTree = this;
 			level.push(nodeJ);
 			mAllNodes.put(nodeJ.mID, nodeJ);
 		}
@@ -49,7 +49,7 @@ public class MTree {
 				for (int j = 0; j < mRows; j++) {
 					MNode nodeJ = new MNode(node, j);
 					nodesI.push(nodeJ);
-					nodeJ.parent = this;
+					nodeJ.mTree = this;
 					node.addChild(nodeJ);
 					mAllNodes.put(nodeJ.mID, nodeJ);
 				}
@@ -92,26 +92,30 @@ public class MTree {
 		return Model.messBuff.toArray(new String[Model.messBuff.size()]);
 	}
 	
-	private String disposeNode(MNode node) {
+	private void disposeNode(MNode node) {
+		setBrothersPath(node);
+		node.leave();
+	}
+	
+	private void setBrothersPath(MNode node) {
 		if (node.getLevel() > 1) {
 			MNode parent = node.mAncestors.peek();
+			Stack<MNode> children = parent.mChildren;
 			int nodeRow = node.mRow;
-			Stack<MNode> children = node.mAncestors.peek().mChildren;
-			children.remove(node.mRow);
-			for (int i = nodeRow; i < parent.mChildren.size(); i++) {
+			for (int i = nodeRow + 1; i < parent.mChildren.size(); i++) {
 				MNode n = parent.mChildren.get(i);
 				n.mRow--;
 				n.mID = n.setPath().getPath();
 			}
+			children.remove(nodeRow);
 		}
-		return node.leave();
 	}
 
 	public MNode addChild(String ID) {
 		MNode node = findNode(ID);
 		if (node == null) return null;
 		MNode newNode = new MNode(node);
-		newNode.parent = this;
+		newNode.mTree = this;
 		Model.messBuff.add( node.addChild(newNode) );
 		mAllNodes.put(newNode.mID, newNode);
 		return newNode;

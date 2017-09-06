@@ -10,7 +10,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 	public Stack<MNode> mChildren;
 	public int mRow;
 	public Stack<MNode> mAncestors;
-	public MTree parent;
+	public MTree mTree;
 	
 	public String leave() {
 		for (MNode child : mChildren) {
@@ -18,7 +18,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		}
 		mAncestors.clear();
 		mChildren.clear();
-		parent.mAllNodes.remove(mID);
+		mTree.mAllNodes.remove(mID);
 		String str = mID.concat(" has leaved the tree");
 		Model.messBuff.add(str);
 		return str;
@@ -41,34 +41,32 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		return this;
 	}
 	
-	public MNode(MNode parent, int row) {
-		mRow = row;
+	public MNode(MNode ancestor, int row) {
 		mChildren = new Stack<MNode>();
 		mAncestors = new Stack<MNode>();
-		if (parent != null) {
-			if (parent.mAncestors.size() > 0) 
-				mAncestors.addAll(parent.mAncestors);
-			mAncestors.push(parent);
-			mID = parent.mID;
+		if (ancestor != null) {
+			if (ancestor.mAncestors.size() > 0) 
+				mAncestors.addAll(ancestor.mAncestors);
+			mAncestors.push(ancestor);
+			mID = ancestor.mID;
 		}
+		mRow = row;
 		mID = mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
 		setPath();
 	}
 
-	public MNode(MNode parent) {
+	public MNode(MNode ancestor) {
+		if (ancestor == null) return;
 		mChildren = new Stack<MNode>();
 		mAncestors = new Stack<MNode>();
-		if (parent == null) return;
-		if (parent.mAncestors.size() > 0) {
-			mAncestors.addAll(parent.mAncestors);
-			if (parent.mChildren.size() > 0)
-				mRow = parent.mChildren.peek().mRow + 1;
-			else
-				mRow = 0;
-		}
-		mAncestors.push(parent);
-		mID = parent.mID;
-	
+		if (ancestor.mAncestors.size() > 0) 
+			mAncestors.addAll(ancestor.mAncestors);
+		mAncestors.push(ancestor);
+		mID = ancestor.mID;
+		if (ancestor.mChildren.size() > 0)
+			mRow = ancestor.mChildren.peek().mRow + 1;
+		else
+			mRow = 0;
 		mID = mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
 		setPath();
 	}

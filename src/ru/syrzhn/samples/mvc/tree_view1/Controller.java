@@ -21,7 +21,7 @@ public class Controller {
 	public ISource setData() {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Adding new node to ".concat(str));
-		str = mViewer.mCurrentItem.getText(0);
+		str = ((MNode)mViewer.mCurrentItem.getData()).path;
 		MNode node = mModel.mTree.addChild(str);
 		mViewer.mForm.printMessage(Model.messBuff.toArray( new String[ Model.messBuff.size() ] )); Model.messBuff.clear();
 		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")} ));
@@ -31,7 +31,7 @@ public class Controller {
 	public void disposeData() {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
-		mViewer.mForm.printMessage(mModel.mTree.disposeChild(mViewer.mCurrentItem.getText(0))); Model.messBuff.clear();
+		mViewer.mForm.printMessage(mModel.mTree.disposeChild(((MNode)mViewer.mCurrentItem.getData()).path)); Model.messBuff.clear();
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
 	}
 

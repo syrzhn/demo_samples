@@ -65,41 +65,48 @@ public class Viewer {
 		};
 	}
 	
-	public SelectionAdapter getNewSelectionAdapter() {
+	public SelectionAdapter getNewItemSelectionAdapter() {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (isBusy) return;
 				if (mCurrentItem == null) return;
-				insertTestData(mCurrentItem);
+				insertItem(mCurrentItem);
+			}
+		};
+	}
+	
+	private void insertItem(final TreeItem treeItem) {
+		mForm.getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				ISource source = mForm.getController().setData();
+				TreeItem newItem = new TreeItem(treeItem, 0);
+				newItem.setData(source.getData());
+				newItem.setText( new String[] { newItem.getData().toString(), ((MNode)newItem.getData()).getPath() } );
 				mCurrentItem.setExpanded(true);
 			}
-		};
-	}
-	
-	private void insertTestData(final TreeItem treeItem) {
-		if (isBusy) return;
-		TreeItem newItem = new TreeItem(treeItem, 0);
-		ISource data = mForm.getController().setData();
-		newItem.setText(data.toString());
+		});
 	}
 
-	public SelectionAdapter getDeleteSelectionAdapter() {
+	public SelectionAdapter getDeleteItemSelectionAdapter() {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (isBusy) return;
 				if (mCurrentItem == null) return;
+				disposeItem(mCurrentItem);
 				TreeItem parent = mCurrentItem.getParentItem();
-				disposeData(mCurrentItem);
 				mCurrentItem.dispose();
-				parent.removeAll();
-				getItemsFromSource(parent);
+				if (parent != null) {
+					parent.removeAll();
+					getItemsFromMTree(parent);
+				}
 			}
 		};
 	}
 	
-	private void disposeData(TreeItem mCurrentItem) {
+	private void disposeItem(TreeItem mCurrentItem) {
 		if (isBusy) return;
 		mForm.getController().disposeData();
 	}
@@ -118,8 +125,8 @@ public class Viewer {
 		}
 	}
 	
-	private abstract class GetDataTask extends Task {
-		public GetDataTask(String name) { super(name); }
+	private abstract class GetItemsFromMTreeTask extends Task {
+		public GetItemsFromMTreeTask(String name) { super(name); }
 		protected void getData(final TreeItem item, ISource source) {
 			ISource children[] = source.getChildren(source);
 			mForm.getDisplay().asyncExec(new Runnable() {
@@ -128,8 +135,7 @@ public class Viewer {
 					for (ISource child : children) {
 						TreeItem childItem = new TreeItem(item, 0);
 						childItem.setData(child.getData());
-						childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );
-						
+						childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );						
 						getData(childItem, child);
 					}
 				}
@@ -137,8 +143,8 @@ public class Viewer {
 		}
 	}
 	
-	public void getItemsFromSource(final TreeItem Item) {
-		Task t = new GetDataTask("fill the item - ".concat(Item.toString())) {
+	public void getItemsFromMTree(final TreeItem Item) {
+		Task t = new GetItemsFromMTreeTask("fill the item - ".concat(Item.toString())) {
 			@Override
 			protected void doTask() {
 				mForm.getDisplay().asyncExec(new Runnable() {
@@ -148,8 +154,7 @@ public class Viewer {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
 							childItem.setData(child.getData());
-							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );
-							
+							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );							
 							getData(childItem, child);
 						}
 					}
@@ -158,8 +163,8 @@ public class Viewer {
 		}; t.start();
 	}
 	
-	public void getData(final Tree tree) {
-		Task t = new GetDataTask("fill the tree") {
+	public void getItemsFromMTree(final Tree tree) {
+		Task t = new GetItemsFromMTreeTask("fill the tree") {
 			@Override
 			protected void doTask() {
 				mForm.getDisplay().asyncExec(new Runnable() {
@@ -169,8 +174,7 @@ public class Viewer {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(tree, 0);
 							childItem.setData(child.getData());
-							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );
-							
+							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );							
 							getData(childItem, child);
 						}
 					}
