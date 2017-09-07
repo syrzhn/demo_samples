@@ -7,23 +7,25 @@ import java.util.Stack;
 
 /** @author syrzhn */
 public class MTree {
+	
+	public int generation;
 
 	private String mName;
 	public Map<String, MNode> mAllNodes;
 	private int mLevels, mRows;
 	
-	public MNode findNode(String ID) {
-		List<IDentifier> path = new IDentifier(null).parse(ID);
+	public MNode findNode(String pathFind) {
+		List<IDentifier> path = new IDentifier(null).parse(pathFind);
 		MNode node = null; int n = path.size();
 		for (int i = 0; i < n; i++) {
 			int row = Integer.valueOf( path.get(i).mRow );
 			if (i == 0) 
-				node = mAllNodes.get(path.get(i).getID());
+				node = mAllNodes.get( path.get(i).getID() ); 
 			else {
 				List<MNode> children = node.getChildren();
 				node = children.get(row);
 			}
-			if (i == n - 1 && node.mID.equals(ID)) return node;
+			if ( i == n - 1 && node.path.equals(pathFind) ) return node;
 		}
 		return null;
 	}	
@@ -36,10 +38,9 @@ public class MTree {
 		
 		Stack<MNode> level = new Stack<MNode>();
 		for (int j = 0; j < mRows; j++) {
-			MNode nodeJ = new MNode(null, j);
-			nodeJ.mTree = this;
+			MNode nodeJ = new MNode(this, j);
 			level.push(nodeJ);
-			mAllNodes.put(nodeJ.mID, nodeJ);
+			mAllNodes.put(nodeJ.path, nodeJ);
 		}
 		Stack<MNode> nodesI = new Stack<MNode>();
 		for (int i = 0; i < mLevels - 1; i++) {
@@ -47,11 +48,9 @@ public class MTree {
 			while (!level.isEmpty()) {
 				node = level.pop(); // add new level
 				for (int j = 0; j < mRows; j++) {
-					MNode nodeJ = new MNode(node, j);
+					MNode nodeJ = new MNode(node);
 					nodesI.push(nodeJ);
-					nodeJ.mTree = this;
-					node.addChild(nodeJ);
-					mAllNodes.put(nodeJ.mID, nodeJ);
+					mAllNodes.put(nodeJ.path, nodeJ);
 				}
 			}
 			level.addAll(nodesI);
@@ -85,39 +84,43 @@ public class MTree {
 		}
 	}
 	
-	public String[] disposeChild(String ID) {
-		MNode node = findNode(ID);
-		if (node == null) throw new RuntimeException("Can't find the node by identifier - \"".concat(ID).concat("\"!"));
+	public String[] disposeChild(String path) {
+		MNode node = findNode(path);
+		if (node == null) throw new RuntimeException("Can't find the node by identifier - \"".concat(path).concat("\"!"));
 		disposeNode(node);
 		return Model.messBuff.toArray(new String[Model.messBuff.size()]);
 	}
 	
 	private void disposeNode(MNode node) {
-		setBrothersPath(node);
+		setBrothersPaths(node);
 		node.leave();
 	}
 	
-	private void setBrothersPath(MNode node) {
-		if (node.getLevel() > 1) {
+	private void setBrothersPaths(MNode node) {
+		List<MNode> brothers = null;
+		if (node.getLevel() > 0) {
 			MNode parent = node.mAncestors.peek();
-			Stack<MNode> children = parent.mChildren;
-			int nodeRow = node.mRow;
-			for (int i = nodeRow + 1; i < parent.mChildren.size(); i++) {
-				MNode n = parent.mChildren.get(i);
-				n.mRow--;
-				n.mID = n.setPath().getPath();
-			}
-			children.remove(nodeRow);
+			brothers = parent.mChildren;
 		}
+		else {
+			brothers = node.mTree.getFirstLevel();			
+		}
+		int nodeRow = node.mRow;
+		for (int i = nodeRow + 1; i < brothers.size(); i++) {
+			MNode n = brothers.get(i);
+			--n.mRow;
+			n.setPath();
+		}
+		brothers.remove(nodeRow);
 	}
 
-	public MNode addChild(String ID) {
-		MNode node = findNode(ID);
+	public MNode addChild(String path) {
+		MNode node = findNode(path);
 		if (node == null) return null;
 		MNode newNode = new MNode(node);
 		newNode.mTree = this;
 		Model.messBuff.add( node.addChild(newNode) );
-		mAllNodes.put(newNode.mID, newNode);
+		mAllNodes.put(newNode.path, newNode);
 		return newNode;
 	}
 	

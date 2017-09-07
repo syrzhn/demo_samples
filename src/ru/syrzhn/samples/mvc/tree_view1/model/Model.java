@@ -21,13 +21,16 @@ public class Model {
 	
 	public MNode[] getTreeData(MNode parent) {
 		MNode arg[] = null;
+		List<MNode> level = null; 
 		if (parent == null) {
-			arg = new MNode[mTree.getFirstLevel().size()];
-			mTree.getFirstLevel().toArray(arg);
+			level = mTree.getFirstLevel();
+			arg = new MNode[level.size()];
+			level.toArray(arg);
 		}
 		else {
-			arg = new MNode[parent.getChildren().size()];
-			parent.getChildren().toArray(arg);
+			level = parent.getChildren();
+			arg = new MNode[level.size()];
+			level.toArray(arg);
 		}		
 		return arg;
 	}

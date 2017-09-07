@@ -18,7 +18,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		}
 		mAncestors.clear();
 		mChildren.clear();
-		mTree.mAllNodes.remove(mID);
+		mTree.mAllNodes.remove(path);
 		String str = mID.concat(" has leaved the tree");
 		Model.messBuff.add(str);
 		return str;
@@ -41,33 +41,31 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		return this;
 	}
 	
-	public MNode(MNode ancestor, int row) {
+	public MNode(MTree parent, int row) {
+		mTree = parent;
 		mChildren = new Stack<MNode>();
 		mAncestors = new Stack<MNode>();
-		if (ancestor != null) {
-			if (ancestor.mAncestors.size() > 0) 
-				mAncestors.addAll(ancestor.mAncestors);
-			mAncestors.push(ancestor);
-			mID = ancestor.mID;
-		}
+		if (parent == null) return;
 		mRow = row;
-		mID = mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
-		setPath();
+		path = Model.getLevelName( getLevel() ).concat( String.valueOf(mRow) );
+		mID = path.concat(" -").concat( String.valueOf(mTree.generation) );
 	}
 
 	public MNode(MNode ancestor) {
 		if (ancestor == null) return;
+		mTree = ancestor.mTree;
 		mChildren = new Stack<MNode>();
 		mAncestors = new Stack<MNode>();
 		if (ancestor.mAncestors.size() > 0) 
 			mAncestors.addAll(ancestor.mAncestors);
 		mAncestors.push(ancestor);
-		mID = ancestor.mID;
+		mID = ancestor.path;
 		if (ancestor.mChildren.size() > 0)
 			mRow = ancestor.mChildren.peek().mRow + 1;
 		else
 			mRow = 0;
-		mID = mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
+		mID = mID.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) ).concat(" -").concat( String.valueOf(mTree.generation) );
+		ancestor.mChildren.push(this);
 		setPath();
 	}
 
@@ -76,7 +74,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 	}
 	
 	public String addChild(MNode child) {
-		mChildren.add(child);
+		//mChildren.add(child);
 		return child.mID.concat(" has appeared in the tree");
 	}
 	

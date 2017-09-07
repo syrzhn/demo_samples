@@ -150,7 +150,7 @@ public class Viewer {
 				mForm.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						ISource children[] = mForm.getController().getSource(Item.getText(0));
+						ISource children[] = mForm.getController().getSource(Item.getText(1));
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
 							childItem.setData(child.getData());
