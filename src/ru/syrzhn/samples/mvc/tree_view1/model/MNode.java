@@ -30,6 +30,10 @@ public class MNode implements Comparable<MNode>, Cloneable {
 	}
 	
 	public MNode setPath() {
+		for (MNode child : mChildren) {
+			child.setPath();
+		}
+		mTree.mAllNodes.remove(path);
 		path = "";
 		for (int i = 0; i < mAncestors.size(); i++) {
 			MNode ancestor = mAncestors.get(i);
@@ -38,6 +42,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 			path = path.concat(level).concat(row);
 		}
 		path = path.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
+		mTree.mAllNodes.put(path, this);
 		return this;
 	}
 	
