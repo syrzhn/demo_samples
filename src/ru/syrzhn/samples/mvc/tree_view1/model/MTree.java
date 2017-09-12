@@ -1,8 +1,6 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 /** @author syrzhn */
@@ -11,16 +9,17 @@ public class MTree {
 	public int generation;
 
 	private String mName;
-	public Map<String, MNode> mAllNodes;
 	private int mLevels, mRows;
+	public Stack<MNode> firstLevel;
+	public int mAllNodes;
 	
 	public MNode findNode(String pathFind) {
-		List<IDentifier> path = new IDentifier(null).parse(pathFind);
+		List<Path> path = new Path(null).parse(pathFind);
 		MNode node = null; int n = path.size();
 		for (int i = 0; i < n; i++) {
 			int row = Integer.valueOf( path.get(i).mRow );
 			if (i == 0) 
-				node = mAllNodes.get( path.get(i).getID() ); 
+				node = firstLevel.get(row); 
 			else {
 				List<MNode> children = node.getChildren();
 				node = children.get(row);
@@ -31,16 +30,18 @@ public class MTree {
 	}	
 
 	public MTree(final int levels, final int rows) {
-		mAllNodes = new HashMap<String, MNode>();
+		mAllNodes = 0;
 		mLevels = levels;
 		mRows = rows;
 		mName = "All tree";
 		
 		Stack<MNode> level = new Stack<MNode>();
+				firstLevel = new Stack<MNode>();
 		for (int j = 0; j < mRows; j++) {
 			MNode nodeJ = new MNode(this, j);
 			level.push(nodeJ);
-			mAllNodes.put(nodeJ.path, nodeJ);
+			firstLevel.push(nodeJ);
+			mAllNodes++;
 		}
 		Stack<MNode> nodesI = new Stack<MNode>();
 		for (int i = 0; i < mLevels - 1; i++) {
@@ -50,7 +51,7 @@ public class MTree {
 				for (int j = 0; j < mRows; j++) {
 					MNode nodeJ = new MNode(node);
 					nodesI.push(nodeJ);
-					mAllNodes.put(nodeJ.path, nodeJ);
+					mAllNodes++;
 				}
 			}
 			level.addAll(nodesI);
@@ -58,29 +59,26 @@ public class MTree {
 		}
 	}
 	
-	private class IDentifier {
+	private class Path {
 		private final static String levelSymbols = Model.alphabet;//"abcdefghijklmnopqrstuvwxyz";
 		private final static String   rowSymbols = "0123456789";
 		
 		public String mLevel;
 		public String   mRow;
-		public IDentifier(String ID) {
-			if (ID != null) {
-				mLevel = String.valueOf( ID.charAt(0) );
+		public Path(String path) {
+			if (path != null) {
+				mLevel = String.valueOf( path.charAt(0) );
 				if (levelSymbols.indexOf(mLevel) < 0) throw new RuntimeException("Illegal symbol - \"".concat( mLevel ).concat( "\" in identifier of tree node!" ));
-				mRow = String.valueOf( ID.charAt(1) );
+				mRow = String.valueOf( path.charAt(1) );
 				if (rowSymbols.indexOf(mRow) < 0) throw new RuntimeException("Illegal symbol - \"".concat( mRow ).concat( "\" in identifier of tree node!" ));
 			}
 		}
-		public List<IDentifier> parse(String ID) {
-			List<IDentifier> ret = new Stack<IDentifier>();
-			for (int i = 0; i < ID.length() - 1; i += 2) {
-				ret.add( new IDentifier(ID.substring(i, i + 2)) );
+		public List<Path> parse(String path) {
+			List<Path> ret = new Stack<Path>();
+			for (int i = 0; i < path.length() - 1; i += 2) {
+				ret.add( new Path(path.substring(i, i + 2)) );
 			}
 			return ret; 
-		}
-		public String getID() {
-			return mLevel.concat(mRow);
 		}
 	}
 	
@@ -120,15 +118,11 @@ public class MTree {
 		MNode newNode = new MNode(node);
 		newNode.mTree = this;
 		Model.messBuff.add( node.addChild(newNode) );
-		mAllNodes.put(newNode.path, newNode);
+		mAllNodes++;
 		return newNode;
 	}
 	
 	public List<MNode> getFirstLevel() {
-		if (mRows <= 0) return null;
-		List<MNode> firstLevel = new Stack<MNode>();
-		for (int i = 0; i < mRows; i++)
-			firstLevel.add( mAllNodes.get(Model.getLevelName(0).concat(String.valueOf(i))) );
 		return firstLevel;
 	}
 

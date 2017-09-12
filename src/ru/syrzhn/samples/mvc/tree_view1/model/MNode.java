@@ -18,7 +18,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		}
 		mAncestors.clear();
 		mChildren.clear();
-		mTree.mAllNodes.remove(path);
+		mTree.mAllNodes--;
 		String str = mID.concat(" has leaved the tree");
 		Model.messBuff.add(str);
 		return str;
@@ -33,7 +33,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		for (MNode child : mChildren) {
 			child.setPath();
 		}
-		mTree.mAllNodes.remove(path);
+		mTree.mAllNodes--;
 		path = "";
 		for (int i = 0; i < mAncestors.size(); i++) {
 			MNode ancestor = mAncestors.get(i);
@@ -42,7 +42,7 @@ public class MNode implements Comparable<MNode>, Cloneable {
 			path = path.concat(level).concat(row);
 		}
 		path = path.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
-		mTree.mAllNodes.put(path, this);
+		mTree.mAllNodes++;
 		return this;
 	}
 	

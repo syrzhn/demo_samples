@@ -25,7 +25,7 @@ public class Controller {
 		str = ((MNode)mViewer.mCurrentItem.getData()).path;
 		MNode node = mModel.mTree.addChild(str); 
 		mViewer.mForm.printMessage(Model.messBuff.toArray( new String[ Model.messBuff.size() ] )); Model.messBuff.clear();
-		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")} ));
+		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mTree.mAllNodes).concat(" nodes in the tree")} ));
 		return new TreeSource(node.path);
 	}
 
@@ -33,7 +33,7 @@ public class Controller {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
 		mViewer.mForm.printMessage(mModel.mTree.disposeChild(((MNode)mViewer.mCurrentItem.getData()).path)); Model.messBuff.clear();
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes).concat(" nodes in the tree")}));
 	}
 
 	public void setDataOnCollapse() {
@@ -62,12 +62,12 @@ public class Controller {
 	}
 	
 	public ISource[] getSource() {
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes).concat(" nodes in the tree")}));
 		return new TreeSource().getBeginDataSet();
 	}
 
 	public ISource[] getSource(String path) {
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes.size()).concat(" nodes in the tree")}));
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes).concat(" nodes in the tree")}));
 		return new TreeSource(path).getBeginDataSet();
 	}
 	
