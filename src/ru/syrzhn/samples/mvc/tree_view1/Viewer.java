@@ -83,7 +83,7 @@ public class Viewer {
 				ISource source = mForm.getController().setData();
 				TreeItem newItem = new TreeItem(treeItem, 0);
 				newItem.setData(source.getData());
-				newItem.setText( new String[] { newItem.getData().toString(), ((MNode)newItem.getData()).getPath() } );
+				newItem.setText( new String[] { newItem.getData().toString(), ((MNode)newItem.getData()).mPath } );
 				mCurrentItem.setExpanded(true);
 			}
 		});
@@ -97,11 +97,18 @@ public class Viewer {
 				if (mCurrentItem == null) return;
 				disposeItem(mCurrentItem);
 				TreeItem parent = mCurrentItem.getParentItem();
+				Tree tree = mCurrentItem.getParent();
 				mCurrentItem.dispose();
 				if (parent != null) {
 					parent.removeAll();
 					getItemsFromMTree(parent);
 				}
+				else {
+					if (tree != null) {
+						tree.removeAll();
+						getItemsFromMTree(tree);
+					}
+				}					
 			}
 		};
 	}
@@ -135,7 +142,7 @@ public class Viewer {
 					for (ISource child : children) {
 						TreeItem childItem = new TreeItem(item, 0);
 						childItem.setData(child.getData());
-						childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );						
+						childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).mPath } );						
 						getData(childItem, child);
 					}
 				}
@@ -154,7 +161,7 @@ public class Viewer {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
 							childItem.setData(child.getData());
-							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );							
+							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).mPath } );							
 							getData(childItem, child);
 						}
 					}
@@ -174,7 +181,7 @@ public class Viewer {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(tree, 0);
 							childItem.setData(child.getData());
-							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).getPath() } );							
+							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).mPath } );							
 							getData(childItem, child);
 						}
 					}

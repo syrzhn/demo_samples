@@ -6,52 +6,54 @@ import java.util.Stack;
 /** @author syrzhn */
 public class MTree {
 	
+	public String mID = "";
+	public String mPath = "";
+	public Stack<MNode> mChildren;
+	public Stack<MNode> mAncestors;
+	public int mAllNodesCount;
+	
 	public int generation;
 
-	private String mName;
-	private int mLevels, mRows;
-	public Stack<MNode> firstLevel;
-	public int mAllNodes;
-	
 	public MNode findNode(String pathFind) {
 		List<Path> path = new Path(null).parse(pathFind);
 		MNode node = null; int n = path.size();
 		for (int i = 0; i < n; i++) {
 			int row = Integer.valueOf( path.get(i).mRow );
 			if (i == 0) 
-				node = firstLevel.get(row); 
+				node = mChildren.get(row); 
 			else {
 				List<MNode> children = node.getChildren();
 				node = children.get(row);
 			}
-			if ( i == n - 1 && node.path.equals(pathFind) ) return node;
+			if ( i == n - 1 && node.mPath.equals(pathFind) ) return node;
 		}
 		return null;
 	}	
 
 	public MTree(final int levels, final int rows) {
-		mAllNodes = 0;
-		mLevels = levels;
-		mRows = rows;
-		mName = "All tree";
+		mChildren = new Stack<MNode>();
+		mAncestors = new Stack<MNode>();
+		MNode root = new MNode(this, -1);
+		mAncestors.push(root);
+		mAllNodesCount = 0;
+		mID = "All tree";
 		
 		Stack<MNode> level = new Stack<MNode>();
-				firstLevel = new Stack<MNode>();
-		for (int j = 0; j < mRows; j++) {
+		for (int j = 0; j < rows; j++) {
 			MNode nodeJ = new MNode(this, j);
 			level.push(nodeJ);
-			firstLevel.push(nodeJ);
-			mAllNodes++;
+			mChildren.push(nodeJ);
+			mAllNodesCount++;
 		}
 		Stack<MNode> nodesI = new Stack<MNode>();
-		for (int i = 0; i < mLevels - 1; i++) {
+		for (int i = 0; i < levels - 1; i++) {
 			MNode node = null;
 			while (!level.isEmpty()) {
 				node = level.pop(); // add new level
-				for (int j = 0; j < mRows; j++) {
+				for (int j = 0; j < rows; j++) {
 					MNode nodeJ = new MNode(node);
 					nodesI.push(nodeJ);
-					mAllNodes++;
+					mAllNodesCount++;
 				}
 			}
 			level.addAll(nodesI);
@@ -101,7 +103,7 @@ public class MTree {
 			brothers = parent.mChildren;
 		}
 		else {
-			brothers = node.mTree.getFirstLevel();			
+			brothers = node.mTree.mChildren;			
 		}
 		int nodeRow = node.mRow;
 		for (int i = nodeRow + 1; i < brothers.size(); i++) {
@@ -118,16 +120,16 @@ public class MTree {
 		MNode newNode = new MNode(node);
 		newNode.mTree = this;
 		Model.messBuff.add( node.addChild(newNode) );
-		mAllNodes++;
+		mAllNodesCount++;
 		return newNode;
 	}
 	
 	public List<MNode> getFirstLevel() {
-		return firstLevel;
+		return mChildren;
 	}
 
 	@Override
 	public String toString() {
-		return mName;
+		return mID;
 	}
 }

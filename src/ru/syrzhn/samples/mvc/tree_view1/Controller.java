@@ -22,18 +22,18 @@ public class Controller {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Adding new node to ".concat(str));
 		mModel.mTree.generation++;
-		str = ((MNode)mViewer.mCurrentItem.getData()).path;
+		str = ((MNode)mViewer.mCurrentItem.getData()).mPath;
 		MNode node = mModel.mTree.addChild(str); 
 		mViewer.mForm.printMessage(Model.messBuff.toArray( new String[ Model.messBuff.size() ] )); Model.messBuff.clear();
-		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mTree.mAllNodes).concat(" nodes in the tree")} ));
-		return new TreeSource(node.path);
+		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mTree.mAllNodesCount).concat(" nodes in the tree")} ));
+		return new TreeSource(node.mPath);
 	}
 
 	public void disposeData() {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
-		mViewer.mForm.printMessage(mModel.mTree.disposeChild(((MNode)mViewer.mCurrentItem.getData()).path)); Model.messBuff.clear();
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes).concat(" nodes in the tree")}));
+		mViewer.mForm.printMessage(mModel.mTree.disposeChild(((MNode)mViewer.mCurrentItem.getData()).mPath)); Model.messBuff.clear();
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodesCount).concat(" nodes in the tree")}));
 	}
 
 	public void setDataOnCollapse() {
@@ -58,16 +58,16 @@ public class Controller {
 	
 	public interface ISource {
 		ISource[] getChildren(ISource parent);
-		Object  getData();
+		Object getData();
 	}
 	
 	public ISource[] getSource() {
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes).concat(" nodes in the tree")}));
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodesCount).concat(" nodes in the tree")}));
 		return new TreeSource().getBeginDataSet();
 	}
 
 	public ISource[] getSource(String path) {
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodes).concat(" nodes in the tree")}));
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodesCount).concat(" nodes in the tree")}));
 		return new TreeSource(path).getBeginDataSet();
 	}
 	
@@ -93,7 +93,7 @@ public class Controller {
 		public ISource[] getBeginDataSet() {
 			TreeSource arg[] = new TreeSource[mChildren.length];
 			for (int i = 0; i < mChildren.length; i++) {
-				arg[i] = new TreeSource(mChildren[i].path);
+				arg[i] = new TreeSource(mChildren[i].mPath);
 			}
 			return arg;
 		}
@@ -105,7 +105,7 @@ public class Controller {
 			mChildren = mModel.getTreeData(node);
 			TreeSource ret[] = new TreeSource[mChildren.length];
 			for (int i = 0; i < mChildren.length; i++) {
-				ret[i] = new TreeSource(mChildren[i].path);
+				ret[i] = new TreeSource(mChildren[i].mPath);
 			}
 			return ret;
 		}
