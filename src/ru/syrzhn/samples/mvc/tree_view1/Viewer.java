@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import ru.syrzhn.samples.mvc.tree_view1.Controller.ISource;
-import ru.syrzhn.samples.mvc.tree_view1.model.MNode;
 
 public class Viewer {
 	
@@ -83,7 +82,7 @@ public class Viewer {
 				ISource source = mForm.getController().setData();
 				TreeItem newItem = new TreeItem(treeItem, 0);
 				newItem.setData(source.getData());
-				newItem.setText( new String[] { newItem.getData().toString(), ((MNode)newItem.getData()).mPath } );
+				newItem.setText(mForm.getController().parseDataToItemColumns(newItem.getData()));
 				mCurrentItem.setExpanded(true);
 			}
 		});
@@ -142,7 +141,7 @@ public class Viewer {
 					for (ISource child : children) {
 						TreeItem childItem = new TreeItem(item, 0);
 						childItem.setData(child.getData());
-						childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).mPath } );						
+						childItem.setText(mForm.getController().parseDataToItemColumns(childItem.getData()));						
 						getData(childItem, child);
 					}
 				}
@@ -161,7 +160,7 @@ public class Viewer {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
 							childItem.setData(child.getData());
-							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).mPath } );							
+							childItem.setText(mForm.getController().parseDataToItemColumns(childItem.getData()));							
 							getData(childItem, child);
 						}
 					}
@@ -181,7 +180,7 @@ public class Viewer {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(tree, 0);
 							childItem.setData(child.getData());
-							childItem.setText( new String[] { childItem.getData().toString(), ((MNode)childItem.getData()).mPath } );							
+							childItem.setText(mForm.getController().parseDataToItemColumns(childItem.getData()));							
 							getData(childItem, child);
 						}
 					}

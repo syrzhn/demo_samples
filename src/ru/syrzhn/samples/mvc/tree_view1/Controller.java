@@ -36,6 +36,10 @@ public class Controller {
 		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTree.mAllNodesCount).concat(" nodes in the tree")}));
 	}
 
+	public String[] parseDataToItemColumns(Object data) {
+		return  new String[] { data.toString(), ((MNode)data).mPath } ;
+	}
+
 	public void setDataOnCollapse() {
 		String str = mViewer.mCurrentItem.toString() + " was collapsed";
 		mViewer.mForm.printMessage(str);

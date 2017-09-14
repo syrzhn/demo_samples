@@ -92,11 +92,8 @@ public class MTree {
 	}
 	
 	private void disposeNode(MNode node) {
-		setBrothersPaths(node);
 		node.leave();
-	}
-	
-	private void setBrothersPaths(MNode node) {
+
 		List<MNode> brothers = null;
 		if (node.getLevel() > 0) {
 			MNode parent = node.mAncestors.peek();
@@ -106,14 +103,14 @@ public class MTree {
 			brothers = node.mTree.mChildren;			
 		}
 		int nodeRow = node.mRow;
-		for (int i = nodeRow + 1; i < brothers.size(); i++) {
+		for (int i = nodeRow; i < brothers.size(); i++) {
 			MNode n = brothers.get(i);
 			--n.mRow;
 			n.setPath();
 		}
 		brothers.remove(nodeRow);
 	}
-
+	
 	public MNode addChild(String path) {
 		MNode node = findNode(path);
 		if (node == null) return null;
