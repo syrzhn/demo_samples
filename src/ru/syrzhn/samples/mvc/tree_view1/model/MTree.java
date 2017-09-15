@@ -14,22 +14,6 @@ public class MTree {
 	
 	public int generation;
 
-	public MNode findNode(String pathFind) {
-		List<Path> path = new Path(null).parse(pathFind);
-		MNode node = null; int n = path.size();
-		for (int i = 0; i < n; i++) {
-			int row = Integer.valueOf( path.get(i).mRow );
-			if (i == 0) 
-				node = mChildren.get(row); 
-			else {
-				List<MNode> children = node.getChildren();
-				node = children.get(row);
-			}
-			if ( i == n - 1 && node.mPath.equals(pathFind) ) return node;
-		}
-		return null;
-	}	
-
 	public MTree(final int levels, final int rows) {
 		mChildren = new Stack<MNode>();
 		mAncestors = new Stack<MNode>();
@@ -84,6 +68,22 @@ public class MTree {
 		}
 	}
 	
+	public MNode findNode(String pathFind) {
+		List<Path> path = new Path(null).parse(pathFind);
+		MNode node = null; int n = path.size();
+		for (int i = 0; i < n; i++) {
+			int row = Integer.valueOf( path.get(i).mRow );
+			if (i == 0) 
+				node = mChildren.get(row); 
+			else {
+				List<MNode> children = node.getChildren();
+				node = children.get(row);
+			}
+			if ( i == n - 1 && node.mPath.equals(pathFind) ) return node;
+		}
+		return null;
+	}	
+
 	public String[] disposeChild(String path) {
 		MNode node = findNode(path);
 		if (node == null) throw new RuntimeException("Can't find the node by identifier - \"".concat(path).concat("\"!"));
@@ -92,17 +92,17 @@ public class MTree {
 	}
 	
 	private void disposeNode(MNode node) {
-		node.leave();
-
 		List<MNode> brothers = null;
 		if (node.getLevel() > 0) {
-			MNode parent = node.mAncestors.peek();
-			brothers = parent.mChildren;
+			brothers = node.mAncestors.peek().mChildren;
 		}
 		else {
 			brothers = node.mTree.mChildren;			
 		}
 		int nodeRow = node.mRow;
+
+		node.leave();
+
 		for (int i = nodeRow; i < brothers.size(); i++) {
 			MNode n = brothers.get(i);
 			--n.mRow;
