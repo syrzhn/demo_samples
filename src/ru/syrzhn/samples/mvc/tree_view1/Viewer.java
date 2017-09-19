@@ -125,9 +125,9 @@ public class Viewer {
 			isBusy = true;
 			long start = System.currentTimeMillis();
 			doTask();
-			isBusy = false;
 			long end = System.currentTimeMillis();
 			mForm.printMessage("Time to execute the task \"".concat(mName).concat("\" in millis: ").concat(String.valueOf(end - start)));
+			isBusy = false;
 		}
 	}
 	
@@ -156,7 +156,7 @@ public class Viewer {
 				mForm.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						ISource children[] = mForm.getController().getSource(Item.getText(1));
+						ISource children[] = mForm.getController().getSource(Item.getData());
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
 							childItem.setData(child.getData());

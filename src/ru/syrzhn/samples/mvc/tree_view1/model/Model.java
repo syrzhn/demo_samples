@@ -19,19 +19,20 @@ public class Model {
 		mTree = new MTree(levels, rows);
 	}
 	
-	public MNode[] getTreeData(MNode parent) {
+	public MNode[] getTreeData() {
 		MNode arg[] = null;
-		List<MNode> level = null; 
-		if (parent == null) {
-			level = mTree.getFirstLevel();
-			arg = new MNode[level.size()];
-			level.toArray(arg);
-		}
-		else {
-			level = parent.getChildren();
-			arg = new MNode[level.size()];
-			level.toArray(arg);
-		}		
+		List<MNode> level = mTree.getFirstLevel();
+		arg = new MNode[level.size()];
+		level.toArray(arg);
+		return arg;
+	}
+	
+	public MNode[] getTreeData(MNode parent) {
+		if (parent == null) return null;
+		MNode arg[] = null;
+		List<MNode> level = parent.getChildren();
+		arg = new MNode[level.size()];
+		level.toArray(arg);
 		return arg;
 	}
 	

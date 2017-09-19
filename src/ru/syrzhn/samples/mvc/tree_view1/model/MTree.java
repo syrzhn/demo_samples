@@ -84,9 +84,7 @@ public class MTree {
 		return null;
 	}	
 
-	public String[] disposeChild(String path) {
-		MNode node = findNode(path);
-		if (node == null) throw new RuntimeException("Can't find the node by identifier - \"".concat(path).concat("\"!"));
+	public String[] disposeChild(MNode node) {
 		disposeNode(node);
 		return Model.messBuff.toArray(new String[Model.messBuff.size()]);
 	}
@@ -111,12 +109,10 @@ public class MTree {
 		brothers.remove(nodeRow);
 	}
 	
-	public MNode addChild(String path) {
-		MNode node = findNode(path);
-		if (node == null) return null;
-		MNode newNode = new MNode(node);
+	public MNode addNode(MNode ancestor) {
+		MNode newNode = new MNode(ancestor);
 		newNode.mTree = this;
-		Model.messBuff.add( node.addChild(newNode) );
+		Model.messBuff.add( newNode.mID.concat(" has appeared in the tree") );
 		mAllNodesCount++;
 		return newNode;
 	}

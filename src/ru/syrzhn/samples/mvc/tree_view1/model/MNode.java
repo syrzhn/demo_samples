@@ -68,11 +68,6 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		return mChildren;
 	}
 	
-	public String addChild(MNode child) {
-		//mChildren.add(child);
-		return child.mID.concat(" has appeared in the tree");
-	}
-	
 	@Override
 	public int compareTo(MNode arg0) {
 		if (this.mID.equals(arg0.mID))
