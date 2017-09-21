@@ -129,6 +129,11 @@ public class Controller {
 			return s;
 		}
 	}
+
+	public void searchByPath(String path) {
+		MNode node = mModel.mTree.findNodeByPath(path);
+		node.toString();
+	}
 }
 
 

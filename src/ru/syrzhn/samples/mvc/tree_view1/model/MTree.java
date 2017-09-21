@@ -1,5 +1,6 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 import java.util.Stack;
 
@@ -45,41 +46,54 @@ public class MTree {
 		}
 	}
 	
-	private class Path {
-		private final static String levelSymbols = Model.alphabet;//"abcdefghijklmnopqrstuvwxyz";
-		private final static String   rowSymbols = "0123456789";
+	public MNode findNodeByPath(String pathToFind) {
+		class Path {
+			private final static String levelSymbols = Model.alphabet;//"abcdefghijklmnopqrstuvwxyz";
+			private final static String   rowSymbols = "0123456789";
+			
+			public String mLevel;
+			public int      mRow;
+			public Stack<Path> mPath;
+			public Path() {
+				mPath = new Stack<Path>();
+			}
+			public Path(String path, Stack<Path> passes) {
+				mLevel = path.substring(0, 1);
+				if (levelSymbols.indexOf(mLevel) < 0) throw new UnsupportedCharsetException("Illegal symbol - \"".concat(mLevel).concat( "\" in path of tree node!" ));
+				String s = path.substring(1, path.length());
+				try {
+					mRow = Integer.valueOf(s);
+				} catch (NumberFormatException e) {
+					throw new NumberFormatException("Illegal symbol - \"".concat(s).concat( "\" in path of tree node!" ));
+				}
+				if (passes != null)	mPath = passes;
+			}
+			public Stack<Path> parse(String path) {
+				if (path == null || path.length() == 0) return mPath;
+				int i = 1;
+				for (i = 1; i < path.length(); i++) { 
+					char c = path.charAt(i); 
+					if (rowSymbols.indexOf(c) < 0) break;
+				}
+				String p = path.substring(0, i);
+				String rest = path.substring(i, path.length());
+				mPath.push(new Path(p, mPath));
+				parse(rest);
+				return mPath; 
+			}
+		}
 		
-		public String mLevel;
-		public String   mRow;
-		public Path(String path) {
-			if (path != null) {
-				mLevel = String.valueOf( path.charAt(0) );
-				if (levelSymbols.indexOf(mLevel) < 0) throw new RuntimeException("Illegal symbol - \"".concat( mLevel ).concat( "\" in identifier of tree node!" ));
-				mRow = String.valueOf( path.charAt(1) );
-				if (rowSymbols.indexOf(mRow) < 0) throw new RuntimeException("Illegal symbol - \"".concat( mRow ).concat( "\" in identifier of tree node!" ));
-			}
-		}
-		public List<Path> parse(String path) {
-			List<Path> ret = new Stack<Path>();
-			for (int i = 0; i < path.length() - 1; i += 2) {
-				ret.add( new Path(path.substring(i, i + 2)) );
-			}
-			return ret; 
-		}
-	}
-	
-	public MNode findNode(String pathFind) {
-		List<Path> path = new Path(null).parse(pathFind);
+		List<Path> path = new Path().parse(pathToFind);
 		MNode node = null; int n = path.size();
 		for (int i = 0; i < n; i++) {
-			int row = Integer.valueOf( path.get(i).mRow );
+			int row = path.get(i).mRow;
 			if (i == 0) 
 				node = mChildren.get(row); 
 			else {
 				List<MNode> children = node.getChildren();
 				node = children.get(row);
 			}
-			if ( i == n - 1 && node.mPath.equals(pathFind) ) return node;
+			if ( i == n - 1 && node.mPath.equals(pathToFind) ) return node;
 		}
 		return null;
 	}	

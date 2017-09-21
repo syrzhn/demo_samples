@@ -1,8 +1,11 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -19,6 +22,7 @@ public class Viewer {
 		void printMessage(String[] msgs);
 		void updateState(State state);
 		Controller getController();
+		String getSearch();
 		Display getDisplay();
 		class State {
 			public String caption;
@@ -62,6 +66,69 @@ public class Viewer {
 				}
 			}		
 		};
+	}
+	
+	public SelectionAdapter getSearchSelectionAdapter() {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				if (isBusy) return;
+				String s = mForm.getSearch();
+				mForm.getController().searchByPath(s);
+			}
+		};
+	}
+	ComboSearchHandler comboSearchHandler = new ComboSearchHandler();
+	public class ComboSearchHandler extends KeyAdapter implements Listener {
+		
+		private final String mValidSymbols = "0123456789" 
+				+ "abcdefghijklmnopqrstuvwxyz" 
+				+ "יצףךוםדרשחץתפûגאןנמכהז‎ÿקסלטעüב‏¸"
+				+ "-_+=|\\/*\"'"
+				+ ",.:;!?"
+				+ "(){}[]"
+				+ "@#$%^&*"
+				+ '\u0008' // backspace
+				+ '\u007F' // delete
+				+ '\r'
+				;
+		
+		private boolean isValid(KeyEvent keyevent) {
+			if (mValidSymbols.toUpperCase().indexOf(String.valueOf(keyevent.character).toUpperCase()) < 0)
+				return false;
+			return true;
+		}
+		
+		@Override
+		public void keyPressed(KeyEvent keyevent) {
+			if (isBusy) return;
+			if (!isValid(keyevent))	return;
+			Combo src = (Combo) keyevent.getSource();
+			String id = src.getText();
+			if (keyevent.character == '\r')
+				search(id);
+		}
+		
+		@Override
+		public void keyReleased(KeyEvent keyevent) {
+			if (isBusy) return;
+			if (!isValid(keyevent))	return;
+			Combo src = (Combo) keyevent.getSource();
+			String id = src.getText();
+			if (keyevent.character == '\r')
+				search(id);
+		}
+		
+		@Override
+		public void handleEvent(Event event) {
+			if (isBusy) return;
+			Combo src = (Combo) event.widget;
+			String str = src.getText();
+			search(str);
+		}
+		
+		public void search(String str) {
+		}
 	}
 	
 	public SelectionAdapter getNewItemSelectionAdapter() {

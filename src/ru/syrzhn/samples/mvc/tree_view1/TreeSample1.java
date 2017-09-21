@@ -3,10 +3,10 @@ package ru.syrzhn.samples.mvc.tree_view1;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -20,7 +20,6 @@ public class TreeSample1 implements Viewer.IForm {
 	
 	private Viewer viewer;
 	private Display display;
-	private Text txtSearch;
 
 	@Override
 	public void updateState(State state) {
@@ -68,6 +67,11 @@ public class TreeSample1 implements Viewer.IForm {
 		return controller;
 	}
 
+	@Override
+	public String getSearch() {
+		return comboSearch.getText().trim();
+	}
+
 	/**
 	 * Launch the application.
 	 * @param args
@@ -82,6 +86,7 @@ public class TreeSample1 implements Viewer.IForm {
 	}
 	
 	private static Controller controller;
+	private Combo comboSearch;
 
 	/**
 	 * Open the window.
@@ -126,15 +131,18 @@ public class TreeSample1 implements Viewer.IForm {
 		tltmDeleteItem.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
 		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
 		
-		txtSearch = new Text(shlTreeSample, SWT.BORDER);
-		txtSearch.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
-		GridData gd_txtSearch = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_txtSearch.heightHint = 24;
-		txtSearch.setLayoutData(gd_txtSearch);
+		comboSearch = new Combo(shlTreeSample, SWT.NONE);
+		comboSearch.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
+		GridData gd_comboSearch = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_comboSearch.heightHint = 35;
+		comboSearch.setLayoutData(gd_comboSearch);
+		comboSearch.addKeyListener( viewer.comboSearchHandler );
+		comboSearch.addListener(SWT.Selection, viewer.comboSearchHandler);
 		
 		ToolBar toolBarSearch = new ToolBar(shlTreeSample, SWT.FLAT | SWT.RIGHT);
 		
 		ToolItem tltmGo = new ToolItem(toolBarSearch, SWT.NONE);
+		tltmGo.addSelectionListener(viewer.getSearchSelectionAdapter());
 		tltmGo.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/search1.png"));
 		
 		tree = new Tree(shlTreeSample, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
