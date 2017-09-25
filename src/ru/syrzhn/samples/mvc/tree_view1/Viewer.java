@@ -100,14 +100,7 @@ public class Viewer {
 		}
 		
 		@Override
-		public void keyPressed(KeyEvent keyevent) {
-			if (isBusy) return;
-			if (!isValid(keyevent))	return;
-			Combo src = (Combo) keyevent.getSource();
-			String id = src.getText();
-			if (keyevent.character == '\r')
-				search(id);
-		}
+		public void keyPressed(KeyEvent keyevent) {}
 		
 		@Override
 		public void keyReleased(KeyEvent keyevent) {
@@ -128,6 +121,7 @@ public class Viewer {
 		}
 		
 		public void search(String str) {
+			mForm.getController().searchByPath(str);
 		}
 	}
 	

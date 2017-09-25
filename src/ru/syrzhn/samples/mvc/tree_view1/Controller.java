@@ -130,9 +130,9 @@ public class Controller {
 		}
 	}
 
-	public void searchByPath(String path) {
+	public MNode searchByPath(String path) {
 		MNode node = mModel.mTree.findNodeByPath(path);
-		node.toString();
+		return node;
 	}
 }
 
