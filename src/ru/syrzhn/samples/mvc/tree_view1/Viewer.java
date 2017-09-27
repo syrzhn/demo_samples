@@ -74,7 +74,7 @@ public class Viewer {
 			public void widgetSelected(SelectionEvent event) {
 				if (isBusy) return;
 				String s = mForm.getSearch();
-				mForm.getController().searchByPath(s);
+				mForm.getController().searchByPath(s).setChecked(true);
 			}
 		};
 	}
@@ -107,9 +107,9 @@ public class Viewer {
 			if (isBusy) return;
 			if (!isValid(keyevent))	return;
 			Combo src = (Combo) keyevent.getSource();
-			String id = src.getText();
+			String str = src.getText();
 			if (keyevent.character == '\r')
-				search(id);
+				search(str).setChecked(true);
 		}
 		
 		@Override
@@ -117,11 +117,11 @@ public class Viewer {
 			if (isBusy) return;
 			Combo src = (Combo) event.widget;
 			String str = src.getText();
-			search(str);
+			search(str).setChecked(true);
 		}
 		
-		public void search(String str) {
-			mForm.getController().searchByPath(str);
+		public TreeItem search(String str) {
+			return mForm.getController().searchByPath(str);
 		}
 	}
 	
@@ -140,11 +140,12 @@ public class Viewer {
 		mForm.getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				ISource source = mForm.getController().setData();
+				ISource source = mForm.getController().addNewData();
 				TreeItem newItem = new TreeItem(treeItem, 0);
-				newItem.setData(source.getData());
-				newItem.setText(mForm.getController().parseDataToItemColumns(newItem.getData()));
-				mCurrentItem.setExpanded(true);
+				Object o = source.getData();
+				newItem.setData(o);
+				newItem.setText(mForm.getController().parseDataToItemColumns(o));
+				treeItem.setExpanded(true);
 			}
 		});
 	}
@@ -201,8 +202,10 @@ public class Viewer {
 				public void run() {
 					for (ISource child : children) {
 						TreeItem childItem = new TreeItem(item, 0);
-						childItem.setData(child.getData());
-						childItem.setText(mForm.getController().parseDataToItemColumns(childItem.getData()));						
+						Object o = child.getData();
+						childItem.setData(o);
+						childItem.setText(mForm.getController().parseDataToItemColumns(o));
+						mForm.getController().setData(childItem);
 						getData(childItem, child);
 					}
 				}
@@ -220,8 +223,10 @@ public class Viewer {
 						ISource children[] = mForm.getController().getSource(Item.getData());
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
-							childItem.setData(child.getData());
-							childItem.setText(mForm.getController().parseDataToItemColumns(childItem.getData()));							
+							Object o = child.getData();
+							childItem.setData(o);
+							childItem.setText(mForm.getController().parseDataToItemColumns(o));
+							mForm.getController().setData(childItem);
 							getData(childItem, child);
 						}
 					}
@@ -240,8 +245,10 @@ public class Viewer {
 						ISource children[] = mForm.getController().getSource();
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(tree, 0);
-							childItem.setData(child.getData());
-							childItem.setText(mForm.getController().parseDataToItemColumns(childItem.getData()));							
+							Object o = child.getData();
+							childItem.setData(o);
+							childItem.setText(mForm.getController().parseDataToItemColumns(o));
+							mForm.getController().setData(childItem);
 							getData(childItem, child);
 						}
 					}

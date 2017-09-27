@@ -1,5 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
+import org.eclipse.swt.widgets.TreeItem;
+
 import ru.syrzhn.samples.mvc.tree_view1.model.MNode;
 import ru.syrzhn.samples.mvc.tree_view1.model.Model;
 
@@ -18,7 +20,13 @@ public class Controller {
 		mViewer = viewer;
 	}
 	
-	public ISource setData() {
+
+	public void setData(TreeItem item) {
+		MNode node = (MNode) item.getData();
+		node.mData = item;
+	}
+	
+	public ISource addNewData() {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Adding new node to ".concat(str));
 		mModel.mTree.generation++;
@@ -130,9 +138,9 @@ public class Controller {
 		}
 	}
 
-	public MNode searchByPath(String path) {
+	public TreeItem searchByPath(String path) {
 		MNode node = mModel.mTree.findNodeByPath(path);
-		return node;
+		return (TreeItem) node.mData;
 	}
 }
 
