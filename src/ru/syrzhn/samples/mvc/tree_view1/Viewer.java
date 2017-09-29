@@ -50,18 +50,19 @@ public class Viewer {
 			public void handleEvent(Event event) {
 				if (isBusy) return;
 				mCurrentItem = (TreeItem) event.item;
+				Controller c = mForm.getController();
 				switch (mEventType) {
 				case SWT.Collapse:
-					mForm.getController().setDataOnCollapse();
+					c.setDataOnCollapse();
 					break;
 				case SWT.Expand:
-					mForm.getController().setDataOnExpand();
+					c.setDataOnExpand();
 					break;
 				case SWT.Selection:
 					if (event.detail == SWT.CHECK) 
-						mForm.getController().setDataOnCheck();
+						c.setDataOnCheck();
 					else
-						mForm.getController().setDataOnSelection();
+						c.setDataOnSelection();
 					break;
 				}
 			}		
@@ -121,7 +122,11 @@ public class Viewer {
 		}
 		
 		public TreeItem search(String str) {
-			return mForm.getController().searchByPath(str);
+			Controller c = mForm.getController();
+			TreeItem item = c.searchByPath(str);
+			TreeItem items[] = c.getAncestors(item);
+			expandTreeItems(items);
+			return item;
 		}
 	}
 	
@@ -136,15 +141,21 @@ public class Viewer {
 		};
 	}
 	
+	private void expandTreeItems(TreeItem items[]) {
+		for (TreeItem item : items) 
+			item.setExpanded(true);
+	}
+	
 	private void insertItem(final TreeItem treeItem) {
 		mForm.getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				ISource source = mForm.getController().addNewData();
+				Controller c = mForm.getController();
+				ISource source = c.addNewData();
 				TreeItem newItem = new TreeItem(treeItem, 0);
 				Object o = source.getData();
 				newItem.setData(o);
-				newItem.setText(mForm.getController().parseDataToItemColumns(o));
+				newItem.setText(c.parseDataToItemColumns(o));
 				treeItem.setExpanded(true);
 			}
 		});
@@ -200,12 +211,13 @@ public class Viewer {
 			mForm.getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
+					Controller c = mForm.getController();
 					for (ISource child : children) {
 						TreeItem childItem = new TreeItem(item, 0);
 						Object o = child.getData();
 						childItem.setData(o);
-						childItem.setText(mForm.getController().parseDataToItemColumns(o));
-						mForm.getController().setData(childItem);
+						childItem.setText(c.parseDataToItemColumns(o));
+						c.setData(childItem);
 						getData(childItem, child);
 					}
 				}
@@ -220,13 +232,14 @@ public class Viewer {
 				mForm.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						ISource children[] = mForm.getController().getSource(Item.getData());
+						Controller c = mForm.getController();
+						ISource children[] = c.getSource(Item.getData());
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
 							Object o = child.getData();
 							childItem.setData(o);
-							childItem.setText(mForm.getController().parseDataToItemColumns(o));
-							mForm.getController().setData(childItem);
+							childItem.setText(c.parseDataToItemColumns(o));
+							c.setData(childItem);
 							getData(childItem, child);
 						}
 					}

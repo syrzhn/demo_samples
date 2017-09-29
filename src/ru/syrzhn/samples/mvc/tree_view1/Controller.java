@@ -1,5 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
+import java.util.Stack;
+
 import org.eclipse.swt.widgets.TreeItem;
 
 import ru.syrzhn.samples.mvc.tree_view1.model.MNode;
@@ -141,6 +143,16 @@ public class Controller {
 	public TreeItem searchByPath(String path) {
 		MNode node = mModel.mTree.findNodeByPath(path);
 		return (TreeItem) node.mData;
+	}
+
+	public TreeItem[] getAncestors(TreeItem item) {
+		MNode node = (MNode)item.getData();
+		Stack<MNode> ancestors = node.mAncestors;
+		TreeItem items[] = new TreeItem[ancestors.size()];
+		int i = 0;
+		for (MNode ancestor : ancestors)
+			items[i++] = (TreeItem)ancestor.mData;
+		return items;
 	}
 }
 
