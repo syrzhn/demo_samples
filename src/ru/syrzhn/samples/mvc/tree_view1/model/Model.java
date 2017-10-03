@@ -1,7 +1,11 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Stack;
+import java.util.TimeZone;
 
 public class Model {
 	
@@ -16,12 +20,12 @@ public class Model {
 	}
 	
 	public Model(final int levels, final int rows) {
-		mTree = new MTree(levels, rows);
+		mTestTree = new MTree(levels, rows);
 	}
 	
 	public MNode[] getTreeData() {
 		MNode arg[] = null;
-		List<MNode> level = mTree.getFirstLevel();
+		List<MNode> level = mTestTree.mChildren;
 		arg = new MNode[level.size()];
 		level.toArray(arg);
 		return arg;
@@ -30,7 +34,7 @@ public class Model {
 	public MNode[] getTreeData(MNode parent) {
 		if (parent == null) return null;
 		MNode arg[] = null;
-		List<MNode> level = parent.getChildren();
+		List<MNode> level = parent.mChildren;
 		arg = new MNode[level.size()];
 		level.toArray(arg);
 		return arg;
@@ -42,5 +46,12 @@ public class Model {
 
 	public static List<String> messBuff;
 
-	public MTree mTree;
+	public MTree mTestTree;
+	
+	public static String currentTime() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss,SSS", Locale.GERMANY);
+		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+5:00"));
+		calendar.setTimeInMillis(System.currentTimeMillis());
+		return sdf.format(calendar.getTime());
+	}
 }

@@ -5,13 +5,14 @@ import java.util.Stack;
 /** @author syrzhn */
 public class MNode implements Comparable<MNode>, Cloneable {
 
-	public String mID = "";
-	public String mPath = "";
+	public String mID;
+	public String mPath;
 	public Stack<MNode> mChildren;
 	public Stack<MNode> mAncestors;
 	public Object mData;
 	public int mRow;
 	public MTree mTree;
+	public int mLevel;
 	
 	public String leave() {
 		for (MNode child : mChildren) {
@@ -30,7 +31,8 @@ public class MNode implements Comparable<MNode>, Cloneable {
 			mPath = mAncestors.peek().mPath;
 		else
 			mPath = "";
-		mPath = mPath.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
+		mLevel = mAncestors.size();
+		mPath = mPath.concat(Model.getLevelName( mLevel )).concat( String.valueOf(mRow) );
 		for (MNode child : mChildren) {
 			child.setPath();
 		}
@@ -38,13 +40,12 @@ public class MNode implements Comparable<MNode>, Cloneable {
 	}
 	
 	public MNode(MTree parent, int row) {
+		if (parent == null) return;
 		mTree = parent;
 		mChildren = new Stack<MNode>();
 		mAncestors = new Stack<MNode>();
-		if (parent == null) return;
 		mRow = row;
-		mPath = Model.getLevelName( getLevel() ).concat( String.valueOf(mRow) );
-		mID = mPath.concat(" -").concat( String.valueOf(mTree.generation) );
+		mID = setPath().mPath.concat(" - ").concat(Model.currentTime());
 	}
 
 	public MNode(MNode ancestor) {
@@ -52,51 +53,41 @@ public class MNode implements Comparable<MNode>, Cloneable {
 		mTree = ancestor.mTree;
 		mChildren = new Stack<MNode>();
 		mAncestors = new Stack<MNode>();
-		if (ancestor.mAncestors.size() > 0) 
-			mAncestors.addAll(ancestor.mAncestors);
+		mAncestors.addAll(ancestor.mAncestors);
 		mAncestors.push(ancestor);
-		if (ancestor.mChildren.size() > 0)
-			mRow = ancestor.mChildren.peek().mRow + 1;
-		else
-			mRow = 0;
-		setPath();
-		mID = mPath.concat(" -").concat( String.valueOf(mTree.generation) );
+		mRow = ancestor.mChildren.size();
+		mID = setPath().mPath.concat(" - ").concat(Model.currentTime());
 		ancestor.mChildren.push(this);
 	}
 
-	public Stack<MNode> getChildren() {
-		return mChildren;
-	}
-	
 	@Override
 	public int compareTo(MNode arg0) {
-		if (this.mID.equals(arg0.mID))
+		if (this.mPath.equals(arg0.mPath))
 			return 0;
 		else {
-			int l1 = this.getLevel(), l2 = arg0.getLevel();
-			int l = l1 - l2;
+			int l1 = this.mLevel, l2 = arg0.mLevel,
+				l = l1 - l2;
 			if (l != 0)
 				return l;
-			else 
-				return this.mRow - arg0.mRow;
+			else {
+				MNode p1 = this.mAncestors.peek(),
+					  p2 = arg0.mAncestors.peek();
+				if (p1.equals(p2))
+					return this.mRow - arg0.mRow;
+				else
+					return p1.mRow - p2.mRow;
+			}
 		}	
 	}
 	
-	public int getLevel() {
-		if (mAncestors == null) return 0;
-		return mAncestors.size();
-	}
-
 	@Override
-	public String toString() {
-		return mID;
-	}
+	public String toString() { return mID; }
 
 	@Override
 	public MNode clone() throws CloneNotSupportedException{
 		MNode node = (MNode)super.clone();
 		node.mRow = mRow + 1;
-		node.mID  = mID.substring(0, mID.length() - 1).concat(String.valueOf(node.mRow));
+		node.mID = node.setPath().mPath.concat(" - ").concat(Model.currentTime());
 		return node;
 	}
 }

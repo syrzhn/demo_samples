@@ -75,13 +75,13 @@ public class Viewer {
 			public void widgetSelected(SelectionEvent event) {
 				if (isBusy) return;
 				String s = mForm.getSearch();
-				mForm.getController().searchByPath(s).setChecked(true);
+				comboSearchHandler.searchAndCheckItem(s);
 			}
 		};
 	}
 	ComboSearchHandler comboSearchHandler = new ComboSearchHandler();
-	public class ComboSearchHandler extends KeyAdapter implements Listener {
-		
+	public class ComboSearchHandler{
+		Combo sourceWidget;
 		private final String mValidSymbols = "0123456789" 
 				+ "abcdefghijklmnopqrstuvwxyz" 
 				+ "יצףךוםדרשחץתפûגאןנמכהז‎ÿקסלטעüב‏¸"
@@ -99,35 +99,60 @@ public class Viewer {
 				return false;
 			return true;
 		}
-		
-		@Override
-		public void keyPressed(KeyEvent keyevent) {}
-		
-		@Override
-		public void keyReleased(KeyEvent keyevent) {
-			if (isBusy) return;
-			if (!isValid(keyevent))	return;
-			Combo src = (Combo) keyevent.getSource();
-			String str = src.getText();
-			if (keyevent.character == '\r')
-				search(str).setChecked(true);
+		public KeyAdapter getKeyAdapter() {
+			return new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent keyevent) {}
+				
+				@Override
+				public void keyReleased(KeyEvent keyevent) {
+					if (isBusy) return;
+					if (!isValid(keyevent))	return;
+					sourceWidget = (Combo) keyevent.getSource();
+					String str = sourceWidget.getText();
+					if (keyevent.character == '\r') 
+						searchAndCheckItem(str);
+				}
+			};
 		}
 		
-		@Override
-		public void handleEvent(Event event) {
-			if (isBusy) return;
-			Combo src = (Combo) event.widget;
-			String str = src.getText();
-			search(str).setChecked(true);
+		public SelectionAdapter getSelectionAdapter() {
+			return new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent event) {
+					if (isBusy) return;
+					sourceWidget = (Combo) event.widget;
+					String str = sourceWidget.getText();
+					searchAndCheckItem(str);
+				}
+			};
 		}
 		
-		public TreeItem search(String str) {
-			Controller c = mForm.getController();
-			TreeItem item = c.searchByPath(str);
-			TreeItem items[] = c.getAncestors(item);
-			expandTreeItems(items);
-			return item;
+		public void searchAndCheckItem(final String str) {
+			Task t = new Task("searching the item - ".concat(str)) {
+				@Override
+				protected void doTask() {
+					mForm.getDisplay().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							Controller c = mForm.getController();
+							TreeItem item = c.searchByPath(str);
+							if (item == null) return;
+							TreeItem items[] = c.getAncestors(item);
+							expandTreeItems(items);
+							if (item != null)
+								item.setChecked(true);
+							sourceWidget.add(str);
+						}
+					});
+				}			
+			}; t.start();
 		}
+	}
+	
+	private void expandTreeItems(TreeItem items[]) {
+		for (TreeItem item : items) 
+			item.setExpanded(true);
 	}
 	
 	public SelectionAdapter getNewItemSelectionAdapter() {
@@ -141,24 +166,25 @@ public class Viewer {
 		};
 	}
 	
-	private void expandTreeItems(TreeItem items[]) {
-		for (TreeItem item : items) 
-			item.setExpanded(true);
-	}
-	
-	private void insertItem(final TreeItem treeItem) {
-		mForm.getDisplay().asyncExec(new Runnable() {
+	private void insertItem(final TreeItem item) {
+		Task t = new Task("inserting the item - ".concat(item.toString())) {
 			@Override
-			public void run() {
-				Controller c = mForm.getController();
-				ISource source = c.addNewData();
-				TreeItem newItem = new TreeItem(treeItem, 0);
-				Object o = source.getData();
-				newItem.setData(o);
-				newItem.setText(c.parseDataToItemColumns(o));
-				treeItem.setExpanded(true);
-			}
-		});
+			protected void doTask() {
+				mForm.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						Controller c = mForm.getController();
+						ISource source = c.addNewData();
+						TreeItem newItem = new TreeItem(item, 0);
+						Object o = source.getData();
+						newItem.setData(o);
+						newItem.setText(c.parseDataToItemColumns(o));
+						c.setData(newItem);
+						item.setExpanded(true);
+					}
+				});
+			}			
+		}; t.start();
 	}
 
 	public SelectionAdapter getDeleteItemSelectionAdapter() {
@@ -226,7 +252,7 @@ public class Viewer {
 	}
 	
 	public void getItemsFromMTree(final TreeItem Item) {
-		Task t = new GetItemsFromMTreeTask("fill the item - ".concat(Item.toString())) {
+		Task t = new GetItemsFromMTreeTask("filling the item - ".concat(Item.toString())) {
 			@Override
 			protected void doTask() {
 				mForm.getDisplay().asyncExec(new Runnable() {
@@ -249,7 +275,7 @@ public class Viewer {
 	}
 	
 	public void getItemsFromMTree(final Tree tree) {
-		Task t = new GetItemsFromMTreeTask("fill the tree") {
+		Task t = new GetItemsFromMTreeTask("filling the tree") {
 			@Override
 			protected void doTask() {
 				mForm.getDisplay().asyncExec(new Runnable() {

@@ -109,7 +109,7 @@ public class TreeSample1 implements Viewer.IForm {
 			}
 		}
 	}
-
+	
 	/**
 	 * Create contents of the window.
 	 */
@@ -132,12 +132,12 @@ public class TreeSample1 implements Viewer.IForm {
 		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
 		
 		comboSearch = new Combo(shlTreeSample, SWT.NONE);
+		comboSearch.addKeyListener( viewer.comboSearchHandler.getKeyAdapter() );
+		comboSearch.addSelectionListener(viewer.comboSearchHandler.getSelectionAdapter());
 		comboSearch.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		GridData gd_comboSearch = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_comboSearch.heightHint = 35;
 		comboSearch.setLayoutData(gd_comboSearch);
-		comboSearch.addKeyListener( viewer.comboSearchHandler );
-		comboSearch.addListener(SWT.Selection, viewer.comboSearchHandler);
 		
 		ToolBar toolBarSearch = new ToolBar(shlTreeSample, SWT.FLAT | SWT.RIGHT);
 		
