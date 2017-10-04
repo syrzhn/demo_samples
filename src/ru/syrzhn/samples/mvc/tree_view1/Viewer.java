@@ -39,6 +39,7 @@ public class Viewer {
 
 	public Viewer(IForm form) {
 		mForm = form;
+		comboSearchHandler = new ComboSearchHandler();
 	}
 
 	public Listener getTableEventListener(final int eventType) {
@@ -79,7 +80,7 @@ public class Viewer {
 			}
 		};
 	}
-	ComboSearchHandler comboSearchHandler = new ComboSearchHandler();
+	ComboSearchHandler comboSearchHandler;
 	public class ComboSearchHandler{
 		Combo sourceWidget;
 		private final String mValidSymbols = "0123456789" 
@@ -119,10 +120,15 @@ public class Viewer {
 		public SelectionAdapter getSelectionAdapter() {
 			return new SelectionAdapter() {
 				@Override
-				public void widgetSelected(SelectionEvent event) {
+				public void widgetSelected(SelectionEvent event) { search(event); }
+				@Override
+				public void widgetDefaultSelected(SelectionEvent event) { search(event); }
+				
+				private void search(SelectionEvent event) {
 					if (isBusy) return;
 					sourceWidget = (Combo) event.widget;
 					String str = sourceWidget.getText();
+					if (str.length() < 2) return;
 					searchAndCheckItem(str);
 				}
 			};
@@ -142,11 +148,18 @@ public class Viewer {
 							expandTreeItems(items);
 							if (item != null)
 								item.setChecked(true);
-							sourceWidget.add(str);
+							addItem(str);
 						}
 					});
 				}			
 			}; t.start();
+		}
+		
+		private void addItem(String str) {
+			if (sourceWidget == null) return;
+			for (String item : sourceWidget.getItems())
+				if (str.equals(item)) return;
+			sourceWidget.add(str);
 		}
 	}
 	

@@ -132,7 +132,7 @@ public class TreeSample1 implements Viewer.IForm {
 		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
 		
 		comboSearch = new Combo(shlTreeSample, SWT.NONE);
-		comboSearch.addKeyListener( viewer.comboSearchHandler.getKeyAdapter() );
+		comboSearch.addKeyListener(viewer.comboSearchHandler.getKeyAdapter());
 		comboSearch.addSelectionListener(viewer.comboSearchHandler.getSelectionAdapter());
 		comboSearch.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		GridData gd_comboSearch = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
