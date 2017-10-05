@@ -23,7 +23,11 @@ public class Model {
 		mTestTree = new MTree(levels, rows);
 	}
 	
-	public MNode[] getTreeData() {
+	public Model (final String fileName) {
+		mXMLtree = new MTree(fileName);
+	}
+	
+	public MNode[] getTestTreeData() {
 		MNode arg[] = null;
 		List<MNode> level = mTestTree.mChildren;
 		arg = new MNode[level.size()];
@@ -31,7 +35,7 @@ public class Model {
 		return arg;
 	}
 	
-	public MNode[] getTreeData(MNode parent) {
+	public MNode[] getTestTreeData(MNode parent) {
 		if (parent == null) return null;
 		MNode arg[] = null;
 		List<MNode> level = parent.mChildren;
@@ -46,7 +50,7 @@ public class Model {
 
 	public static List<String> messBuff;
 
-	public MTree mTestTree;
+	public MTree mTestTree, mXMLtree;
 	
 	public static String currentTime() {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss,SSS", Locale.GERMANY);

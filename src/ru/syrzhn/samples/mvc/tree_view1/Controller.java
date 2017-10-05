@@ -91,13 +91,13 @@ public class Controller {
 		private MNode mSource;
 		
 		public TreeSource() {
-			mChildren = mModel.getTreeData();
+			mChildren = mModel.getTestTreeData();
 		}
 		
 		public TreeSource(MNode node) {
 			if (node == null) throw new RuntimeException("Empty node!");
 			mSource = node;
-			mChildren = mModel.getTreeData(mSource);
+			mChildren = mModel.getTestTreeData(mSource);
 		}
 		
 		public MNode getData() {return mSource;}
@@ -114,7 +114,7 @@ public class Controller {
 		public ISource[] getChildren(ISource parent) {
 			MNode node = (MNode)parent.getData();
 			if (node == null) return null;
-			mChildren = mModel.getTreeData(node);
+			mChildren = mModel.getTestTreeData(node);
 			TreeSource ret[] = new TreeSource[mChildren.length];
 			for (int i = 0; i < mChildren.length; i++) {
 				ret[i] = new TreeSource(mChildren[i]);

@@ -1,14 +1,52 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
+import java.io.IOException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 import java.util.Stack;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /** @author syrzhn */
 public class MTree {
 	
 	public Stack<MNode> mChildren;
 	public int mAllNodesCount;
+	
+	public MTree(final String fileName) {
+        try {
+            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = documentBuilder.parse(fileName);
+            Node root = document.getDocumentElement();
+            
+            NodeList elements0 = root.getChildNodes();
+            for (int i = 0; i < elements0.getLength(); i++) {
+                Node el = elements0.item(i);
+                if (el.getNodeType() != Node.TEXT_NODE) {
+                    NodeList props = el.getChildNodes();
+                    for(int j = 0; j < props.getLength(); j++) {
+                        Node property = props.item(j);
+                        if (property.getNodeType() != Node.TEXT_NODE) {
+                            System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent());
+                        }
+                    }
+                }
+            } 
+        } catch (ParserConfigurationException ex) {
+            ex.printStackTrace();
+        } catch (SAXException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+	}
 
 	public MTree(final int levels, final int rows) {
 		mChildren = new Stack<MNode>();
