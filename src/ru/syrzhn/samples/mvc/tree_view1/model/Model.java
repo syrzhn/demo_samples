@@ -35,6 +35,14 @@ public class Model {
 		return arg;
 	}
 	
+	public MNode[] getXMLData() {
+		MNode arg[] = null;
+		List<MNode> level = mXMLtree.mChildren;
+		arg = new MNode[level.size()];
+		level.toArray(arg);
+		return arg;
+	}
+	
 	public MNode[] getTestTreeData(MNode parent) {
 		if (parent == null) return null;
 		MNode arg[] = null;
@@ -53,7 +61,7 @@ public class Model {
 	public MTree mTestTree, mXMLtree;
 	
 	public static String currentTime() {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss,SSS", Locale.GERMANY);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy HH:mm:ss,SSS", Locale.GERMANY);
 		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+5:00"));
 		calendar.setTimeInMillis(System.currentTimeMillis());
 		return sdf.format(calendar.getTime());

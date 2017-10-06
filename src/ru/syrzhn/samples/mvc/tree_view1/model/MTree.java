@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -22,14 +23,20 @@ public class MTree {
 	
 	public MTree(final String fileName) {
         try {
+        	mChildren = new Stack<MNode>();
+    		mAllNodesCount = 0;
+    		
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = documentBuilder.parse(fileName);
             Node root = document.getDocumentElement();
             
             NodeList elements0 = root.getChildNodes();
             for (int i = 0; i < elements0.getLength(); i++) {
+            	MNode node = new MNode(this, i);
                 Node el = elements0.item(i);
-                if (el.getNodeType() != Node.TEXT_NODE) {
+                Element e = (Element) elements0.item(i);
+                node.mID = el.getNodeName();
+                /*if (el.getNodeType() != Node.TEXT_NODE) {
                     NodeList props = el.getChildNodes();
                     for(int j = 0; j < props.getLength(); j++) {
                         Node property = props.item(j);
@@ -37,7 +44,9 @@ public class MTree {
                             System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent());
                         }
                     }
-                }
+                }*/
+            	mChildren.push(node);
+            	mAllNodesCount++;
             } 
         } catch (ParserConfigurationException ex) {
             ex.printStackTrace();

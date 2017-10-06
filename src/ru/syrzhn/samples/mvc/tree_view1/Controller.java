@@ -14,7 +14,8 @@ public class Controller {
 	private Model mModel;
 	
 	public Controller(Viewer viewer) {
-		mModel = new Model(3, 3);
+		//mModel = new Model(3, 3);
+		mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\BookCatalog.xml");
 		mViewer = viewer;
 	}
 	
@@ -77,7 +78,7 @@ public class Controller {
 	}
 	
 	public ISource[] getSource() {
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTestTree.mAllNodesCount).concat(" nodes in the tree")}));
+		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mXMLtree.mAllNodesCount).concat(" nodes in the tree")}));
 		return new TreeSource().getBeginDataSet();
 	}
 
@@ -91,7 +92,8 @@ public class Controller {
 		private MNode mSource;
 		
 		public TreeSource() {
-			mChildren = mModel.getTestTreeData();
+			//mChildren = mModel.getTestTreeData();
+			mChildren = mModel.getXMLData();
 		}
 		
 		public TreeSource(MNode node) {
