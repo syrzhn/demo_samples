@@ -34,19 +34,21 @@ public class MTree {
             for (int i = 0; i < elements0.getLength(); i++) {
             	MNode node = new MNode(this, i);
                 Node el = elements0.item(i);
-                Element e = (Element) elements0.item(i);
-                node.mID = el.getNodeName();
-                /*if (el.getNodeType() != Node.TEXT_NODE) {
-                    NodeList props = el.getChildNodes();
-                    for(int j = 0; j < props.getLength(); j++) {
-                        Node property = props.item(j);
-                        if (property.getNodeType() != Node.TEXT_NODE) {
-                            System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent());
-                        }
-                    }
-                }*/
-            	mChildren.push(node);
-            	mAllNodesCount++;
+                if (el.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) el;
+                    node.mID = eElement.getNodeName();
+	                /*if (el.getNodeType() != Node.TEXT_NODE) {
+	                    NodeList props = el.getChildNodes();
+	                    for(int j = 0; j < props.getLength(); j++) {
+	                        Node property = props.item(j);
+	                        if (property.getNodeType() != Node.TEXT_NODE) {
+	                            System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent());
+	                        }
+	                    }
+	                }*/
+	            	mChildren.push(node);
+	            	mAllNodesCount++;
+                }
             } 
         } catch (ParserConfigurationException ex) {
             ex.printStackTrace();
