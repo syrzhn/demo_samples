@@ -28,35 +28,42 @@ public class MTree {
     		
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = documentBuilder.parse(fileName);
-            Node root = document.getDocumentElement();
+            Node rootXML = document.getDocumentElement(); rootXML.normalize();
             
-            NodeList elements0 = root.getChildNodes();
-            for (int i = 0; i < elements0.getLength(); i++) {
-            	MNode node = new MNode(this, i);
-                Node el = elements0.item(i);
-                if (el.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) el;
-                    node.mID = eElement.getNodeName();
-	                /*if (el.getNodeType() != Node.TEXT_NODE) {
-	                    NodeList props = el.getChildNodes();
-	                    for(int j = 0; j < props.getLength(); j++) {
-	                        Node property = props.item(j);
-	                        if (property.getNodeType() != Node.TEXT_NODE) {
-	                            System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent());
-	                        }
-	                    }
-	                }*/
-	            	mChildren.push(node);
-	            	mAllNodesCount++;
-                }
+            NodeList listOfElements0 = rootXML.getChildNodes();
+            for (int i = 0; i < listOfElements0.getLength(); i++) {
+            	MNode nodeTree = new MNode(this, i);
+                Node nodeXML = listOfElements0.item(i);
+				switch (nodeXML.getNodeType()) {
+				case (Node.ELEMENT_NODE):
+					Element elementXML = (Element) nodeXML;
+					nodeTree.mID = elementXML.getNodeName();
+					/*
+					if (el.getNodeType() != Node.TEXT_NODE) { 
+						NodeList props = el.getChildNodes(); 
+						for(int j = 0; j < props.getLength(); j++) { 
+							Node property = props.item(j); 
+							if (property.getNodeType() != Node.TEXT_NODE) {
+								System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent()); 
+							} 
+						} 
+					}
+					*/
+					mChildren.push(nodeTree);
+					mAllNodesCount++;
+					break;
+
+				case (Node.ATTRIBUTE_NODE):
+					break;
+				case (Node.TEXT_NODE):
+					break;
+				default:
+					break;
+				}
             } 
-        } catch (ParserConfigurationException ex) {
-            ex.printStackTrace();
-        } catch (SAXException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+		} catch (ParserConfigurationException | SAXException | IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public MTree(final int levels, final int rows) {
