@@ -29,7 +29,7 @@ public class Model {
 	
 	public MNode[] getTestTreeData() {
 		MNode arg[] = null;
-		List<MNode> level = mTestTree.mChildren;
+		List<ANode> level = mTestTree.mChildren;
 		arg = new MNode[level.size()];
 		level.toArray(arg);
 		return arg;
@@ -37,7 +37,7 @@ public class Model {
 	
 	public MNode[] getXMLData() {
 		MNode arg[] = null;
-		List<MNode> level = mXMLtree.mChildren;
+		List<ANode> level = mXMLtree.mChildren;
 		arg = new MNode[level.size()];
 		level.toArray(arg);
 		return arg;
@@ -46,7 +46,7 @@ public class Model {
 	public MNode[] getTestTreeData(MNode parent) {
 		if (parent == null) return null;
 		MNode arg[] = null;
-		List<MNode> level = parent.mChildren;
+		List<ANode> level = parent.mChildren;
 		arg = new MNode[level.size()];
 		level.toArray(arg);
 		return arg;

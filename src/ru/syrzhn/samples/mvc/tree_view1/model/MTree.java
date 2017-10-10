@@ -16,27 +16,33 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /** @author syrzhn */
-public class MTree {
+public class MTree extends ANode{
 	
-	public Stack<MNode> mChildren;
 	public int mAllNodesCount;
 	
 	public MTree(final String fileName) {
-        try {
-        	mChildren = new Stack<MNode>();
-    		mAllNodesCount = 0;
-    		
-            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = documentBuilder.parse(fileName);
-            Node rootXML = document.getDocumentElement(); rootXML.normalize();
-            
-            NodeList listOfElements0 = rootXML.getChildNodes();
-            for (int i = 0; i < listOfElements0.getLength(); i++) {
-            	MNode nodeTree = new MNode(this, i);
-                Node nodeXML = listOfElements0.item(i);
+		super();
+		mAllNodesCount = 0;
+
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setValidating(true);
+		dbf.setNamespaceAware(true);
+		dbf.setIgnoringElementContentWhitespace(true);
+
+		Document document = null;
+		try {
+			DocumentBuilder builder = dbf.newDocumentBuilder();
+			document = builder.parse(fileName);
+			Node rootXML = document.getDocumentElement();
+			rootXML.normalize();
+
+			NodeList listOfElements0 = rootXML.getChildNodes();
+			for (int i = 0; i < listOfElements0.getLength(); i++) {
+				Node nodeXML = listOfElements0.item(i);
 				switch (nodeXML.getNodeType()) {
 				case (Node.ELEMENT_NODE):
 					Element elementXML = (Element) nodeXML;
+					MNode nodeTree = new MNode(this);
 					nodeTree.mID = elementXML.getNodeName();
 					/*
 					if (el.getNodeType() != Node.TEXT_NODE) { 
@@ -52,7 +58,6 @@ public class MTree {
 					mChildren.push(nodeTree);
 					mAllNodesCount++;
 					break;
-
 				case (Node.ATTRIBUTE_NODE):
 					break;
 				case (Node.TEXT_NODE):
@@ -60,21 +65,79 @@ public class MTree {
 				default:
 					break;
 				}
-            } 
+			}
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
 			ex.printStackTrace();
 		}
 	}
 
+	private void dumpLoop(Node nodeXML, String indent, int row) {
+        switch(nodeXML.getNodeType()) {
+        case Node.CDATA_SECTION_NODE:
+            System.out.println(indent + "CDATA_SECTION_NODE");
+            break;
+        case Node.COMMENT_NODE:
+            System.out.println(indent + "COMMENT_NODE");
+            break;
+        case Node.DOCUMENT_FRAGMENT_NODE:
+            System.out.println(indent + "DOCUMENT_FRAGMENT_NODE");
+            break;
+        case Node.DOCUMENT_NODE:
+            System.out.println(indent + "DOCUMENT_NODE");
+            break;
+        case Node.DOCUMENT_TYPE_NODE:
+            System.out.println(indent + "DOCUMENT_TYPE_NODE");
+            break;
+        case Node.ELEMENT_NODE:
+			Element elementXML = (Element) nodeXML;
+			MNode nodeTree = new MNode(this);
+			nodeTree.mID = elementXML.getNodeName();
+			/*
+			if (el.getNodeType() != Node.TEXT_NODE) { 
+				NodeList props = el.getChildNodes(); 
+				for(int j = 0; j < props.getLength(); j++) { 
+					Node property = props.item(j); 
+					if (property.getNodeType() != Node.TEXT_NODE) {
+						System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent()); 
+					} 
+				} 
+			}
+			*/
+			mChildren.push(nodeTree);
+			mAllNodesCount++;
+            System.out.println(indent + "ELEMENT_NODE");
+            break;
+        case Node.ENTITY_NODE:
+            System.out.println(indent + "ENTITY_NODE");
+            break;
+        case Node.ENTITY_REFERENCE_NODE:
+            System.out.println(indent + "ENTITY_REFERENCE_NODE");
+            break;
+        case Node.NOTATION_NODE:
+            System.out.println(indent + "NOTATION_NODE");
+            break;
+        case Node.PROCESSING_INSTRUCTION_NODE:
+            System.out.println(indent + "PROCESSING_INSTRUCTION_NODE");
+            break;
+        case Node.TEXT_NODE:
+            System.out.println(indent + "TEXT_NODE");
+            break;
+        default:
+            System.out.println(indent + "Unknown node");
+            break;
+        }
+        NodeList xmlNodesList = nodeXML.getChildNodes();
+        for(int i = 0; i < xmlNodesList.getLength(); i++)
+            dumpLoop(xmlNodesList.item(i), indent + "\t", i);
+    }
+
 	public MTree(final int levels, final int rows) {
-		mChildren = new Stack<MNode>();
 		mAllNodesCount = 0;
 		
 		Stack<MNode> level = new Stack<MNode>();
 		for (int j = 0; j < rows; j++) {
-			MNode nodeJ = new MNode(this, j);
+			MNode nodeJ = new MNode(this);
 			level.push(nodeJ);
-			mChildren.push(nodeJ);
 			mAllNodesCount++;
 		}
 		Stack<MNode> nodesI = new Stack<MNode>();
@@ -138,13 +201,13 @@ public class MTree {
 		MNode node = null; int n = path.size();
 		for (int i = 0; i < n; i++) {
 			int row = path.get(i).mRow;
-			List<MNode> children = null;
+			List<ANode> children = null;
 			if (i == 0)
 				children = mChildren;
 			else 
 				children = node.mChildren;
 			if (row > -1 && row < children.size())
-				node = children.get(row);
+				node = (MNode) children.get(row);
 			else
 				return null;
 			if ( i == n - 1 && node.mPath.equals(pathToFind) ) return node;
@@ -158,7 +221,7 @@ public class MTree {
 	}
 	
 	private void disposeNode(MNode node) {
-		List<MNode> brothers = null;
+		List<ANode> brothers = null;
 		if (node.mLevel > 0) 
 			brothers = node.mAncestors.peek().mChildren;
 		else 
@@ -168,7 +231,7 @@ public class MTree {
 		node.leave();
 
 		for (int i = nodeRow; i < brothers.size(); i++) {
-			MNode n = brothers.get(i);
+			MNode n = (MNode) brothers.get(i);
 			--n.mRow;
 			n.setPath();
 		}
