@@ -7,61 +7,55 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 	public String mPath;
 	public Object mData;
 	public int mRow;
-	public MTree mTree;
-	public int mLevel;
+	//public int mLevel;
 	
 	public String leave() {
 		for (ANode child : mChildren) 
 			((MNode)child).leave();
+		mTree.mAllNodesCount--;
 		mAncestors.clear();
 		mChildren.clear();
-		mTree.mAllNodesCount--;
 		String str = mID.concat(" has leaved the tree");
 		Model.messBuff.add(str);
 		return str;
 	}
 	
 	public MNode setPath() {
-		if (mAncestors.size() > 0) {
+		if (mAncestors.size() > 1) {
 			MNode tmp = (MNode) mAncestors.peek();
 			mPath = tmp.mPath;
 		}
 		else
 			mPath = "";
-		mLevel = mAncestors.size();
-		mPath = mPath.concat(Model.getLevelName( mLevel )).concat( String.valueOf(mRow) );
+		mPath = mPath.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
 		for (ANode child : mChildren)
 			((MNode) child).setPath();
 		return this;
 	}
-	
-	public MNode(MTree ancestor) {
-		super();
-		if (ancestor == null) return;
-		mTree = ancestor;
-		mAncestors.addAll(ancestor.mAncestors);
-		mRow = ancestor.mChildren.size();
-		mID = setPath().mPath.concat(" - ").concat(Model.currentTime());
-		ancestor.mChildren.push(this);
+	private int getLevel() {
+		return mAncestors.size() - 1;
 	}
-
-	public MNode(MNode ancestor) {
+	
+	public MNode(ANode ancestor) {
 		super();
 		if (ancestor == null) return;
-		mTree = ancestor.mTree;
 		mAncestors.addAll(ancestor.mAncestors);
 		mAncestors.push(ancestor);
 		mRow = ancestor.mChildren.size();
 		mID = setPath().mPath.concat(" - ").concat(Model.currentTime());
 		ancestor.mChildren.push(this);
+		mTree = (MTree) mAncestors.firstElement(); 
+		mTree.mAllNodesCount++;
 	}
+
+	private MTree mTree;
 
 	@Override
 	public int compareTo(MNode arg0) {
 		if (this.mPath.equals(arg0.mPath))
 			return 0;
 		else {
-			int l1 = this.mLevel, l2 = arg0.mLevel,
+			int l1 = this.getLevel(), l2 = arg0.getLevel(),
 				l = l1 - l2;
 			if (l != 0)
 				return l;

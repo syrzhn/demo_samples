@@ -46,7 +46,7 @@ public class Controller {
 		MNode node = (MNode)mViewer.mCurrentItem.getData();
 		if (node == null) throw new RuntimeException("Empty data in the item ".concat(str));
 		mViewer.mForm.printMessage(mModel.mTestTree.disposeChild(node)); Model.messBuff.clear();
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mTestTree.mAllNodesCount).concat(" nodes in the tree")}));
+		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mTestTree.mAllNodesCount).concat(" nodes in the tree")} ));
 	}
 
 	public String[] parseDataToItemColumns(Object data) {
@@ -153,8 +153,11 @@ public class Controller {
 		Stack<ANode> ancestors = node.mAncestors;
 		TreeItem items[] = new TreeItem[ancestors.size()];
 		int i = 0;
-		for (ANode ancestor : ancestors)
-			items[i++] = (TreeItem)((MNode) ancestor).mData;
+		for (ANode ancestor : ancestors) {
+			Object data = ((MNode) ancestor).mData;
+			if (data == null) break;
+			items[i++] = (TreeItem) data;
+		}
 		return items;
 	}
 }

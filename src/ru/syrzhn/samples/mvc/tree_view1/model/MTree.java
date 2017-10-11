@@ -35,43 +35,14 @@ public class MTree extends ANode{
 			document = builder.parse(fileName);
 			Node rootXML = document.getDocumentElement();
 			rootXML.normalize();
-
-			NodeList listOfElements0 = rootXML.getChildNodes();
-			for (int i = 0; i < listOfElements0.getLength(); i++) {
-				Node nodeXML = listOfElements0.item(i);
-				switch (nodeXML.getNodeType()) {
-				case (Node.ELEMENT_NODE):
-					Element elementXML = (Element) nodeXML;
-					MNode nodeTree = new MNode(this);
-					nodeTree.mID = elementXML.getNodeName();
-					/*
-					if (el.getNodeType() != Node.TEXT_NODE) { 
-						NodeList props = el.getChildNodes(); 
-						for(int j = 0; j < props.getLength(); j++) { 
-							Node property = props.item(j); 
-							if (property.getNodeType() != Node.TEXT_NODE) {
-								System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent()); 
-							} 
-						} 
-					}
-					*/
-					mChildren.push(nodeTree);
-					mAllNodesCount++;
-					break;
-				case (Node.ATTRIBUTE_NODE):
-					break;
-				case (Node.TEXT_NODE):
-					break;
-				default:
-					break;
-				}
-			}
+			
+			unGordius(rootXML, "");
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	private void dumpLoop(Node nodeXML, String indent, int row) {
+	private void unGordius(Node nodeXML, String indent) {
         switch(nodeXML.getNodeType()) {
         case Node.CDATA_SECTION_NODE:
             System.out.println(indent + "CDATA_SECTION_NODE");
@@ -128,28 +99,20 @@ public class MTree extends ANode{
         }
         NodeList xmlNodesList = nodeXML.getChildNodes();
         for(int i = 0; i < xmlNodesList.getLength(); i++)
-            dumpLoop(xmlNodesList.item(i), indent + "\t", i);
+            unGordius(xmlNodesList.item(i), indent + "\t");
     }
 
 	public MTree(final int levels, final int rows) {
-		mAllNodesCount = 0;
-		
-		Stack<MNode> level = new Stack<MNode>();
-		for (int j = 0; j < rows; j++) {
-			MNode nodeJ = new MNode(this);
-			level.push(nodeJ);
-			mAllNodesCount++;
-		}
-		Stack<MNode> nodesI = new Stack<MNode>();
-		for (int i = 0; i < levels - 1; i++) {
-			MNode node = null;
+		mAllNodesCount = 0;		
+		Stack<MNode> level = new Stack<MNode>(),
+					nodesI = new Stack<MNode>();
+		for (int i = 0; i < rows; i++) 
+			level.push(new MNode(this));
+		for (int l = 1; l < levels; l++) {
 			while (!level.isEmpty()) {
-				node = level.pop(); // add new level
-				for (int j = 0; j < rows; j++) {
-					MNode nodeJ = new MNode(node);
-					nodesI.push(nodeJ);
-					mAllNodesCount++;
-				}
+				MNode node = level.pop(); // add new level
+				for (int i = 0; i < rows; i++) 
+					nodesI.push(new MNode(node));
 			}
 			level.addAll(nodesI);
 			nodesI.clear();
@@ -222,15 +185,12 @@ public class MTree extends ANode{
 	
 	private void disposeNode(MNode node) {
 		List<ANode> brothers = null;
-		if (node.mLevel > 0) 
-			brothers = node.mAncestors.peek().mChildren;
-		else 
-			brothers = node.mTree.mChildren;			
+		brothers = node.mAncestors.peek().mChildren;
 		int nodeRow = node.mRow;
 
 		node.leave();
 
-		for (int i = nodeRow; i < brothers.size(); i++) {
+		for (int i = nodeRow + 1; i < brothers.size(); i++) {
 			MNode n = (MNode) brothers.get(i);
 			--n.mRow;
 			n.setPath();
@@ -240,9 +200,7 @@ public class MTree extends ANode{
 	
 	public MNode addNode(MNode ancestor) {
 		MNode newNode = new MNode(ancestor);
-		newNode.mTree = this;
 		Model.messBuff.add( newNode.mID.concat(" has appeared in the tree") );
-		mAllNodesCount++;
 		return newNode;
 	}
 }
