@@ -101,6 +101,10 @@ public class TreeSample1 implements Viewer.IForm {
 		
 		viewer.getItemsFromMTree(tree);
 		
+		TreeColumn trclmnAncestors = new TreeColumn(tree, SWT.NONE);
+		trclmnAncestors.setWidth(300);
+		trclmnAncestors.setText("Ancestors");
+		
 		shlTreeSample.open();
 		shlTreeSample.layout();
 		while (!shlTreeSample.isDisposed()) {

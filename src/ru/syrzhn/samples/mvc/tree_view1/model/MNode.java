@@ -3,7 +3,6 @@ package ru.syrzhn.samples.mvc.tree_view1.model;
 /** @author syrzhn */
 public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 
-	public String mID;
 	public String mPath;
 	public Object mData;
 	public int mRow;
@@ -70,9 +69,6 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 		}	
 	}
 	
-	@Override
-	public String toString() { return mID; }
-
 	@Override
 	public MNode clone() throws CloneNotSupportedException{
 		MNode node = (MNode)super.clone();

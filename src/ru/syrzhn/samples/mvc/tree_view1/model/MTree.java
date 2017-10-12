@@ -103,6 +103,7 @@ public class MTree extends ANode{
     }
 
 	public MTree(final int levels, final int rows) {
+		mID = "testTree";
 		mAllNodesCount = 0;		
 		Stack<MNode> level = new Stack<MNode>(),
 					nodesI = new Stack<MNode>();
@@ -110,6 +111,11 @@ public class MTree extends ANode{
 			level.push(new MNode(this));
 		for (int l = 1; l < levels; l++) {
 			while (!level.isEmpty()) {
+				// Size of each new level is equivalent to
+				// l-th member of geometric progression
+				// where denoiminator and first member are 
+				// equivalent rows count.
+				// L(l) = L1*(rows^(l-1)) & L1 = rows => L(l) = rows^l;
 				MNode node = level.pop(); // add new level
 				for (int i = 0; i < rows; i++) 
 					nodesI.push(new MNode(node));

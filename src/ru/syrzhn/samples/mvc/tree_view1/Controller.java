@@ -50,7 +50,7 @@ public class Controller {
 	}
 
 	public String[] parseDataToItemColumns(Object data) {
-		return new String[] { data.toString(), ((MNode)data).mPath } ;
+		return new String[] { data.toString(), ((MNode)data).mPath, "1", "2", ((MNode)data).mAncestors.toString() } ;
 	}
 
 	public void setDataOnCollapse() {
