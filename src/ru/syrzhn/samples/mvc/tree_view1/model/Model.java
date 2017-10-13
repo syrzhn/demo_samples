@@ -20,36 +20,27 @@ public class Model {
 	}
 	
 	public Model(final int levels, final int rows) {
-		mTestTree = new MTree(levels, rows);
+		mDataTree = new MTree(levels, rows);
 	}
 	
 	public Model (final String fileName) {
-		mXMLtree = new MTree(fileName);
+		mDataTree = new MTree(fileName);
 	}
 	
-	public MNode[] getTestTreeData() {
+	public MNode[] getDataTreeData(ANode parent) {
 		MNode arg[] = null;
-		List<ANode> level = mTestTree.mChildren;
+		List<ANode> level = null;
+		if (parent != null) 
+			level = parent.mChildren;
+		else
+			level = mDataTree.mChildren;
 		arg = new MNode[level.size()];
 		level.toArray(arg);
 		return arg;
 	}
 	
-	public MNode[] getXMLData() {
-		MNode arg[] = null;
-		List<ANode> level = mXMLtree.mChildren;
-		arg = new MNode[level.size()];
-		level.toArray(arg);
-		return arg;
-	}
-	
-	public MNode[] getTestTreeData(MNode parent) {
-		if (parent == null) return null;
-		MNode arg[] = null;
-		List<ANode> level = parent.mChildren;
-		arg = new MNode[level.size()];
-		level.toArray(arg);
-		return arg;
+	public MTree getDataTree() {
+		return mDataTree;
 	}
 	
 	static {
@@ -58,7 +49,7 @@ public class Model {
 
 	public static List<String> messBuff;
 
-	public MTree mTestTree, mXMLtree;
+	private MTree mDataTree;
 	
 	public static String currentTime() {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy HH:mm:ss,SSS", Locale.GERMANY);

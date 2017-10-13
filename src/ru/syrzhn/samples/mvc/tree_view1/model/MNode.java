@@ -6,7 +6,6 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 	public String mPath;
 	public Object mData;
 	public int mRow;
-	//public int mLevel;
 	
 	public String leave() {
 		for (ANode child : mChildren) 

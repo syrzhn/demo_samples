@@ -1,5 +1,6 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
@@ -16,16 +17,17 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /** @author syrzhn */
-public class MTree extends ANode{
+public class MTree extends ANode {
 	
 	public int mAllNodesCount;
 	
 	public MTree(final String fileName) {
 		super();
-		mAllNodesCount = 0;
+		File xmlFile = new File(fileName);
+		mID = xmlFile.getName();
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setValidating(true);
+		dbf.setValidating(false);
 		dbf.setNamespaceAware(true);
 		dbf.setIgnoringElementContentWhitespace(true);
 
@@ -33,16 +35,17 @@ public class MTree extends ANode{
 		try {
 			DocumentBuilder builder = dbf.newDocumentBuilder();
 			document = builder.parse(fileName);
-			Node rootXML = document.getDocumentElement();
-			rootXML.normalize();
-			
-			unGordius(rootXML, "");
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
 			ex.printStackTrace();
 		}
+		Node rootXML = document.getDocumentElement();
+		rootXML.normalize();
+		unGordius((Node) document, this, "");
 	}
-
-	private void unGordius(Node nodeXML, String indent) {
+	
+	private void unGordius(Node nodeXML, ANode nodeParent, String indent) {
+		String tagName = "";
+		ANode nodeTree = nodeParent;
         switch(nodeXML.getNodeType()) {
         case Node.CDATA_SECTION_NODE:
             System.out.println(indent + "CDATA_SECTION_NODE");
@@ -57,26 +60,16 @@ public class MTree extends ANode{
             System.out.println(indent + "DOCUMENT_NODE");
             break;
         case Node.DOCUMENT_TYPE_NODE:
-            System.out.println(indent + "DOCUMENT_TYPE_NODE");
+        	tagName = ((Document) nodeXML).getDocumentElement().getNodeName();
+            System.out.println(indent.concat(tagName).concat(" type=DOCUMENT_TYPE_NODE"));
             break;
         case Node.ELEMENT_NODE:
 			Element elementXML = (Element) nodeXML;
-			MNode nodeTree = new MNode(this);
-			nodeTree.mID = elementXML.getNodeName();
-			/*
-			if (el.getNodeType() != Node.TEXT_NODE) { 
-				NodeList props = el.getChildNodes(); 
-				for(int j = 0; j < props.getLength(); j++) { 
-					Node property = props.item(j); 
-					if (property.getNodeType() != Node.TEXT_NODE) {
-						System.out.println(property.getNodeName() + ":" + property.getChildNodes().item(0).getTextContent()); 
-					} 
-				} 
-			}
-			*/
-			mChildren.push(nodeTree);
+			nodeTree = new MNode(nodeParent);
+			tagName  = elementXML.getNodeName(); 
+			nodeTree.mID = tagName;
 			mAllNodesCount++;
-            System.out.println(indent + "ELEMENT_NODE");
+            System.out.println(indent.concat(tagName).concat(" type=ELEMENT_NODE"));
             break;
         case Node.ENTITY_NODE:
             System.out.println(indent + "ENTITY_NODE");
@@ -99,21 +92,21 @@ public class MTree extends ANode{
         }
         NodeList xmlNodesList = nodeXML.getChildNodes();
         for(int i = 0; i < xmlNodesList.getLength(); i++)
-            unGordius(xmlNodesList.item(i), indent + "\t");
+            unGordius(xmlNodesList.item(i), nodeTree, indent + "\t");
     }
 
 	public MTree(final int levels, final int rows) {
+		super();
 		mID = "testTree";
-		mAllNodesCount = 0;		
 		Stack<MNode> level = new Stack<MNode>(),
-					nodesI = new Stack<MNode>();
+				nodesI = new Stack<MNode>();
 		for (int i = 0; i < rows; i++) 
 			level.push(new MNode(this));
 		for (int l = 1; l < levels; l++) {
 			while (!level.isEmpty()) {
 				// Size of each new level is equivalent to
 				// l-th member of geometric progression
-				// where denoiminator and first member are 
+				// where denominator and first member are 
 				// equivalent rows count.
 				// L(l) = L1*(rows^(l-1)) & L1 = rows => L(l) = rows^l;
 				MNode node = level.pop(); // add new level
@@ -123,7 +116,7 @@ public class MTree extends ANode{
 			level.addAll(nodesI);
 			nodesI.clear();
 		}
-	}
+	}	
 	
 	public MNode findNodeByPath(String pathToFind) {
 		class Path {
