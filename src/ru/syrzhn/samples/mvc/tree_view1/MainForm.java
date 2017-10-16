@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-public class TreeSample1 implements Viewer.IForm {
+public class MainForm implements Viewer.IForm {
 
 	public Shell shlTreeSample;
 	private Tree tree;
@@ -27,7 +27,7 @@ public class TreeSample1 implements Viewer.IForm {
 		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				TreeSample1.this.shlTreeSample.setText("Tree sample ".concat(caption));
+				MainForm.this.shlTreeSample.setText("Tree sample ".concat(caption));
 			}
 		});
 	}
@@ -78,7 +78,7 @@ public class TreeSample1 implements Viewer.IForm {
 	 */
 	public static void main(String[] args) {
 		try {
-			TreeSample1 window = new TreeSample1();
+			MainForm window = new MainForm();
 			window.open();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -119,7 +119,7 @@ public class TreeSample1 implements Viewer.IForm {
 	 */
 	protected void createContents() {
 		shlTreeSample = new Shell();
-		shlTreeSample.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/tree1.png"));
+		shlTreeSample.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/tree1.png"));
 		shlTreeSample.setSize(1280, 720);
 		shlTreeSample.setText("Tree sample");
 		shlTreeSample.setLayout(new GridLayout(3, false));
@@ -129,10 +129,10 @@ public class TreeSample1 implements Viewer.IForm {
 		
 		ToolItem tltmNewItem = new ToolItem(toolBar, SWT.NONE);
 		tltmNewItem.addSelectionListener(viewer.getNewItemSelectionAdapter());
-		tltmNewItem.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/new1.png"));
+		tltmNewItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/new1.png"));
 		
 		ToolItem tltmDeleteItem = new ToolItem(toolBar, SWT.NONE);
-		tltmDeleteItem.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
+		tltmDeleteItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
 		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
 		
 		comboSearch = new Combo(shlTreeSample, SWT.NONE);
@@ -147,7 +147,7 @@ public class TreeSample1 implements Viewer.IForm {
 		
 		ToolItem tltmGo = new ToolItem(toolBarSearch, SWT.NONE);
 		tltmGo.addSelectionListener(viewer.getSearchSelectionAdapter());
-		tltmGo.setImage(SWTResourceManager.getImage(TreeSample1.class, "/ru/syrzhn/samples/mvc/tree_view1/res/search1.png"));
+		tltmGo.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/search1.png"));
 		
 		tree = new Tree(shlTreeSample, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		tree.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
