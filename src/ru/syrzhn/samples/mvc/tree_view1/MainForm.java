@@ -15,7 +15,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 public class MainForm implements Viewer.IForm {
 
-	public Shell shlTreeSample;
+	public Shell shlMainForm;
 	private Tree tree;
 	
 	private Viewer viewer;
@@ -27,7 +27,7 @@ public class MainForm implements Viewer.IForm {
 		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				MainForm.this.shlTreeSample.setText("Tree sample ".concat(caption));
+				shlMainForm.setText("Tree sample ".concat(caption));
 			}
 		});
 	}
@@ -38,7 +38,7 @@ public class MainForm implements Viewer.IForm {
 		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				MessageBox msgBox = new MessageBox(shlTreeSample, SWT.ICON_INFORMATION);
+				MessageBox msgBox = new MessageBox(shlMainForm, SWT.ICON_INFORMATION);
 				msgBox.setText("Test application for tree ¹1");
 				msgBox.setMessage(mMsg);
 				msgBox.open();	
@@ -105,9 +105,9 @@ public class MainForm implements Viewer.IForm {
 		trclmnAncestors.setWidth(300);
 		trclmnAncestors.setText("Ancestors");
 		
-		shlTreeSample.open();
-		shlTreeSample.layout();
-		while (!shlTreeSample.isDisposed()) {
+		shlMainForm.open();
+		shlMainForm.layout();
+		while (!shlMainForm.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -118,13 +118,13 @@ public class MainForm implements Viewer.IForm {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		shlTreeSample = new Shell();
-		shlTreeSample.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/tree1.png"));
-		shlTreeSample.setSize(1280, 720);
-		shlTreeSample.setText("Tree sample");
-		shlTreeSample.setLayout(new GridLayout(3, false));
+		shlMainForm = new Shell();
+		shlMainForm.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/tree1.png"));
+		shlMainForm.setSize(1280, 720);
+		shlMainForm.setText("Tree sample");
+		shlMainForm.setLayout(new GridLayout(3, false));
 		
-		ToolBar toolBar = new ToolBar(shlTreeSample, SWT.FLAT | SWT.RIGHT);
+		ToolBar toolBar = new ToolBar(shlMainForm, SWT.FLAT | SWT.RIGHT);
 		toolBar.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		
 		ToolItem tltmNewItem = new ToolItem(toolBar, SWT.NONE);
@@ -135,7 +135,7 @@ public class MainForm implements Viewer.IForm {
 		tltmDeleteItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
 		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
 		
-		comboSearch = new Combo(shlTreeSample, SWT.NONE);
+		comboSearch = new Combo(shlMainForm, SWT.NONE);
 		comboSearch.addKeyListener(viewer.comboSearchHandler.getKeyAdapter());
 		comboSearch.addSelectionListener(viewer.comboSearchHandler.getSelectionAdapter());
 		comboSearch.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
@@ -143,13 +143,13 @@ public class MainForm implements Viewer.IForm {
 		gd_comboSearch.heightHint = 35;
 		comboSearch.setLayoutData(gd_comboSearch);
 		
-		ToolBar toolBarSearch = new ToolBar(shlTreeSample, SWT.FLAT | SWT.RIGHT);
+		ToolBar toolBarSearch = new ToolBar(shlMainForm, SWT.FLAT | SWT.RIGHT);
 		
 		ToolItem tltmGo = new ToolItem(toolBarSearch, SWT.NONE);
 		tltmGo.addSelectionListener(viewer.getSearchSelectionAdapter());
 		tltmGo.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/search1.png"));
 		
-		tree = new Tree(shlTreeSample, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		tree = new Tree(shlMainForm, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		tree.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		tree.setLinesVisible(true);
 		tree.setHeaderVisible(true);
