@@ -20,8 +20,7 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 	
 	public MNode setPath() {
 		if (mAncestors.size() > 1) {
-			MNode tmp = (MNode) mAncestors.peek();
-			mPath = tmp.mPath;
+			mPath = ((MNode) mAncestors.peek()).mPath;
 		}
 		else
 			mPath = "";
@@ -30,6 +29,7 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 			((MNode) child).setPath();
 		return this;
 	}
+	
 	private int getLevel() {
 		return mAncestors.size() - 1;
 	}

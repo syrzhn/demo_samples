@@ -39,17 +39,13 @@ public class Model {
 		return arg;
 	}
 	
-	public MTree getDataTree() {
-		return mDataTree;
-	}
-	
 	static {
 		messBuff = new Stack<String>();
 	}
 
 	public static List<String> messBuff;
 
-	private MTree mDataTree;
+	public MTree mDataTree;
 	
 	public static String currentTime() {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy HH:mm:ss,SSS", Locale.GERMANY);

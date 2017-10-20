@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BookCatalogue>
-	<Shelve>Shelve0
-	    <Book>
+	<Shelve>Shelve №0<Book>
 	        <Title>Book0</Title>
 	        <Author>Author0</Author>
 	        <Date>1966</Date>

@@ -102,6 +102,7 @@ public class MainForm implements Viewer.IForm {
 		viewer.getItemsFromMTree(tree);
 		
 		TreeColumn trclmnAncestors = new TreeColumn(tree, SWT.NONE);
+		trclmnAncestors.setMoveable(true);
 		trclmnAncestors.setWidth(300);
 		trclmnAncestors.setText("Ancestors");
 		
@@ -160,18 +161,22 @@ public class MainForm implements Viewer.IForm {
 		tree.addListener(SWT.Selection, viewer.getTableEventListener(SWT.Selection));
 		
 		TreeColumn trclmnId = new TreeColumn(tree, SWT.NONE);
+		trclmnId.setMoveable(true);
 		trclmnId.setWidth(400);
 		trclmnId.setText("ID");
 		
 		TreeColumn trclmnPath = new TreeColumn(tree, SWT.NONE);
+		trclmnPath.setMoveable(true);
 		trclmnPath.setWidth(300);
 		trclmnPath.setText("Path");
 		
 		TreeColumn trclmnData = new TreeColumn(tree, SWT.NONE);
+		trclmnData.setMoveable(true);
 		trclmnData.setWidth(200);
 		trclmnData.setText("Data");
 		
 		TreeColumn trclmnType = new TreeColumn(tree, SWT.NONE);
+		trclmnType.setMoveable(true);
 		trclmnType.setWidth(100);
 		trclmnType.setText("Type");		
 	}
