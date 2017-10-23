@@ -1,5 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -20,17 +22,27 @@ public class Viewer {
 		void showMessage(String msg);
 		void printMessage(String msg);
 		void printMessage(String[] msgs);
-		void updateState(State state);
+		public void printMessage(List<String> msgs);
+		void updateState(States state, Object o);
 		Controller getController();
 		String getSearch();
 		Display getDisplay();
+		
 		class State {
 			public String caption;
-			public State(String[] args) {
-				if (args == null || args.length == 0) return;
-				caption = args[0];
+			
+			public State updateCaption(String string) {
+				caption = string;
+				return this;
+			}
+			
+			public State updateItem(TreeItem item, String[] strings) {
+				item.setText(strings);
+				return this;
 			}
 		}
+		
+		enum States{ CAPTION, TREE_ITEM };
 	}
 	
 	public IForm mForm;

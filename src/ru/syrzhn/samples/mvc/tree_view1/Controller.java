@@ -4,6 +4,7 @@ import java.util.Stack;
 
 import org.eclipse.swt.widgets.TreeItem;
 
+import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm.States;
 import ru.syrzhn.samples.mvc.tree_view1.model.ANode;
 import ru.syrzhn.samples.mvc.tree_view1.model.MNode;
 import ru.syrzhn.samples.mvc.tree_view1.model.Model;
@@ -15,8 +16,8 @@ public class Controller {
 	private Model mModel;
 	
 	public Controller(Viewer viewer) {
-		//mModel = new Model(3, 3);
-		mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\BookCatalog.xml");
+		mModel = new Model(3, 3);
+		//mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\BookCatalog.xml");
 		mViewer = viewer;
 	}
 	
@@ -35,8 +36,8 @@ public class Controller {
 		MNode parent = (MNode) mViewer.mCurrentItem.getData();
 		if (parent == null) throw new RuntimeException("Empty data in the item ".concat(str));
 		MNode node = mModel.mDataTree.addNode(parent); 
-		mViewer.mForm.printMessage(Model.messBuff.toArray( new String[ Model.messBuff.size() ] )); Model.messBuff.clear();
-		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree")} ));
+		mViewer.mForm.printMessage(Model.messBuff);
+		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return new TreeSource(node);
 	}
 
@@ -45,8 +46,9 @@ public class Controller {
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
 		MNode node = (MNode) mViewer.mCurrentItem.getData();
 		if (node == null) throw new RuntimeException("Empty data in the item ".concat(str));
-		mViewer.mForm.printMessage(mModel.mDataTree.disposeChild(node)); Model.messBuff.clear();
-		mViewer.mForm.updateState(new Viewer.IForm.State( new String[] {String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree")} ));
+		mModel.mDataTree.disposeNode(node);
+		mViewer.mForm.printMessage(Model.messBuff);
+		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 	}
 
 	public String[] parseDataToItemColumns(Object data) {
@@ -79,13 +81,13 @@ public class Controller {
 	}
 	
 	public ISource[] getSource() {
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree")}));
+		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return new TreeSource().getBeginDataSet();
 	}
 
 	public ISource[] getSource(Object node) {
-		mViewer.mForm.updateState(new Viewer.IForm.State(new String[] {String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree")}));
-		return new TreeSource((MNode)node).getBeginDataSet();
+		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
+		return new TreeSource((MNode) node).getBeginDataSet();
 	}
 	
 	public class TreeSource implements ISource {

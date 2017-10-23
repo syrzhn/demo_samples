@@ -1,5 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,14 +24,25 @@ public class MainForm implements Viewer.IForm {
 	private Display display;
 
 	@Override
-	public void updateState(State state) {
-		final String caption = state.caption;
-		display.asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				shlMainForm.setText("Tree sample ".concat(caption));
-			}
-		});
+	public void updateState(States state, Object o) {
+		switch (state) {
+		case CAPTION :
+			display.asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					shlMainForm.setText("Tree sample ".concat(o.toString()));
+				}
+			});
+			break;
+		case TREE_ITEM :
+			display.asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					shlMainForm.setText("Tree sample ".concat(o.toString()));
+				}
+			});
+			break;
+		}
 	}
 
 	@Override
@@ -50,6 +63,13 @@ public class MainForm implements Viewer.IForm {
 	public void printMessage(String[] msgs) {
 		for (String msg : msgs)
 			System.out.println(msg);
+	}
+
+	@Override
+	public void printMessage(List<String> msgs) {
+		for (String msg : msgs)
+			System.out.println(msg);
+		msgs.clear();
 	}
 
 	@Override

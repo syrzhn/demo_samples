@@ -177,12 +177,7 @@ public class MTree extends ANode {
 		return null;
 	}	
 
-	public String[] disposeChild(MNode node) {
-		disposeNode(node);
-		return Model.messBuff.toArray(new String[Model.messBuff.size()]);
-	}
-	
-	private void disposeNode(MNode node) {
+	public void disposeNode(MNode node) {
 		List<ANode> brothers = null;
 		brothers = node.mAncestors.peek().mChildren;
 		int nodeRow = node.mRow;
