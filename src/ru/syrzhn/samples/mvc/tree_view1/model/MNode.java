@@ -4,19 +4,10 @@ package ru.syrzhn.samples.mvc.tree_view1.model;
 public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 
 	public String mPath;
+	public String mType;
 	public Object mData;
+	public Object mState;
 	public int mRow;
-	
-	public String leave() {
-		for (ANode child : mChildren) 
-			((MNode)child).leave();
-		mTree.mAllNodesCount--;
-		mAncestors.clear();
-		mChildren.clear();
-		String str = mID.concat(" has leaved the tree");
-		Model.messBuff.add(str);
-		return str;
-	}
 	
 	public MNode setPath() {
 		if (mAncestors.size() > 1) {
@@ -29,24 +20,22 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 			((MNode) child).setPath();
 		return this;
 	}
-	
+
 	private int getLevel() {
 		return mAncestors.size() - 1;
 	}
 	
-	public MNode(ANode ancestor) {
+	public MNode(ANode ancestor, Object data) {
 		super();
 		if (ancestor == null) return;
 		mAncestors.addAll(ancestor.mAncestors);
 		mAncestors.push(ancestor);
 		mRow = ancestor.mChildren.size();
 		mID = setPath().mPath.concat(" - ").concat(Model.currentTime());
+		mData = data;
+		mType = data.getClass().getSimpleName();
 		ancestor.mChildren.push(this);
-		mTree = (MTree) mAncestors.firstElement(); 
-		mTree.mAllNodesCount++;
 	}
-
-	private MTree mTree;
 
 	@Override
 	public int compareTo(MNode arg0) {

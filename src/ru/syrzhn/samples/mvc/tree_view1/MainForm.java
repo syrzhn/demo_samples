@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+//import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class MainForm implements Viewer.IForm {
@@ -35,6 +36,7 @@ public class MainForm implements Viewer.IForm {
 			});
 			break;
 		case TREE_ITEM :
+			//TreeItem[] items = (TreeItem[]) o;
 			display.asyncExec(new Runnable() {
 				@Override
 				public void run() {
@@ -83,11 +85,6 @@ public class MainForm implements Viewer.IForm {
 	}
 	
 	@Override
-	public Controller getController() {
-		return controller;
-	}
-
-	@Override
 	public String getSearch() {
 		return comboSearch.getText().trim();
 	}
@@ -105,7 +102,6 @@ public class MainForm implements Viewer.IForm {
 		}
 	}
 	
-	private static Controller controller;
 	private Combo comboSearch;
 
 	/**
@@ -115,7 +111,6 @@ public class MainForm implements Viewer.IForm {
 		display = Display.getDefault();
 		
 		viewer = new Viewer(this); 
-		controller = new Controller(viewer);
 
 		createContents();
 		

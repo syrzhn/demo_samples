@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import ru.syrzhn.samples.mvc.tree_view1.Controller.ISource;
+import ru.syrzhn.samples.mvc.tree_view1.SourceController.ISource;
 
 public class Viewer {
 	
@@ -22,36 +22,25 @@ public class Viewer {
 		void showMessage(String msg);
 		void printMessage(String msg);
 		void printMessage(String[] msgs);
-		public void printMessage(List<String> msgs);
+		void printMessage(List<String> msgs);
 		void updateState(States state, Object o);
-		Controller getController();
 		String getSearch();
 		Display getDisplay();
-		
-		class State {
-			public String caption;
-			
-			public State updateCaption(String string) {
-				caption = string;
-				return this;
-			}
-			
-			public State updateItem(TreeItem item, String[] strings) {
-				item.setText(strings);
-				return this;
-			}
-		}
-		
-		enum States{ CAPTION, TREE_ITEM };
+		enum States { 
+			CAPTION, 
+			TREE_ITEM 
+		};
 	}
 	
 	public IForm mForm;
 	public TreeItem mCurrentItem;
 	private volatile boolean isBusy;
+	private SourceController mController;
 
 	public Viewer(IForm form) {
 		mForm = form;
 		comboSearchHandler = new ComboSearchHandler();
+		mController = new SourceController(this);
 	}
 
 	public Listener getTableEventListener(final int eventType) {
@@ -63,19 +52,18 @@ public class Viewer {
 			public void handleEvent(Event event) {
 				if (isBusy) return;
 				mCurrentItem = (TreeItem) event.item;
-				Controller c = mForm.getController();
 				switch (mEventType) {
 				case SWT.Collapse:
-					c.setDataOnCollapse();
+					mController.setDataOnCollapse();
 					break;
 				case SWT.Expand:
-					c.setDataOnExpand();
+					mController.setDataOnExpand();
 					break;
 				case SWT.Selection:
 					if (event.detail == SWT.CHECK) 
-						c.setDataOnCheck();
+						mController.setDataOnCheck();
 					else
-						c.setDataOnSelection();
+						mController.setDataOnSelection();
 					break;
 				}
 			}		
@@ -140,7 +128,7 @@ public class Viewer {
 					if (isBusy) return;
 					sourceWidget = (Combo) event.widget;
 					String str = sourceWidget.getText();
-					if (str.length() < 2) return;
+					if (str.length() < 3) return;
 					searchAndCheckItem(str);
 				}
 			};
@@ -153,7 +141,7 @@ public class Viewer {
 					mForm.getDisplay().asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							Controller c = mForm.getController();
+							SourceController c = mController;
 							TreeItem item = c.searchByPath(str);
 							if (item == null) return;
 							TreeItem items[] = c.getAncestors(item);
@@ -198,13 +186,12 @@ public class Viewer {
 				mForm.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						Controller c = mForm.getController();
-						ISource source = c.addNewData();
+						ISource source = mController.addNewData();
 						TreeItem newItem = new TreeItem(item, 0);
 						Object o = source.getData();
+						newItem.setText(mController.parseDataToItemColumns(o));
 						newItem.setData(o);
-						newItem.setText(c.parseDataToItemColumns(o));
-						c.setData(newItem);
+						mController.setState(newItem);
 						item.setExpanded(true);
 					}
 				});
@@ -238,7 +225,7 @@ public class Viewer {
 	
 	private void disposeItem(TreeItem mCurrentItem) {
 		if (isBusy) return;
-		mForm.getController().disposeData();
+		mController.disposeData();
 	}
 	
 	private abstract class Task extends Thread {
@@ -262,13 +249,12 @@ public class Viewer {
 			mForm.getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					Controller c = mForm.getController();
 					for (ISource child : children) {
 						TreeItem childItem = new TreeItem(item, 0);
 						Object o = child.getData();
+						childItem.setText(mController.parseDataToItemColumns(o));
 						childItem.setData(o);
-						childItem.setText(c.parseDataToItemColumns(o));
-						c.setData(childItem);
+						mController.setState(childItem);
 						getData(childItem, child);
 					}
 				}
@@ -277,20 +263,20 @@ public class Viewer {
 	}
 	
 	public void getItemsFromMTree(final TreeItem Item) {
+		Object data = Item.getData();
 		Task t = new GetItemsFromMTreeTask("filling the item - ".concat(Item.toString())) {
 			@Override
 			protected void doTask() {
+				ISource children[] = mController.getSource(data);
 				mForm.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						Controller c = mForm.getController();
-						ISource children[] = c.getSource(Item.getData());
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
 							Object o = child.getData();
+							childItem.setText(mController.parseDataToItemColumns(o));
 							childItem.setData(o);
-							childItem.setText(c.parseDataToItemColumns(o));
-							c.setData(childItem);
+							mController.setState(childItem);
 							getData(childItem, child);
 						}
 					}
@@ -303,16 +289,16 @@ public class Viewer {
 		Task t = new GetItemsFromMTreeTask("filling the tree") {
 			@Override
 			protected void doTask() {
+				ISource children[] = mController.getSource();
 				mForm.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						ISource children[] = mForm.getController().getSource();
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(tree, 0);
 							Object o = child.getData();
+							childItem.setText(mController.parseDataToItemColumns(o));
 							childItem.setData(o);
-							childItem.setText(mForm.getController().parseDataToItemColumns(o));
-							mForm.getController().setData(childItem);
+							mController.setState(childItem);
 							getData(childItem, child);
 						}
 					}

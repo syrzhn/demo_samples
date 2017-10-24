@@ -65,7 +65,7 @@ public class MTree extends ANode {
             break;
         case Node.ELEMENT_NODE:
 			Element elementXML = (Element) nodeXML;
-			nodeTree = new MNode(nodeParent);
+			nodeTree = new MNode(nodeParent, elementXML);
 			tagName  = elementXML.getNodeName(); 
 			nodeTree.mID = tagName;
 			mAllNodesCount++;
@@ -100,8 +100,10 @@ public class MTree extends ANode {
 		mID = "testTree";
 		Stack<MNode> level = new Stack<MNode>(),
 				nodesI = new Stack<MNode>();
-		for (int i = 0; i < rows; i++) 
-			level.push(new MNode(this));
+		for (int i = 0; i < rows; i++) {
+			level.push(new MNode(this, "node"));
+			mAllNodesCount++;
+		}
 		for (int l = 1; l < levels; l++) {
 			while (!level.isEmpty()) {
 				// Size of each new level is equivalent to
@@ -110,8 +112,10 @@ public class MTree extends ANode {
 				// equivalent rows count.
 				// L(l) = L1*(rows^(l-1)) & L1 = rows => L(l) = rows^l;
 				MNode node = level.pop(); // add new level
-				for (int i = 0; i < rows; i++) 
-					nodesI.push(new MNode(node));
+				for (int i = 0; i < rows; i++) {
+					nodesI.push(new MNode(node, "none"));
+					mAllNodesCount++;
+				}
 			}
 			level.addAll(nodesI);
 			nodesI.clear();
@@ -120,7 +124,7 @@ public class MTree extends ANode {
 	
 	public MNode findNodeByPath(String pathToFind) {
 		class Path {
-			private final static String levelSymbols = Model.alphabet;//"abcdefghijklmnopqrstuvwxyz";
+			private final static String levelSymbols = Model.ALPHABET;//"abcdefghijklmnopqrstuvwxyz";
 			private final static String   rowSymbols = "0123456789";
 			
 			public String mLevel;
@@ -182,8 +186,8 @@ public class MTree extends ANode {
 		brothers = node.mAncestors.peek().mChildren;
 		int nodeRow = node.mRow;
 
-		node.leave();
-
+		node.leave(Model.messBuff);
+		mAllNodesCount = mAllNodesCount - Model.messBuff.size();
 		for (int i = nodeRow + 1; i < brothers.size(); i++) {
 			MNode n = (MNode) brothers.get(i);
 			--n.mRow;
@@ -192,9 +196,15 @@ public class MTree extends ANode {
 		brothers.remove(nodeRow);
 	}
 	
+	public Stack<ANode> getDescendants(MNode node) {
+		Stack<ANode> descendants = new Stack<ANode>();
+		return node.getDescendants(descendants);
+	}
+	
 	public MNode addNode(MNode ancestor) {
-		MNode newNode = new MNode(ancestor);
+		MNode newNode = new MNode(ancestor, ancestor.mType);
 		Model.messBuff.add( newNode.mID.concat(" has appeared in the tree") );
+		mAllNodesCount++;
 		return newNode;
 	}
 }

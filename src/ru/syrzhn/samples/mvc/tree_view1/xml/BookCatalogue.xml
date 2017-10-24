@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<BookCatalogue>
-	<Shelve>
+<BookCatalogue id="0">
+	<Shelve id="1">
 		Shelve №0
 		<Book>
 			<Title>Book0</Title>

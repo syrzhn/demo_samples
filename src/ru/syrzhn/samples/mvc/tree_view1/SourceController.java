@@ -9,15 +9,15 @@ import ru.syrzhn.samples.mvc.tree_view1.model.ANode;
 import ru.syrzhn.samples.mvc.tree_view1.model.MNode;
 import ru.syrzhn.samples.mvc.tree_view1.model.Model;
 
-public class Controller {
+public class SourceController {
 	
 	private Viewer mViewer;
 	
 	private Model mModel;
 	
-	public Controller(Viewer viewer) {
+	public SourceController(Viewer viewer) {
 		mModel = new Model(3, 3);
-		//mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\BookCatalog.xml");
+		//mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\BookCatalogue.xml");
 		mViewer = viewer;
 	}
 	
@@ -25,9 +25,9 @@ public class Controller {
 		mViewer = viewer;
 	}	
 
-	public void setData(TreeItem item) {
+	public void setState(TreeItem item) {
 		MNode node = (MNode) item.getData();
-		node.mData = item;
+		node.mState = item;
 	}
 	
 	public ISource addNewData() {
@@ -52,7 +52,8 @@ public class Controller {
 	}
 
 	public String[] parseDataToItemColumns(Object data) {
-		return new String[] { data.toString(), ((MNode) data).mPath, "1", "2", ((MNode) data).mAncestors.toString() } ;
+		MNode node = (MNode) data;
+		return new String[] { data.toString(), node.mPath, node.mData.toString(), node.mType, node.mAncestors.toString() } ;
 	}
 
 	public void setDataOnCollapse() {
@@ -145,17 +146,30 @@ public class Controller {
 	public TreeItem searchByPath(String path) {
 		MNode node = mModel.mDataTree.findNodeByPath(path);
 		if (node == null) return null;
-		return (TreeItem) node.mData;
+		return (TreeItem) node.mState;
 	}
 
 	public TreeItem[] getAncestors(TreeItem item) {
-		MNode node = (MNode)item.getData();
+		MNode node = (MNode) item.getData();
 		Stack<ANode> ancestors = node.mAncestors;
 		TreeItem items[] = new TreeItem[ancestors.size()];
 		int i = 0;
 		for (ANode ancestor : ancestors) {
-			Object data = ((MNode) ancestor).mData;
-			if (data == null) break;
+			Object data = ((MNode) ancestor).mState;
+			if (data == null) continue;
+			items[i++] = (TreeItem) data;
+		}
+		return items;
+	}
+	
+	public TreeItem[] getDescendants(TreeItem item) {
+		MNode node = (MNode) item.getData();
+		Stack<ANode> descendants = node.mChildren;
+		TreeItem items[] = new TreeItem[descendants.size()];
+		int i = 0;
+		for (ANode descendant : descendants) {
+			Object data = ((MNode) descendant).mState;
+			if (data == null) continue;
 			items[i++] = (TreeItem) data;
 		}
 		return items;

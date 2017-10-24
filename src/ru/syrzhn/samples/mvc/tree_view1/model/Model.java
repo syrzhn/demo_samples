@@ -9,14 +9,14 @@ import java.util.TimeZone;
 
 public class Model {
 	
-	final static String alphabet = "abcdefghijklmnopqrstuvwxyz";
+	final static String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 	
 	public static String getLevelName(int level) {
-		return String.valueOf( alphabet.charAt(level) );
+		return String.valueOf( ALPHABET.charAt(level) );
 	}
 
 	public static String getNameLevel(String name) {
-		return String.valueOf( alphabet.indexOf(name.charAt(0)) );
+		return String.valueOf( ALPHABET.indexOf(name.charAt(0)) );
 	}
 	
 	public Model(final int levels, final int rows) {
@@ -43,7 +43,7 @@ public class Model {
 		messBuff = new Stack<String>();
 	}
 
-	public static List<String> messBuff;
+	public static Stack<String> messBuff;
 
 	public MTree mDataTree;
 	
