@@ -1,5 +1,6 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
+import java.util.NoSuchElementException;
 import java.util.Stack;
 
 import org.eclipse.swt.widgets.TreeItem;
@@ -34,21 +35,31 @@ public class SourceController {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Adding new node to ".concat(str));
 		MNode parent = (MNode) mViewer.mCurrentItem.getData();
-		if (parent == null) throw new RuntimeException("Empty data in the item ".concat(str));
+		if (parent == null) 
+			throw new NoSuchElementException("Empty data in the item ".concat(str));
 		MNode node = mModel.mDataTree.addNode(parent); 
 		mViewer.mForm.printMessage(Model.messBuff);
 		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return new TreeSource(node);
 	}
 
-	public void disposeData() {
+	public TreeItem[] disposeData() {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
 		MNode node = (MNode) mViewer.mCurrentItem.getData();
-		if (node == null) throw new RuntimeException("Empty data in the item ".concat(str));
-		mModel.mDataTree.disposeNode(node);
+		if (node == null) 
+			throw new NoSuchElementException("Empty data in the item ".concat(str));
+		Stack<ANode> dependents = mModel.mDataTree.disposeNode(node);
 		mViewer.mForm.printMessage(Model.messBuff);
 		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
+		TreeItem items[] = new TreeItem[dependents.size()];
+		int i = 0;
+		for (ANode depend : dependents) {
+			Object data = ((MNode) depend).mState;
+			if (data == null) continue;
+			items[i++] = (TreeItem) data;
+		}
+		return items;
 	}
 
 	public String[] parseDataToItemColumns(Object data) {
@@ -164,7 +175,8 @@ public class SourceController {
 	
 	public TreeItem[] getDescendants(TreeItem item) {
 		MNode node = (MNode) item.getData();
-		Stack<ANode> descendants = node.mChildren;
+		Stack<ANode> descendants = new Stack<ANode>();
+		descendants = node.getDescendants(descendants);
 		TreeItem items[] = new TreeItem[descendants.size()];
 		int i = 0;
 		for (ANode descendant : descendants) {

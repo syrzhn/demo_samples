@@ -67,7 +67,7 @@ public class MTree extends ANode {
 			Element elementXML = (Element) nodeXML;
 			nodeTree = new MNode(nodeParent, elementXML);
 			tagName  = elementXML.getNodeName(); 
-			nodeTree.mID = tagName;
+			((MNode) nodeTree).mID = tagName;
 			mAllNodesCount++;
             System.out.println(indent.concat(tagName).concat(" type=ELEMENT_NODE"));
             break;
@@ -97,7 +97,7 @@ public class MTree extends ANode {
 
 	public MTree(final int levels, final int rows) {
 		super();
-		mID = "testTree";
+		mID = "test tree";
 		Stack<MNode> level = new Stack<MNode>(),
 				nodesI = new Stack<MNode>();
 		for (int i = 0; i < rows; i++) {
@@ -113,7 +113,7 @@ public class MTree extends ANode {
 				// L(l) = L1*(rows^(l-1)) & L1 = rows => L(l) = rows^l;
 				MNode node = level.pop(); // add new level
 				for (int i = 0; i < rows; i++) {
-					nodesI.push(new MNode(node, "none"));
+					nodesI.push(new MNode(node, "node"));
 					mAllNodesCount++;
 				}
 			}
@@ -181,11 +181,11 @@ public class MTree extends ANode {
 		return null;
 	}	
 
-	public void disposeNode(MNode node) {
-		List<ANode> brothers = null;
+	public Stack<ANode> disposeNode(MNode node) {
+		Stack<ANode> brothers = null, dependents = null;
 		brothers = node.mAncestors.peek().mChildren;
 		int nodeRow = node.mRow;
-
+		dependents = node.getDependents(dependents);
 		node.leave(Model.messBuff);
 		mAllNodesCount = mAllNodesCount - Model.messBuff.size();
 		for (int i = nodeRow + 1; i < brothers.size(); i++) {
@@ -194,6 +194,7 @@ public class MTree extends ANode {
 			n.setPath();
 		}
 		brothers.remove(nodeRow);
+		return dependents;
 	}
 	
 	public Stack<ANode> getDescendants(MNode node) {

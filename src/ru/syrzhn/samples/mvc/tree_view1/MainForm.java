@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-//import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class MainForm implements Viewer.IForm {
@@ -36,13 +35,6 @@ public class MainForm implements Viewer.IForm {
 			});
 			break;
 		case TREE_ITEM :
-			//TreeItem[] items = (TreeItem[]) o;
-			display.asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					shlMainForm.setText("Tree sample ".concat(o.toString()));
-				}
-			});
 			break;
 		}
 	}
@@ -115,11 +107,6 @@ public class MainForm implements Viewer.IForm {
 		createContents();
 		
 		viewer.getItemsFromMTree(tree);
-		
-		TreeColumn trclmnAncestors = new TreeColumn(tree, SWT.NONE);
-		trclmnAncestors.setMoveable(true);
-		trclmnAncestors.setWidth(300);
-		trclmnAncestors.setText("Ancestors");
 		
 		shlMainForm.open();
 		shlMainForm.layout();
@@ -194,5 +181,10 @@ public class MainForm implements Viewer.IForm {
 		trclmnType.setMoveable(true);
 		trclmnType.setWidth(100);
 		trclmnType.setText("Type");		
+
+		TreeColumn trclmnAncestors = new TreeColumn(tree, SWT.NONE);
+		trclmnAncestors.setMoveable(true);
+		trclmnAncestors.setWidth(300);
+		trclmnAncestors.setText("Ancestors");		
 	}
 }

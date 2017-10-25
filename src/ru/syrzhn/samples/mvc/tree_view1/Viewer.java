@@ -80,8 +80,9 @@ public class Viewer {
 			}
 		};
 	}
+	
 	ComboSearchHandler comboSearchHandler;
-	public class ComboSearchHandler{
+	public class ComboSearchHandler {
 		Combo sourceWidget;
 		private final String mValidSymbols = "0123456789" 
 				+ "abcdefghijklmnopqrstuvwxyz" 
@@ -100,6 +101,7 @@ public class Viewer {
 				return false;
 			return true;
 		}
+		
 		public KeyAdapter getKeyAdapter() {
 			return new KeyAdapter() {
 				@Override
@@ -199,33 +201,26 @@ public class Viewer {
 		}; t.start();
 	}
 
+	private TreeItem[] disposeItem(TreeItem mCurrentItem) {
+		TreeItem[] items = mController.disposeData();
+		return items;
+	}
+	
 	public SelectionAdapter getDeleteItemSelectionAdapter() {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (isBusy) return;
 				if (mCurrentItem == null) return;
-				disposeItem(mCurrentItem);
-				TreeItem parent = mCurrentItem.getParentItem();
-				Tree tree = mCurrentItem.getParent();
+				TreeItem[] items = disposeItem(mCurrentItem);
 				mCurrentItem.dispose();
-				if (parent != null) {
-					parent.removeAll();
-					getItemsFromMTree(parent);
+				for (TreeItem item : items) {
+					Object o = item.getData();
+					item.setText(mController.parseDataToItemColumns(o));
+					item.setData(o);
 				}
-				else {
-					if (tree != null) {
-						tree.removeAll();
-						getItemsFromMTree(tree);
-					}
-				}					
 			}
 		};
-	}
-	
-	private void disposeItem(TreeItem mCurrentItem) {
-		if (isBusy) return;
-		mController.disposeData();
 	}
 	
 	private abstract class Task extends Thread {
