@@ -31,25 +31,25 @@ public class SourceController {
 		node.mState = item;
 	}
 	
-	public ISource addNewData() {
+	public ISource addNewData(Object o) {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Adding new node to ".concat(str));
-		MNode parent = (MNode) mViewer.mCurrentItem.getData();
-		if (parent == null) 
+		MNode parentNode = (MNode) o;
+		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(str));
-		MNode node = mModel.mDataTree.addNode(parent); 
+		MNode node = mModel.mDataTree.addNode(parentNode); 
 		mViewer.mForm.printMessage(Model.messBuff);
 		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return new TreeSource(node);
 	}
 
-	public TreeItem[] disposeData() {
+	public TreeItem[] disposeData(Object o) {
 		String str = mViewer.mCurrentItem.toString();
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
-		MNode node = (MNode) mViewer.mCurrentItem.getData();
-		if (node == null) 
+		MNode parentNode = (MNode) o;
+		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(str));
-		Stack<ANode> dependents = mModel.mDataTree.disposeNode(node);
+		Stack<ANode> dependents = mModel.mDataTree.disposeNode(parentNode);
 		mViewer.mForm.printMessage(Model.messBuff);
 		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		TreeItem items[] = new TreeItem[dependents.size()];

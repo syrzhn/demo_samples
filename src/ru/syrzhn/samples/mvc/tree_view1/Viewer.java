@@ -1,6 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -174,51 +175,62 @@ public class Viewer {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				if (isBusy) return;
-				if (mCurrentItem == null) return;
-				insertItem(mCurrentItem);
+				if (isBusy || mCurrentItem == null) return;
+				Object parentNode = mCurrentItem.getData();
+				String taskName = "inserting the item - ".concat(mCurrentItem.toString());
+				Task t = new Task(taskName) {
+					@Override
+					protected void doTask() {
+						if (parentNode == null)
+							throw new NoSuchElementException();
+						ISource source = mController.addNewData(parentNode);
+						if (source == null)
+							throw new NoSuchElementException();
+						mForm.getDisplay().asyncExec(new Runnable() {
+							@Override
+							public void run() {
+								TreeItem newItem = new TreeItem(mCurrentItem, 0);
+								Object newNode = source.getData();
+								newItem.setText(mController.parseDataToItemColumns(newNode));
+								newItem.setData(newNode);
+								mController.setState(newItem);
+								mCurrentItem.setExpanded(true);
+							}
+						});
+					}			
+				}; t.start();
 			}
 		};
 	}
-	
-	private void insertItem(final TreeItem item) {
-		Task t = new Task("inserting the item - ".concat(item.toString())) {
-			@Override
-			protected void doTask() {
-				mForm.getDisplay().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						ISource source = mController.addNewData();
-						TreeItem newItem = new TreeItem(item, 0);
-						Object o = source.getData();
-						newItem.setText(mController.parseDataToItemColumns(o));
-						newItem.setData(o);
-						mController.setState(newItem);
-						item.setExpanded(true);
-					}
-				});
-			}			
-		}; t.start();
-	}
 
-	private TreeItem[] disposeItem(TreeItem mCurrentItem) {
-		TreeItem[] items = mController.disposeData();
-		return items;
-	}
-	
 	public SelectionAdapter getDeleteItemSelectionAdapter() {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				if (isBusy) return;
-				if (mCurrentItem == null) return;
-				TreeItem[] items = disposeItem(mCurrentItem);
-				mCurrentItem.dispose();
-				for (TreeItem item : items) {
-					Object o = item.getData();
-					item.setText(mController.parseDataToItemColumns(o));
-					item.setData(o);
-				}
+				if (isBusy || mCurrentItem == null) return;
+				Object parentNode = mCurrentItem.getData();
+				String taskName = "deleting the item - ".concat(mCurrentItem.toString());
+				Task t = new Task(taskName) {
+					@Override
+					protected void doTask() {
+						if (parentNode == null)
+							throw new NoSuchElementException();
+						TreeItem[] items = mController.disposeData(parentNode);
+						if (items == null)
+							throw new NoSuchElementException();
+						mForm.getDisplay().asyncExec(new Runnable() {
+							@Override
+							public void run() {
+								mCurrentItem.dispose();
+								for (TreeItem item : items) {
+									Object o = item.getData();
+									item.setText(mController.parseDataToItemColumns(o));
+									item.setData(o);
+								}
+							}
+						});
+					}
+				}; t.start();				
 			}
 		};
 	}
