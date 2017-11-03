@@ -184,8 +184,6 @@ public class Viewer {
 						if (parentNode == null)
 							throw new NoSuchElementException();
 						ISource source = mController.addNewData(parentNode);
-						if (source == null)
-							throw new NoSuchElementException();
 						mForm.getDisplay().asyncExec(new Runnable() {
 							@Override
 							public void run() {
@@ -216,8 +214,6 @@ public class Viewer {
 						if (parentNode == null)
 							throw new NoSuchElementException();
 						TreeItem[] items = mController.disposeData(parentNode);
-						if (items == null)
-							throw new NoSuchElementException();
 						mForm.getDisplay().asyncExec(new Runnable() {
 							@Override
 							public void run() {
