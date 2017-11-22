@@ -221,6 +221,7 @@ public class Viewer {
 								for (TreeItem item : items) {
 									Object o = item.getData();
 									item.setText(mController.parseDataToItemColumns(o));
+									item.setGrayed(true);
 									item.setData(o);
 								}
 							}

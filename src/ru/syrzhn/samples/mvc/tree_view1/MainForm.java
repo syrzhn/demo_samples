@@ -154,7 +154,6 @@ public class MainForm implements Viewer.IForm {
 		
 		tree = new Tree(shlMainForm, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		tree.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
-		tree.setLinesVisible(true);
 		tree.setHeaderVisible(true);
 		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 		tree.addListener(SWT.Collapse, viewer.getTableEventListener(SWT.Collapse));
