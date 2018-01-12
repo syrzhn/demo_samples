@@ -18,7 +18,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class MainForm implements Viewer.IForm {
 
 	public Shell shlMainForm;
-	private Tree tree;
+	public Tree tree;
 	
 	private Viewer viewer;
 	private Display display;
@@ -27,12 +27,7 @@ public class MainForm implements Viewer.IForm {
 	public void updateState(States state, Object o) {
 		switch (state) {
 		case CAPTION :
-			display.asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					shlMainForm.setText("Tree sample ".concat(o.toString()));
-				}
-			});
+			display.asyncExec(() -> shlMainForm.setText("Tree sample ".concat(o.toString())) );
 			break;
 		case TREE_ITEM :
 			break;
@@ -42,15 +37,13 @@ public class MainForm implements Viewer.IForm {
 	@Override
 	public void showMessage(String msg) {
 		final String mMsg = msg;
-		display.asyncExec(new Runnable() {
-			@Override
-			public void run() {
+		display.asyncExec(() -> {
 				MessageBox msgBox = new MessageBox(shlMainForm, SWT.ICON_INFORMATION);
 				msgBox.setText("Test application for tree ¹1");
 				msgBox.setMessage(mMsg);
 				msgBox.open();	
 			}
-		});
+		);
 	}
 
 	@Override

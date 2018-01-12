@@ -17,7 +17,7 @@ public class SourceController {
 	private Model mModel;
 	
 	public SourceController(Viewer viewer) {
-		mModel = new Model(3, 3);
+		mModel = new Model(3, 10);
 		//mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\BookCatalogue.xml");
 		mViewer = viewer;
 	}
@@ -163,12 +163,12 @@ public class SourceController {
 	public TreeItem[] getAncestors(TreeItem item) {
 		MNode node = (MNode) item.getData();
 		Stack<ANode> ancestors = node.mAncestors;
-		TreeItem items[] = new TreeItem[ancestors.size()];
-		int i = 0;
-		for (ANode ancestor : ancestors) {
-			Object data = ((MNode) ancestor).mState;
+		int size = ancestors.size();
+		TreeItem items[] = new TreeItem[size - 1];
+		for (int i = 1; i < size; i++) {
+			Object data = ((MNode) ancestors.get(i)).mState;
 			if (data == null) continue;
-			items[i++] = (TreeItem) data;
+			items[i - 1] = (TreeItem) data;
 		}
 		return items;
 	}

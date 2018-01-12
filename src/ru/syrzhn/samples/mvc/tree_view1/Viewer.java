@@ -141,19 +141,19 @@ public class Viewer {
 			Task t = new Task("searching the item - ".concat(str)) {
 				@Override
 				protected void doTask() {
-					mForm.getDisplay().asyncExec(new Runnable() {
-						@Override
-						public void run() {
+					mForm.getDisplay().asyncExec(() -> {
 							SourceController c = mController;
 							TreeItem item = c.searchByPath(str);
 							if (item == null) return;
-							TreeItem items[] = c.getAncestors(item);
-							expandTreeItems(items);
-							if (item != null)
+//							TreeItem items[] = c.getAncestors(item);
+//							expandTreeItems(items);
+							if (item != null) {
 								item.setChecked(true);
+								item.getParent().setSelection(item); 
+							}
 							addItem(str);
 						}
-					});
+					);
 				}			
 			}; t.start();
 		}
@@ -166,10 +166,10 @@ public class Viewer {
 		}
 	}
 	
-	private void expandTreeItems(TreeItem items[]) {
-		for (TreeItem item : items) 
-			item.setExpanded(true);
-	}
+//	private void expandTreeItems(TreeItem items[]) {
+//		for (TreeItem item : items) 
+//			item.setExpanded(true);
+//	}
 	
 	public SelectionAdapter getNewItemSelectionAdapter() {
 		return new SelectionAdapter() {
@@ -184,9 +184,7 @@ public class Viewer {
 						if (parentNode == null)
 							throw new NoSuchElementException();
 						ISource source = mController.addNewData(parentNode);
-						mForm.getDisplay().asyncExec(new Runnable() {
-							@Override
-							public void run() {
+						mForm.getDisplay().asyncExec(() -> {
 								TreeItem newItem = new TreeItem(mCurrentItem, 0);
 								Object newNode = source.getData();
 								newItem.setText(mController.parseDataToItemColumns(newNode));
@@ -194,7 +192,7 @@ public class Viewer {
 								mController.setState(newItem);
 								mCurrentItem.setExpanded(true);
 							}
-						});
+						);
 					}			
 				}; t.start();
 			}
@@ -214,9 +212,7 @@ public class Viewer {
 						if (parentNode == null)
 							throw new NoSuchElementException();
 						TreeItem[] items = mController.disposeData(parentNode);
-						mForm.getDisplay().asyncExec(new Runnable() {
-							@Override
-							public void run() {
+						mForm.getDisplay().asyncExec(() -> {
 								mCurrentItem.dispose();
 								for (TreeItem item : items) {
 									Object o = item.getData();
@@ -225,7 +221,7 @@ public class Viewer {
 									item.setData(o);
 								}
 							}
-						});
+						);
 					}
 				}; t.start();				
 			}
@@ -250,9 +246,7 @@ public class Viewer {
 		public GetItemsFromMTreeTask(String name) { super(name); }
 		protected void getData(final TreeItem item, ISource source) {
 			ISource children[] = source.getChildren(source);
-			mForm.getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
+			mForm.getDisplay().asyncExec(() -> {
 					for (ISource child : children) {
 						TreeItem childItem = new TreeItem(item, 0);
 						Object o = child.getData();
@@ -262,7 +256,7 @@ public class Viewer {
 						getData(childItem, child);
 					}
 				}
-			});				
+			);				
 		}
 	}
 	
@@ -272,9 +266,7 @@ public class Viewer {
 			@Override
 			protected void doTask() {
 				ISource children[] = mController.getSource(data);
-				mForm.getDisplay().asyncExec(new Runnable() {
-					@Override
-					public void run() {
+				mForm.getDisplay().asyncExec(() -> {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(Item, 0);
 							Object o = child.getData();
@@ -284,7 +276,7 @@ public class Viewer {
 							getData(childItem, child);
 						}
 					}
-				});
+				);
 			}			
 		}; t.start();
 	}
@@ -294,9 +286,7 @@ public class Viewer {
 			@Override
 			protected void doTask() {
 				ISource children[] = mController.getSource();
-				mForm.getDisplay().asyncExec(new Runnable() {
-					@Override
-					public void run() {
+				mForm.getDisplay().asyncExec(() -> {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(tree, 0);
 							Object o = child.getData();
@@ -306,7 +296,7 @@ public class Viewer {
 							getData(childItem, child);
 						}
 					}
-				});
+				);
 			}			
 		}; t.start();
 	}
