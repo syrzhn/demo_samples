@@ -137,7 +137,7 @@ public class Viewer {
 			};
 		}
 		
-		public void searchAndCheckItem(final String str) {
+		public void searchAndCheckItem(String str) {
 			Task t = new Task("searching the item - ".concat(str)) {
 				@Override
 				protected void doTask() {
@@ -181,8 +181,6 @@ public class Viewer {
 				Task t = new Task(taskName) {
 					@Override
 					protected void doTask() {
-						if (parentNode == null)
-							throw new NoSuchElementException();
 						ISource source = mController.addNewData(parentNode);
 						mForm.getDisplay().asyncExec(() -> {
 								TreeItem newItem = new TreeItem(mCurrentItem, 0);
@@ -205,12 +203,11 @@ public class Viewer {
 			public void widgetSelected(SelectionEvent event) {
 				if (isBusy || mCurrentItem == null) return;
 				Object parentNode = mCurrentItem.getData();
+				if (parentNode == null)	throw new NoSuchElementException();
 				String taskName = "deleting the item - ".concat(mCurrentItem.toString());
 				Task t = new Task(taskName) {
 					@Override
 					protected void doTask() {
-						if (parentNode == null)
-							throw new NoSuchElementException();
 						TreeItem[] items = mController.disposeData(parentNode);
 						mForm.getDisplay().asyncExec(() -> {
 								mCurrentItem.dispose();

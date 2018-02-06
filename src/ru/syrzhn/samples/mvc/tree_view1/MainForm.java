@@ -3,12 +3,15 @@ package ru.syrzhn.samples.mvc.tree_view1;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -36,11 +39,10 @@ public class MainForm implements Viewer.IForm {
 
 	@Override
 	public void showMessage(String msg) {
-		final String mMsg = msg;
 		display.asyncExec(() -> {
 				MessageBox msgBox = new MessageBox(shlMainForm, SWT.ICON_INFORMATION);
 				msgBox.setText("Test application for tree ¹1");
-				msgBox.setMessage(mMsg);
+				msgBox.setMessage(msg);
 				msgBox.open();	
 			}
 		);
@@ -145,10 +147,16 @@ public class MainForm implements Viewer.IForm {
 		tltmGo.addSelectionListener(viewer.getSearchSelectionAdapter());
 		tltmGo.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/search1.png"));
 		
-		tree = new Tree(shlMainForm, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		TabFolder tabFolder = new TabFolder(shlMainForm, SWT.NONE);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		
+		TabItem tbtmTree = new TabItem(tabFolder, SWT.NONE);
+		tbtmTree.setText("Tree");
+		
+		tree = new Tree(tabFolder, SWT.BORDER | SWT.CHECK | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		tbtmTree.setControl(tree);
 		tree.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		tree.setHeaderVisible(true);
-		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 		tree.addListener(SWT.Collapse, viewer.getTableEventListener(SWT.Collapse));
 		tree.addListener(SWT.Expand, viewer.getTableEventListener(SWT.Expand));
 		//tree.addListener(SWT.CHECK, viewer.getTableEventListener(SWT.CHECK));
@@ -156,7 +164,7 @@ public class MainForm implements Viewer.IForm {
 		
 		TreeColumn trclmnId = new TreeColumn(tree, SWT.NONE);
 		trclmnId.setMoveable(true);
-		trclmnId.setWidth(400);
+		trclmnId.setWidth(300);
 		trclmnId.setText("ID");
 		
 		TreeColumn trclmnPath = new TreeColumn(tree, SWT.NONE);
@@ -173,10 +181,25 @@ public class MainForm implements Viewer.IForm {
 		trclmnType.setMoveable(true);
 		trclmnType.setWidth(100);
 		trclmnType.setText("Type");		
-
-		TreeColumn trclmnAncestors = new TreeColumn(tree, SWT.NONE);
-		trclmnAncestors.setMoveable(true);
-		trclmnAncestors.setWidth(300);
-		trclmnAncestors.setText("Ancestors");		
+		
+				TreeColumn trclmnAncestors = new TreeColumn(tree, SWT.NONE);
+				trclmnAncestors.setMoveable(true);
+				trclmnAncestors.setWidth(300);
+				trclmnAncestors.setText("Ancestors");		
+		
+		TabItem tbtmHtml = new TabItem(tabFolder, SWT.NONE);
+		tbtmHtml.setText("HTML");
+		
+		Browser browser = new Browser(tabFolder, SWT.NONE);
+		browser.setText("<html>"
+				+ "<head>" 
+				+ "<base href=\"http://www.eclipse.org/swt/\" >"
+				+ "<title>HTML Test</title>"
+				+ "</head>"
+				+ "<body>"
+				+ "<a href=\"faq.php\">local link</a>"
+				+ "</body>"
+				+ "</html>");
+		tbtmHtml.setControl(browser);
 	}
 }
