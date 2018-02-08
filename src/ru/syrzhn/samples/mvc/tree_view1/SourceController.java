@@ -92,14 +92,12 @@ public class SourceController {
 		Object getData();
 	}
 	
-	public ISource[] getSource() {
-		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
-		return new TreeSource().getBeginDataSet();
-	}
-
 	public ISource[] getSource(Object node) {
 		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
-		return new TreeSource((MNode) node).getBeginDataSet();
+		if (node == null)
+			return new TreeSource().getBeginDataSet();
+		else
+			return new TreeSource((MNode) node).getBeginDataSet();
 	}
 	
 	public class TreeSource implements ISource {

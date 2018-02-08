@@ -3,6 +3,8 @@ package ru.syrzhn.samples.mvc.tree_view1;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.lang.model.type.UnknownTypeException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -177,6 +179,7 @@ public class Viewer {
 			public void widgetSelected(SelectionEvent event) {
 				if (isBusy || mCurrentItem == null) return;
 				Object parentNode = mCurrentItem.getData();
+				if (parentNode == null)	throw new NoSuchElementException();
 				String taskName = "inserting the item - ".concat(mCurrentItem.toString());
 				Task t = new Task(taskName) {
 					@Override
@@ -214,7 +217,7 @@ public class Viewer {
 								for (TreeItem item : items) {
 									Object o = item.getData();
 									item.setText(mController.parseDataToItemColumns(o));
-									item.setGrayed(true);
+									item.setChecked(true);
 									item.setData(o);
 								}
 							}
@@ -239,33 +242,14 @@ public class Viewer {
 		}
 	}
 	
-	private abstract class GetItemsFromMTreeTask extends Task {
-		public GetItemsFromMTreeTask(String name) { super(name); }
-		protected void getData(final TreeItem item, ISource source) {
-			ISource children[] = source.getChildren(source);
-			mForm.getDisplay().asyncExec(() -> {
-					for (ISource child : children) {
-						TreeItem childItem = new TreeItem(item, 0);
-						Object o = child.getData();
-						childItem.setText(mController.parseDataToItemColumns(o));
-						childItem.setData(o);
-						mController.setState(childItem);
-						getData(childItem, child);
-					}
-				}
-			);				
-		}
-	}
-	
-	public void getItemsFromMTree(final TreeItem Item) {
-		Object data = Item.getData();
-		Task t = new GetItemsFromMTreeTask("filling the item - ".concat(Item.toString())) {
-			@Override
-			protected void doTask() {
-				ISource children[] = mController.getSource(data);
+	public void getItemsFromMTree(Object parent) {
+		abstract class GetItemsFromMTreeTask extends Task {
+			public GetItemsFromMTreeTask(String name) { super(name); }
+			protected void getData(final TreeItem item, ISource source) {
+				ISource children[] = source.getChildren(source);
 				mForm.getDisplay().asyncExec(() -> {
 						for (ISource child : children) {
-							TreeItem childItem = new TreeItem(Item, 0);
+							TreeItem childItem = new TreeItem(item, 0);
 							Object o = child.getData();
 							childItem.setText(mController.parseDataToItemColumns(o));
 							childItem.setData(o);
@@ -273,19 +257,25 @@ public class Viewer {
 							getData(childItem, child);
 						}
 					}
-				);
-			}			
-		}; t.start();
-	}
-	
-	public void getItemsFromMTree(final Tree tree) {
-		Task t = new GetItemsFromMTreeTask("filling the tree") {
+				);				
+			}
+		}
+		String taskName = "filling the ";
+		if (parent instanceof TreeItem) 
+			taskName = taskName.concat("item - ").concat(parent.toString());
+		else if (parent instanceof Tree)
+			taskName = taskName.concat("tree");
+		else 
+			throw new UnknownTypeException(null, parent);
+			
+		Object data = parent instanceof TreeItem ? ((TreeItem) parent).getData() : null;
+		Task t = new GetItemsFromMTreeTask(taskName) {
 			@Override
 			protected void doTask() {
-				ISource children[] = mController.getSource();
+				ISource children[] = mController.getSource(data);
 				mForm.getDisplay().asyncExec(() -> {
 						for (ISource child : children) {
-							TreeItem childItem = new TreeItem(tree, 0);
+							TreeItem childItem = parent instanceof TreeItem ? new TreeItem((TreeItem) parent, 0) : new TreeItem((Tree) parent, 0);
 							Object o = child.getData();
 							childItem.setText(mController.parseDataToItemColumns(o));
 							childItem.setData(o);
