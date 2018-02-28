@@ -43,6 +43,10 @@ public class MTree extends ANode {
 		unGordius((Node) document, this, "");
 	}
 	
+	public MTree (final Document document) {
+		unGordius((Node) document, this, "");		
+	}
+	
 	private void unGordius(Node nodeXML, ANode nodeParent, String indent) {
 		String tagName = "";
 		ANode nodeTree = nodeParent;
@@ -95,6 +99,35 @@ public class MTree extends ANode {
             unGordius(xmlNodesList.item(i), nodeTree, indent + "\t");
     }
 
+	public MTree() {		
+		Document doc = XmlUtils.createXmlDocument("TestTree");
+        Node root = doc.getDocumentElement();
+ 
+        Element book = doc.createElement("Book");
+        Element title = doc.createElement("Title");
+        title.setTextContent("Incredible book about Java");
+        Element author = doc.createElement("Author");
+        author.setTextContent("Saburov Anton");
+        Element date = doc.createElement("Date");
+        date.setTextContent("2015");
+        Element isbn = doc.createElement("ISBN");
+        isbn.setTextContent("0-06-999999-9");
+        Element publisher = doc.createElement("Publisher");
+        publisher.setTextContent("Java-Course publisher");
+        Element cost = doc.createElement("Cost");
+        cost.setTextContent("499");
+        cost.setAttribute("currency", "RUB");
+        book.appendChild(title);
+        book.appendChild(author);
+        book.appendChild(date);
+        book.appendChild(isbn);
+        book.appendChild(publisher);
+        book.appendChild(cost);
+        root.appendChild(book);
+        
+        unGordius((Node) doc, this, "");
+	}
+	
 	public MTree(final int levels, final int rows) {
 		super();
 		mID = "test tree";
