@@ -5,8 +5,7 @@ import java.util.Stack;
 /** @author syrzhn */
 public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 
-	public int mRow;
-	public String mPath;
+	public String mID;
 	public String mType;
 	public Object mData;
 	public Object mState;
@@ -32,31 +31,9 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 		return youngBrothers;
 	}
 	
-	public Stack<String> leave(Stack<String> messBuff) {
-		for (ANode child : mChildren) 
-			((MNode) child).leave(messBuff);
-		mAncestors.clear();
-		mChildren.clear();
-		messBuff.add(mID.concat(" has leaved the tree"));
-		return messBuff;
-	}
-	
-	public MNode setPath() {
-		mPath = (mAncestors.size() > 1) ? ((MNode) mAncestors.peek()).mPath : "";
-		mPath = mPath.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
-		for (ANode child : mChildren)
-			((MNode) child).setPath();
-		return this;
-	}
-
-	private int getLevel() {
-		return mAncestors.size() - 1;
-	}
-	
 	public MNode(ANode ancestor, Object data) {
 		super(ancestor);
-		mRow = ancestor.mChildren.size() - 1;
-		mID = setPath().mPath.concat(" - ").concat(Model.currentTime());
+		mID = mPath.concat(" - ").concat(Model.currentTime());
 		mData = data;
 		mType = data.getClass().getSimpleName();
 	}
@@ -79,6 +56,11 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 					return p1.mRow - p2.mRow;
 			}
 		}	
+	}
+	
+	@Override
+	public String toString() {
+		return mID;
 	}
 	
 	@Override

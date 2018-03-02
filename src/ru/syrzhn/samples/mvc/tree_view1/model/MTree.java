@@ -10,8 +10,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -22,9 +24,8 @@ public class MTree extends ANode {
 	public int mAllNodesCount;
 	
 	public MTree(final String fileName) {
-		super();
 		File xmlFile = new File(fileName);
-		mID = xmlFile.getName();
+		mPath = xmlFile.getName();
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
@@ -47,25 +48,25 @@ public class MTree extends ANode {
 		unGordius((Node) document, this, "");		
 	}
 	
-	private void unGordius(Node nodeXML, ANode nodeParent, String indent) {
+	private void unGordius(Node nodeXML, ANode nodeParent, String tab) {
 		String tagName = "";
 		ANode nodeTree = nodeParent;
         switch(nodeXML.getNodeType()) {
         case Node.CDATA_SECTION_NODE:
-            System.out.println(indent + "CDATA_SECTION_NODE");
+            System.out.println(tab.concat("CDATA_SECTION_NODE"));
             break;
         case Node.COMMENT_NODE:
-            System.out.println(indent + "COMMENT_NODE");
+            System.out.println(tab.concat("COMMENT_NODE"));
             break;
         case Node.DOCUMENT_FRAGMENT_NODE:
-            System.out.println(indent + "DOCUMENT_FRAGMENT_NODE");
+            System.out.println(tab.concat("DOCUMENT_FRAGMENT_NODE"));
             break;
         case Node.DOCUMENT_NODE:
-            System.out.println(indent + "DOCUMENT_NODE");
+            System.out.println(tab.concat("DOCUMENT_NODE"));
             break;
         case Node.DOCUMENT_TYPE_NODE:
         	tagName = ((Document) nodeXML).getDocumentElement().getNodeName();
-            System.out.println(indent.concat(tagName).concat(" type=DOCUMENT_TYPE_NODE"));
+            System.out.println(tab.concat(tagName).concat(" type=DOCUMENT_TYPE_NODE"));
             break;
         case Node.ELEMENT_NODE:
 			Element elementXML = (Element) nodeXML;
@@ -73,64 +74,66 @@ public class MTree extends ANode {
 			tagName  = elementXML.getNodeName(); 
 			((MNode) nodeTree).mID = tagName;
 			mAllNodesCount++;
-            System.out.println(indent.concat(tagName).concat(" type=ELEMENT_NODE"));
+            System.out.println(tab.concat(tagName).concat(" type=ELEMENT_NODE"));
+            NamedNodeMap attributes = elementXML.getAttributes();
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Attr node = (Attr) attributes.item(i);
+                ANode attrNodeTree = new MNode(nodeTree, node);
+                ((MNode) attrNodeTree).mID = node.getName();
+                System.out.println(tab.concat("\tattribute=").concat(node.getName()));
+                mAllNodesCount++;
+            }
             break;
         case Node.ENTITY_NODE:
-            System.out.println(indent + "ENTITY_NODE");
+            System.out.println(tab.concat("ENTITY_NODE"));
             break;
         case Node.ENTITY_REFERENCE_NODE:
-            System.out.println(indent + "ENTITY_REFERENCE_NODE");
+            System.out.println(tab.concat("ENTITY_REFERENCE_NODE"));
             break;
         case Node.NOTATION_NODE:
-            System.out.println(indent + "NOTATION_NODE");
+            System.out.println(tab.concat("NOTATION_NODE"));
             break;
         case Node.PROCESSING_INSTRUCTION_NODE:
-            System.out.println(indent + "PROCESSING_INSTRUCTION_NODE");
+            System.out.println(tab.concat("PROCESSING_INSTRUCTION_NODE"));
             break;
         case Node.TEXT_NODE:
-            System.out.println(indent + "TEXT_NODE");
+            System.out.println(tab.concat("TEXT_NODE"));
             break;
         default:
-            System.out.println(indent + "Unknown node");
+            System.out.println(tab.concat("Unknown node"));
             break;
         }
         NodeList xmlNodesList = nodeXML.getChildNodes();
         for(int i = 0; i < xmlNodesList.getLength(); i++)
-            unGordius(xmlNodesList.item(i), nodeTree, indent + "\t");
+            unGordius(xmlNodesList.item(i), nodeTree, tab.concat("\t"));
     }
 
-	public MTree() {		
+	public MTree() {
 		Document doc = XmlUtils.createXmlDocument("TestTree");
         Node root = doc.getDocumentElement();
  
-        Element book = doc.createElement("Book");
-        Element title = doc.createElement("Title");
-        title.setTextContent("Incredible book about Java");
-        Element author = doc.createElement("Author");
-        author.setTextContent("Saburov Anton");
-        Element date = doc.createElement("Date");
-        date.setTextContent("2015");
-        Element isbn = doc.createElement("ISBN");
-        isbn.setTextContent("0-06-999999-9");
-        Element publisher = doc.createElement("Publisher");
-        publisher.setTextContent("Java-Course publisher");
-        Element cost = doc.createElement("Cost");
-        cost.setTextContent("499");
-        cost.setAttribute("currency", "RUB");
-        book.appendChild(title);
-        book.appendChild(author);
-        book.appendChild(date);
-        book.appendChild(isbn);
-        book.appendChild(publisher);
-        book.appendChild(cost);
-        root.appendChild(book);
+        Element firstElemet = doc.createElement("First");
+        firstElemet.setTextContent("First element");
+        firstElemet.setAttribute("ID", "FirstElement");
+        firstElemet.setAttribute("type", "text");
+        
+        Element secondElement1 = doc.createElement("SecondOne");
+        secondElement1.setTextContent("SecondElement1");
+        secondElement1.setAttribute("ID", "SecondElement1");
+        Element secondElement2 = doc.createElement("SecondTwo");
+        secondElement2.setTextContent("SecondElement2");
+        secondElement2.setAttribute("ID", "SecondElement2");
+        secondElement2.setAttribute("type", "text");
+
+        firstElemet.appendChild(secondElement2);
+        firstElemet.appendChild(secondElement1);
+        root.appendChild(firstElemet);
         
         unGordius((Node) doc, this, "");
 	}
 	
 	public MTree(final int levels, final int rows) {
-		super();
-		mID = "test tree";
+		mPath = "tesTree";
 		Stack<MNode> level = new Stack<MNode>(),
 				nodesI = new Stack<MNode>();
 		for (int i = 0; i < rows; i++) {
