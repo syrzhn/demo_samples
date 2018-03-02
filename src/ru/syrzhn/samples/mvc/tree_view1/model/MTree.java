@@ -51,62 +51,63 @@ public class MTree extends ANode {
 	private void unGordius(Node nodeXML, ANode nodeParent, String tab) {
 		String tagName = "";
 		ANode nodeTree = nodeParent;
-        switch(nodeXML.getNodeType()) {
-        case Node.CDATA_SECTION_NODE:
-            System.out.println(tab.concat("CDATA_SECTION_NODE"));
-            break;
-        case Node.COMMENT_NODE:
-            System.out.println(tab.concat("COMMENT_NODE"));
-            break;
-        case Node.DOCUMENT_FRAGMENT_NODE:
-            System.out.println(tab.concat("DOCUMENT_FRAGMENT_NODE"));
-            break;
-        case Node.DOCUMENT_NODE:
-            System.out.println(tab.concat("DOCUMENT_NODE"));
-            break;
-        case Node.DOCUMENT_TYPE_NODE:
-        	tagName = ((Document) nodeXML).getDocumentElement().getNodeName();
-            System.out.println(tab.concat(tagName).concat(" type=DOCUMENT_TYPE_NODE"));
-            break;
-        case Node.ELEMENT_NODE:
+		switch (nodeXML.getNodeType()) {
+		case Node.CDATA_SECTION_NODE:
+			System.out.println(tab.concat("CDATA_SECTION_NODE"));
+			break;
+		case Node.COMMENT_NODE:
+			System.out.println(tab.concat("COMMENT_NODE"));
+			break;
+		case Node.DOCUMENT_FRAGMENT_NODE:
+			System.out.println(tab.concat("DOCUMENT_FRAGMENT_NODE"));
+			break;
+		case Node.DOCUMENT_NODE:
+			System.out.println(tab.concat("DOCUMENT_NODE"));
+			break;
+		case Node.DOCUMENT_TYPE_NODE:
+			tagName = ((Document) nodeXML).getDocumentElement().getNodeName();
+			System.out.println(tab.concat(tagName).concat(" type=DOCUMENT_TYPE_NODE"));
+			break;
+		case Node.ELEMENT_NODE:
 			Element elementXML = (Element) nodeXML;
-			nodeTree = new MNode(nodeParent, elementXML);
-			tagName  = elementXML.getNodeName(); 
-			((MNode) nodeTree).mID = tagName;
+			tagName = elementXML.getNodeName();
+			nodeTree = new MNode(nodeParent);
+			((MNode) nodeTree).putData(tagName, elementXML.getNodeValue());
 			mAllNodesCount++;
-            System.out.println(tab.concat(tagName).concat(" type=ELEMENT_NODE"));
-            NamedNodeMap attributes = elementXML.getAttributes();
-            for (int i = 0; i < attributes.getLength(); i++) {
-                Attr node = (Attr) attributes.item(i);
-                ANode attrNodeTree = new MNode(nodeTree, node);
-                ((MNode) attrNodeTree).mID = node.getName();
-                System.out.println(tab.concat("\tattribute=").concat(node.getName()));
-                mAllNodesCount++;
-            }
-            break;
-        case Node.ENTITY_NODE:
-            System.out.println(tab.concat("ENTITY_NODE"));
-            break;
-        case Node.ENTITY_REFERENCE_NODE:
-            System.out.println(tab.concat("ENTITY_REFERENCE_NODE"));
-            break;
-        case Node.NOTATION_NODE:
-            System.out.println(tab.concat("NOTATION_NODE"));
-            break;
-        case Node.PROCESSING_INSTRUCTION_NODE:
-            System.out.println(tab.concat("PROCESSING_INSTRUCTION_NODE"));
-            break;
-        case Node.TEXT_NODE:
-            System.out.println(tab.concat("TEXT_NODE"));
-            break;
-        default:
-            System.out.println(tab.concat("Unknown node"));
-            break;
-        }
-        NodeList xmlNodesList = nodeXML.getChildNodes();
-        for(int i = 0; i < xmlNodesList.getLength(); i++)
-            unGordius(xmlNodesList.item(i), nodeTree, tab.concat("\t"));
-    }
+			System.out.println(tab.concat(tagName).concat(" type=ELEMENT_NODE"));
+			if (!elementXML.hasAttributes()) break;
+			NamedNodeMap attributes = elementXML.getAttributes();
+			for (int i = 0; i < attributes.getLength(); i++) {
+				Attr attrXML = (Attr) attributes.item(i);
+				MNode attrNodeTree = new MNode(nodeTree);
+				attrNodeTree.putData(attrXML.getName(), attrXML.getValue());
+				System.out.println(tab.concat("\tattribute=").concat(attrXML.getName()));
+				mAllNodesCount++;
+			}
+			break;
+		case Node.ENTITY_NODE:
+			System.out.println(tab.concat("ENTITY_NODE"));
+			break;
+		case Node.ENTITY_REFERENCE_NODE:
+			System.out.println(tab.concat("ENTITY_REFERENCE_NODE"));
+			break;
+		case Node.NOTATION_NODE:
+			System.out.println(tab.concat("NOTATION_NODE"));
+			break;
+		case Node.PROCESSING_INSTRUCTION_NODE:
+			System.out.println(tab.concat("PROCESSING_INSTRUCTION_NODE"));
+			break;
+		case Node.TEXT_NODE:
+			System.out.println(tab.concat("TEXT_NODE"));
+			break;
+		default:
+			System.out.println(tab.concat("Unknown node"));
+			break;
+		}
+		NodeList xmlNodesList = nodeXML.getChildNodes();
+		for (int i = 0; i < xmlNodesList.getLength(); i++)
+			unGordius(xmlNodesList.item(i), nodeTree, tab.concat("\t"));
+	}
 
 	public MTree() {
 		Document doc = XmlUtils.createXmlDocument("TestTree");
@@ -137,7 +138,9 @@ public class MTree extends ANode {
 		Stack<MNode> level = new Stack<MNode>(),
 				nodesI = new Stack<MNode>();
 		for (int i = 0; i < rows; i++) {
-			level.push(new MNode(this, "node"));
+			MNode newNode = new MNode(this);
+			newNode.putData("ID", newNode.mPath.concat(" - ").concat(Model.currentTime()));
+			level.push(newNode);
 			mAllNodesCount++;
 		}
 		for (int l = 1; l < levels; l++) {
@@ -149,7 +152,9 @@ public class MTree extends ANode {
 				// L(l) = L1*(rows^(l-1)) & L1 = rows => L(l) = rows^l;
 				MNode node = level.pop(); // add new level
 				for (int i = 0; i < rows; i++) {
-					nodesI.push(new MNode(node, "node"));
+					MNode newNode = new MNode(node);
+					newNode.putData("ID", newNode.mPath.concat(" - ").concat(Model.currentTime()));
+					nodesI.push(newNode);
 					mAllNodesCount++;
 				}
 			}
@@ -239,8 +244,8 @@ public class MTree extends ANode {
 	}
 	
 	public MNode addNode(MNode ancestor) {
-		MNode newNode = new MNode(ancestor, ancestor.mType);
-		Model.messBuff.add( newNode.mID.concat(" has appeared in the tree") );
+		MNode newNode = new MNode(ancestor);
+		Model.messBuff.add( newNode.toString().concat(" has appeared in the tree") );
 		mAllNodesCount++;
 		return newNode;
 	}

@@ -29,7 +29,7 @@ public class SourceController {
 
 	public void setState(TreeItem item) {
 		MNode node = (MNode) item.getData();
-		node.mState = item;
+		node.putData("TreeItem", item);
 	}
 	
 	public ISource addNewData(Object o) {
@@ -56,7 +56,7 @@ public class SourceController {
 		TreeItem items[] = new TreeItem[dependents.size()];
 		int i = 0;
 		for (ANode depend : dependents) {
-			Object data = ((MNode) depend).mState;
+			Object data = ((MNode) depend).mData.get("TreeItem");
 			if (data == null) continue;
 			items[i++] = (TreeItem) data;
 		}
@@ -65,7 +65,13 @@ public class SourceController {
 
 	public String[] parseDataToItemColumns(Object data) {
 		MNode node = (MNode) data;
-		return new String[] { data.toString(), node.mPath, node.mData.toString(), node.mType, node.mAncestors.toString() } ;
+		return new String[] { 
+				node.toString(), 
+				node.mPath, 
+				node.mData.values().toString(),
+				node.getData("type").toString(), 
+				node.mAncestors.toString() 
+		};
 	}
 
 	public void setDataOnCollapse() {
@@ -156,7 +162,7 @@ public class SourceController {
 	public TreeItem searchByPath(String path) {
 		MNode node = mModel.mDataTree.findNodeByPath(path);
 		if (node == null) return null;
-		return (TreeItem) node.mState;
+		return (TreeItem) node.mData.get("TreeItem");
 	}
 
 	public TreeItem[] getAncestors(TreeItem item) {
@@ -165,7 +171,7 @@ public class SourceController {
 		int size = ancestors.size();
 		TreeItem items[] = new TreeItem[size - 1];
 		for (int i = 1; i < size; i++) {
-			Object data = ((MNode) ancestors.get(i)).mState;
+			Object data = ((MNode) ancestors.get(i)).mData.get("TreeItem");
 			if (data == null) continue;
 			items[i - 1] = (TreeItem) data;
 		}
@@ -179,7 +185,7 @@ public class SourceController {
 		TreeItem items[] = new TreeItem[descendants.size()];
 		int i = 0;
 		for (ANode descendant : descendants) {
-			Object data = ((MNode) descendant).mState;
+			Object data = ((MNode) descendant).mData.get("TreeItem");
 			if (data == null) continue;
 			items[i++] = (TreeItem) data;
 		}

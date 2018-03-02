@@ -5,9 +5,8 @@ import java.util.Stack;
 
 public abstract class ANode {
 	public int mRow;
-	public String mPath;
-	public Stack<ANode> mChildren;
-	public Stack<ANode> mAncestors;
+	public String mPath, mType = "Abstract node";
+	public Stack<ANode> mChildren, mAncestors;
 
 	public Stack<ANode> getDescendants(Stack<ANode> descendants) {
 		if (descendants == null) 

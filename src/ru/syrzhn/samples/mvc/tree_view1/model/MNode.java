@@ -1,43 +1,48 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
-/** @author syrzhn */
-public class MNode extends ANode implements Comparable<MNode>, Cloneable {
+public class MNode extends ANode implements Comparable<MNode> {
 
-	public String mID;
-	public String mType;
-	public Object mData;
-	public Object mState;
+	public Map<String, Object> mData;
 	
+	public MNode(ANode nodeParent) { super(nodeParent); }
+
 	public Stack<ANode> getDependents(Stack<ANode> dependents) {
-		if (dependents == null) 
-			dependents = new Stack<ANode>();		
-		Stack<ANode> youngBrothers = getYoungBrothers();
+		if (dependents == null) dependents = new Stack<ANode>();		
+		Stack<ANode> youngBrothers = getYoungerBrothers();
 		dependents.addAll(youngBrothers);
-		for (ANode node : youngBrothers) {
+		for (ANode node : youngBrothers)
 			dependents.addAll(node.getDescendants(dependents));
-		}
 		return dependents;
 	}
 
-	public Stack<ANode> getYoungBrothers() {
+	public Stack<ANode> getYoungerBrothers() {
 		Stack<ANode> brothers = mAncestors.peek().mChildren;
-		Stack<ANode> youngBrothers = new Stack<ANode>();
+		Stack<ANode> youngerBrothers = new Stack<ANode>();
 		for (int i = mRow + 1; i < brothers.size(); i++) {
 			ANode n = brothers.get(i);
-			youngBrothers.push(n);
+			youngerBrothers.push(n);
 		}
-		return youngBrothers;
+		return youngerBrothers;
 	}
 	
-	public MNode(ANode ancestor, Object data) {
-		super(ancestor);
-		mID = mPath.concat(" - ").concat(Model.currentTime());
-		mData = data;
-		mType = data.getClass().getSimpleName();
+	public ANode putData(String key, Object data) {
+		if (mData == null) 
+			mData = new HashMap<>();
+		mData.put(key, data);
+		return this;
 	}
-
+	
+	public Object getData(String key) {
+		if (mData == null) return mPath;
+		if (mData.containsKey(key))
+			return (String) mData.get(key);
+		return "";
+	}
+	
 	@Override
 	public int compareTo(MNode arg0) {
 		if (this.mPath.equals(arg0.mPath))
@@ -60,14 +65,9 @@ public class MNode extends ANode implements Comparable<MNode>, Cloneable {
 	
 	@Override
 	public String toString() {
-		return mID;
-	}
-	
-	@Override
-	public MNode clone() throws CloneNotSupportedException{
-		MNode node = (MNode) super.clone();
-		node.mRow = mRow + 1;
-		node.mID = node.setPath().mPath.concat(" - ").concat(Model.currentTime());
-		return node;
+		if (mData == null) return mPath;
+		if (mData.containsKey("ID"))
+			return (String) mData.get("ID").toString();
+		return mData.keySet().toString();
 	}
 }
