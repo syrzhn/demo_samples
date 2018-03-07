@@ -1,5 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -9,6 +11,12 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,14 +45,14 @@ public class Model {
 		mDataTree = new MTree();
 	}
 
-	public MNode[] getDataTreeData(ANode parent) {
-		MNode arg[] = null;
-		List<ANode> level = null;
+	public MXMLNode[] getDataTreeData(MANode parent) {
+		MXMLNode arg[] = null;
+		List<MANode> level = null;
 		if (parent != null) 
 			level = parent.mChildren;
 		else
 			level = mDataTree.mChildren;
-		arg = new MNode[level.size()];
+		arg = new MXMLNode[level.size()];
 		level.toArray(arg);
 		return arg;
 	}
@@ -94,4 +102,21 @@ class XmlUtils {
 		} catch (Exception e) {}
 		return null;
 	}
+	 
+    /**
+     * Save document into file "outer.xml"
+     * @param document
+     * @throws TransformerFactoryConfigurationError
+     */
+    public static void saveDocument(Document document) throws TransformerFactoryConfigurationError {
+        try {
+            Transformer tr = TransformerFactory.newInstance().newTransformer();
+            DOMSource source = new DOMSource(document);
+            FileOutputStream fos = new FileOutputStream("outer.xml");
+            StreamResult result = new StreamResult(fos);
+            tr.transform(source, result);
+        } catch (TransformerException | IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
 }

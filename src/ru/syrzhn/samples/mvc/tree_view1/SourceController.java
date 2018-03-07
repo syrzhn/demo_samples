@@ -6,8 +6,8 @@ import java.util.Stack;
 import org.eclipse.swt.widgets.TreeItem;
 
 import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm.States;
-import ru.syrzhn.samples.mvc.tree_view1.model.ANode;
-import ru.syrzhn.samples.mvc.tree_view1.model.MNode;
+import ru.syrzhn.samples.mvc.tree_view1.model.MANode;
+import ru.syrzhn.samples.mvc.tree_view1.model.MXMLNode;
 import ru.syrzhn.samples.mvc.tree_view1.model.Model;
 
 public class SourceController {
@@ -28,35 +28,35 @@ public class SourceController {
 	}	
 
 	public void setState(TreeItem item) {
-		MNode node = (MNode) item.getData();
+		MXMLNode node = (MXMLNode) item.getData();
 		node.putData("TreeItem", item);
 	}
 	
 	public ISource addNewData(Object o) {
-		MNode parentNode = (MNode) o;
+		MXMLNode parentNode = (MXMLNode) o;
 		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(o.toString()));
 		String str = o.toString();
 		mViewer.mForm.printMessage("Adding new node to ".concat(str));
-		MNode node = mModel.mDataTree.addNode(parentNode); 
+		MXMLNode node = mModel.mDataTree.addNode(parentNode); 
 		mViewer.mForm.printMessage(Model.messBuff);
 		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return new TreeSource(node);
 	}
 
 	public TreeItem[] disposeData(Object o) {
-		MNode parentNode = (MNode) o;
+		MXMLNode parentNode = (MXMLNode) o;
 		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(o.toString()));
 		String str = o.toString();
 		mViewer.mForm.printMessage("Disposing the node ".concat(str));
-		Stack<ANode> dependents = mModel.mDataTree.disposeNode(parentNode);
+		Stack<MANode> dependents = mModel.mDataTree.disposeNode(parentNode);
 		mViewer.mForm.printMessage(Model.messBuff);
 		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		TreeItem items[] = new TreeItem[dependents.size()];
 		int i = 0;
-		for (ANode depend : dependents) {
-			Object data = ((MNode) depend).mData.get("TreeItem");
+		for (MANode depend : dependents) {
+			Object data = ((MXMLNode) depend).mData.get("TreeItem");
 			if (data == null) continue;
 			items[i++] = (TreeItem) data;
 		}
@@ -64,12 +64,12 @@ public class SourceController {
 	}
 
 	public String[] parseDataToItemColumns(Object data) {
-		MNode node = (MNode) data;
+		MXMLNode node = (MXMLNode) data;
 		return new String[] { 
 				node.toString(), 
 				node.mPath, 
-				node.mData.values().toString(),
-				node.getData("type").toString(), 
+				node.getData("all").toString(),
+				node.getData("xmlNodeType").toString(), 
 				node.mAncestors.toString() 
 		};
 	}
@@ -104,24 +104,24 @@ public class SourceController {
 		if (node == null)
 			return new TreeSource().getBeginDataSet();
 		else
-			return new TreeSource((MNode) node).getBeginDataSet();
+			return new TreeSource((MXMLNode) node).getBeginDataSet();
 	}
 	
 	public class TreeSource implements ISource {
-		private MNode mChildren[];
-		private MNode mSource;
+		private MXMLNode mChildren[];
+		private MXMLNode mSource;
 		
 		public TreeSource() {
 			mChildren = mModel.getDataTreeData(null);
 		}
 		
-		public TreeSource(MNode node) {
+		public TreeSource(MXMLNode node) {
 			if (node == null) throw new RuntimeException("Empty node!");
 			mSource = node;
 			mChildren = mModel.getDataTreeData(mSource);
 		}
 		
-		public MNode getData() {return mSource;}
+		public MXMLNode getData() {return mSource;}
 		
 		public ISource[] getBeginDataSet() {
 			TreeSource arg[] = new TreeSource[mChildren.length];
@@ -133,7 +133,7 @@ public class SourceController {
 		
 		@Override
 		public ISource[] getChildren(ISource parent) {
-			MNode node = (MNode) parent.getData();
+			MXMLNode node = (MXMLNode) parent.getData();
 			if (node == null) return null;
 			mChildren = mModel.getDataTreeData(node);
 			TreeSource ret[] = new TreeSource[mChildren.length];
@@ -149,7 +149,7 @@ public class SourceController {
 			if (mChildren == null || mChildren.length == 0) return s;
 			s = s.concat(" and children: ");
 			for (int i = 0; i < mChildren.length; i++) {
-				MNode child = mChildren[i];
+				MXMLNode child = mChildren[i];
 				if (i == 0)
 					s.concat(child.toString());
 				else
@@ -160,18 +160,18 @@ public class SourceController {
 	}
 
 	public TreeItem searchByPath(String path) {
-		MNode node = mModel.mDataTree.findNodeByPath(path);
+		MXMLNode node = mModel.mDataTree.findNodeByPath(path);
 		if (node == null) return null;
 		return (TreeItem) node.mData.get("TreeItem");
 	}
 
 	public TreeItem[] getAncestors(TreeItem item) {
-		MNode node = (MNode) item.getData();
-		Stack<ANode> ancestors = node.mAncestors;
+		MXMLNode node = (MXMLNode) item.getData();
+		Stack<MANode> ancestors = node.mAncestors;
 		int size = ancestors.size();
 		TreeItem items[] = new TreeItem[size - 1];
 		for (int i = 1; i < size; i++) {
-			Object data = ((MNode) ancestors.get(i)).mData.get("TreeItem");
+			Object data = ((MXMLNode) ancestors.get(i)).mData.get("TreeItem");
 			if (data == null) continue;
 			items[i - 1] = (TreeItem) data;
 		}
@@ -179,13 +179,13 @@ public class SourceController {
 	}
 	
 	public TreeItem[] getDescendants(TreeItem item) {
-		MNode node = (MNode) item.getData();
-		Stack<ANode> descendants = new Stack<ANode>();
+		MXMLNode node = (MXMLNode) item.getData();
+		Stack<MANode> descendants = new Stack<MANode>();
 		descendants = node.getDescendants(descendants);
 		TreeItem items[] = new TreeItem[descendants.size()];
 		int i = 0;
-		for (ANode descendant : descendants) {
-			Object data = ((MNode) descendant).mData.get("TreeItem");
+		for (MANode descendant : descendants) {
+			Object data = ((MXMLNode) descendant).mData.get("TreeItem");
 			if (data == null) continue;
 			items[i++] = (TreeItem) data;
 		}

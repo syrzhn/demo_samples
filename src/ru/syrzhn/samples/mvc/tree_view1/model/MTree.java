@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /** @author syrzhn */
-public class MTree extends ANode {
+public class MTree extends MANode {
 	
 	public int mAllNodesCount;
 	
@@ -48,62 +48,71 @@ public class MTree extends ANode {
 		unGordius((Node) document, this, "");		
 	}
 	
-	private void unGordius(Node nodeXML, ANode nodeParent, String tab) {
-		String tagName = "";
-		ANode nodeTree = nodeParent;
+	private void unGordius(Node nodeXML, MANode nodeParent, String tab) {
+		String nodeName = "", nodeValue = "", nodeType = "";
+		MANode nodeTree = nodeParent;
 		switch (nodeXML.getNodeType()) {
 		case Node.CDATA_SECTION_NODE:
-			System.out.println(tab.concat("CDATA_SECTION_NODE"));
+			nodeType = "CDATA_SECTION_NODE";
 			break;
 		case Node.COMMENT_NODE:
-			System.out.println(tab.concat("COMMENT_NODE"));
+			nodeType = "COMMENT_NODE";
 			break;
 		case Node.DOCUMENT_FRAGMENT_NODE:
-			System.out.println(tab.concat("DOCUMENT_FRAGMENT_NODE"));
+			nodeType = "DOCUMENT_FRAGMENT_NODE";
 			break;
 		case Node.DOCUMENT_NODE:
-			System.out.println(tab.concat("DOCUMENT_NODE"));
+			nodeType = "DOCUMENT_NODE";
 			break;
 		case Node.DOCUMENT_TYPE_NODE:
-			tagName = ((Document) nodeXML).getDocumentElement().getNodeName();
-			System.out.println(tab.concat(tagName).concat(" type=DOCUMENT_TYPE_NODE"));
+			nodeType = "DOCUMENT_TYPE_NODE";
 			break;
 		case Node.ELEMENT_NODE:
-			Element elementXML = (Element) nodeXML;
-			tagName = elementXML.getNodeName();
-			nodeTree = new MNode(nodeParent);
-			((MNode) nodeTree).putData(tagName, elementXML.getNodeValue());
+			nodeType = "ELEMENT_NODE";
+			nodeName  = nodeXML.getNodeName();
+			nodeValue = nodeXML.getNodeValue();
+			nodeTree  = new MXMLNode(nodeParent)
+					.putData("xmlNodeName",  nodeName)
+					.putData("xmlNodeValue", nodeValue)
+					.putData("xmlNodeType",  nodeType);
 			mAllNodesCount++;
-			System.out.println(tab.concat(tagName).concat(" type=ELEMENT_NODE"));
-			if (!elementXML.hasAttributes()) break;
-			NamedNodeMap attributes = elementXML.getAttributes();
-			for (int i = 0; i < attributes.getLength(); i++) {
-				Attr attrXML = (Attr) attributes.item(i);
-				MNode attrNodeTree = new MNode(nodeTree);
-				attrNodeTree.putData(attrXML.getName(), attrXML.getValue());
-				System.out.println(tab.concat("\tattribute=").concat(attrXML.getName()));
-				mAllNodesCount++;
-			}
 			break;
 		case Node.ENTITY_NODE:
-			System.out.println(tab.concat("ENTITY_NODE"));
+			nodeType = "ENTITY_NODE";
 			break;
 		case Node.ENTITY_REFERENCE_NODE:
-			System.out.println(tab.concat("ENTITY_REFERENCE_NODE"));
+			nodeType = "ENTITY_REFERENCE_NODE";
 			break;
 		case Node.NOTATION_NODE:
-			System.out.println(tab.concat("NOTATION_NODE"));
+			nodeType = "NOTATION_NODE";
 			break;
 		case Node.PROCESSING_INSTRUCTION_NODE:
-			System.out.println(tab.concat("PROCESSING_INSTRUCTION_NODE"));
+			nodeType = "PROCESSING_INSTRUCTION_NODE";
 			break;
 		case Node.TEXT_NODE:
-			System.out.println(tab.concat("TEXT_NODE"));
+			nodeType = "TEXT_NODE";
 			break;
 		default:
-			System.out.println(tab.concat("Unknown node"));
+			nodeType = "Unknown node";
 			break;
 		}
+		System.out.println(tab + nodeName + " " + nodeValue + " " + nodeType);
+		if (nodeXML.hasAttributes()) {
+			NamedNodeMap attributes = nodeXML.getAttributes();
+			for (int i = 0; i < attributes.getLength(); i++) {
+				Attr attrXML = (Attr) attributes.item(i);
+				nodeName  = attrXML.getName();
+				nodeValue = attrXML.getValue();
+				nodeType  = "ATTRIBUTE_NODE";
+				new MXMLNode(nodeTree)
+						.putData("xmlNodeName",  nodeName)
+						.putData("xmlNodeValue", nodeValue)
+						.putData("xmlNodeType",  nodeType);
+				System.out.println(tab + '\t' + nodeName + " " + nodeValue + " " + nodeType);
+				mAllNodesCount++;
+			}
+		}
+		if (!nodeXML.hasChildNodes()) return;
 		NodeList xmlNodesList = nodeXML.getChildNodes();
 		for (int i = 0; i < xmlNodesList.getLength(); i++)
 			unGordius(xmlNodesList.item(i), nodeTree, tab.concat("\t"));
@@ -113,32 +122,34 @@ public class MTree extends ANode {
 		Document doc = XmlUtils.createXmlDocument("TestTree");
         Node root = doc.getDocumentElement();
  
-        Element firstElemet = doc.createElement("First");
-        firstElemet.setTextContent("First element");
-        firstElemet.setAttribute("ID", "FirstElement");
-        firstElemet.setAttribute("type", "text");
+        Element fstEl = doc.createElement("First");
+        fstEl.setTextContent("First text content");
+        fstEl.setNodeValue("First node value");
+        fstEl.setAttribute("ID", "First id");
+        fstEl.setAttribute("type", "type text");
+        root.appendChild(fstEl);
         
-        Element secondElement1 = doc.createElement("SecondOne");
-        secondElement1.setTextContent("SecondElement1");
-        secondElement1.setAttribute("ID", "SecondElement1");
-        Element secondElement2 = doc.createElement("SecondTwo");
-        secondElement2.setTextContent("SecondElement2");
-        secondElement2.setAttribute("ID", "SecondElement2");
-        secondElement2.setAttribute("type", "text");
+        Element sndEl1 = doc.createElement("SecondOne");
+        sndEl1.setTextContent("Second 1 text content");
+        sndEl1.setAttribute("ID", "Second 1 id");
+        fstEl.appendChild(sndEl1);
 
-        firstElemet.appendChild(secondElement2);
-        firstElemet.appendChild(secondElement1);
-        root.appendChild(firstElemet);
-        
+        Element sndEl2 = doc.createElement("SecondTwo");
+        sndEl2.setAttribute("ID", "Second 2 id");
+        sndEl2.setAttribute("type", "type text");
+        fstEl.appendChild(sndEl2);
+
         unGordius((Node) doc, this, "");
+        
+        XmlUtils.saveDocument(doc);
 	}
 	
 	public MTree(final int levels, final int rows) {
 		mPath = "tesTree";
-		Stack<MNode> level = new Stack<MNode>(),
-				nodesI = new Stack<MNode>();
+		Stack<MXMLNode> level = new Stack<MXMLNode>(),
+				nodesI = new Stack<MXMLNode>();
 		for (int i = 0; i < rows; i++) {
-			MNode newNode = new MNode(this);
+			MXMLNode newNode = new MXMLNode(this);
 			newNode.putData("ID", newNode.mPath.concat(" - ").concat(Model.currentTime()));
 			level.push(newNode);
 			mAllNodesCount++;
@@ -150,9 +161,9 @@ public class MTree extends ANode {
 				// where denominator and first member are 
 				// equivalent rows count.
 				// L(l) = L1*(rows^(l-1)) & L1 = rows => L(l) = rows^l;
-				MNode node = level.pop(); // add new level
+				MXMLNode node = level.pop(); // add new level
 				for (int i = 0; i < rows; i++) {
-					MNode newNode = new MNode(node);
+					MXMLNode newNode = new MXMLNode(node);
 					newNode.putData("ID", newNode.mPath.concat(" - ").concat(Model.currentTime()));
 					nodesI.push(newNode);
 					mAllNodesCount++;
@@ -163,7 +174,7 @@ public class MTree extends ANode {
 		}
 	}	
 	
-	public MNode findNodeByPath(String pathToFind) {
+	public MXMLNode findNodeByPath(String pathToFind) {
 		class Path {
 			private final static String levelSymbols = Model.ALPHABET;//"abcdefghijklmnopqrstuvwxyz";
 			private final static String   rowSymbols = "0123456789";
@@ -205,16 +216,16 @@ public class MTree extends ANode {
 		}
 		
 		List<Path> path = new Path().parse(pathToFind);
-		MNode node = null; int n = path.size();
+		MXMLNode node = null; int n = path.size();
 		for (int i = 0; i < n; i++) {
 			int row = path.get(i).mRow;
-			List<ANode> children = null;
+			List<MANode> children = null;
 			if (i == 0)
 				children = mChildren;
 			else 
 				children = node.mChildren;
 			if (row > -1 && row < children.size())
-				node = (MNode) children.get(row);
+				node = (MXMLNode) children.get(row);
 			else
 				return null;
 			if ( i == n - 1 && node.mPath.equals(pathToFind) ) return node;
@@ -222,15 +233,15 @@ public class MTree extends ANode {
 		return null;
 	}	
 
-	public Stack<ANode> disposeNode(MNode node) {
-		Stack<ANode> brothers = null, dependents = null;
+	public Stack<MANode> disposeNode(MXMLNode node) {
+		Stack<MANode> brothers = null, dependents = null;
 		brothers = node.mAncestors.peek().mChildren;
 		int nodeRow = node.mRow;
 		dependents = node.getDependents(dependents);
 		node.leave(Model.messBuff);
 		mAllNodesCount = mAllNodesCount - Model.messBuff.size();
 		for (int i = nodeRow + 1; i < brothers.size(); i++) {
-			MNode n = (MNode) brothers.get(i);
+			MXMLNode n = (MXMLNode) brothers.get(i);
 			--n.mRow;
 			n.setPath();
 		}
@@ -238,13 +249,13 @@ public class MTree extends ANode {
 		return dependents;
 	}
 	
-	public Stack<ANode> getDescendants(MNode node) {
-		Stack<ANode> descendants = new Stack<ANode>();
+	public Stack<MANode> getDescendants(MXMLNode node) {
+		Stack<MANode> descendants = new Stack<MANode>();
 		return node.getDescendants(descendants);
 	}
 	
-	public MNode addNode(MNode ancestor) {
-		MNode newNode = new MNode(ancestor);
+	public MXMLNode addNode(MXMLNode ancestor) {
+		MXMLNode newNode = new MXMLNode(ancestor);
 		Model.messBuff.add( newNode.toString().concat(" has appeared in the tree") );
 		mAllNodesCount++;
 		return newNode;
