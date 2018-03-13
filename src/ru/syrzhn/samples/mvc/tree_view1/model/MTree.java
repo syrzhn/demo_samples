@@ -52,49 +52,27 @@ public class MTree extends MANode {
 		String nodeName = "", nodeValue = "", nodeType = "";
 		MANode nodeTree = nodeParent;
 		switch (nodeXML.getNodeType()) {
-		case Node.CDATA_SECTION_NODE:
-			nodeType = "CDATA_SECTION_NODE";
-			break;
-		case Node.COMMENT_NODE:
-			nodeType = "COMMENT_NODE";
-			break;
-		case Node.DOCUMENT_FRAGMENT_NODE:
-			nodeType = "DOCUMENT_FRAGMENT_NODE";
-			break;
-		case Node.DOCUMENT_NODE:
-			nodeType = "DOCUMENT_NODE";
-			break;
-		case Node.DOCUMENT_TYPE_NODE:
-			nodeType = "DOCUMENT_TYPE_NODE";
-			break;
+		case Node.CDATA_SECTION_NODE: nodeType = "CDATA_SECTION_NODE"; break;
+		case Node.COMMENT_NODE:       nodeType = "COMMENT_NODE";       break;
+		case Node.DOCUMENT_FRAGMENT_NODE: nodeType = "DOCUMENT_FRAGMENT_NODE"; break;
+		case Node.DOCUMENT_NODE:          nodeType = "DOCUMENT_NODE";          break;
+		case Node.DOCUMENT_TYPE_NODE:     nodeType = "DOCUMENT_TYPE_NODE";     break;
 		case Node.ELEMENT_NODE:
-			nodeType = "ELEMENT_NODE";
+			nodeType  = "ELEMENT_NODE";
 			nodeName  = nodeXML.getNodeName();
-			nodeValue = nodeXML.getNodeValue();
+			nodeValue = nodeXML.getTextContent();
 			nodeTree  = new MXMLNode(nodeParent)
 					.putData("xmlNodeName",  nodeName)
 					.putData("xmlNodeValue", nodeValue)
 					.putData("xmlNodeType",  nodeType);
 			mAllNodesCount++;
 			break;
-		case Node.ENTITY_NODE:
-			nodeType = "ENTITY_NODE";
-			break;
-		case Node.ENTITY_REFERENCE_NODE:
-			nodeType = "ENTITY_REFERENCE_NODE";
-			break;
-		case Node.NOTATION_NODE:
-			nodeType = "NOTATION_NODE";
-			break;
-		case Node.PROCESSING_INSTRUCTION_NODE:
-			nodeType = "PROCESSING_INSTRUCTION_NODE";
-			break;
-		case Node.TEXT_NODE:
-			nodeType = "TEXT_NODE";
-			break;
-		default:
-			nodeType = "Unknown node";
-			break;
+		case Node.ENTITY_NODE:                 nodeType = "ENTITY_NODE";           break;
+		case Node.ENTITY_REFERENCE_NODE:       nodeType = "ENTITY_REFERENCE_NODE"; break;
+		case Node.NOTATION_NODE:               nodeType = "NOTATION_NODE";	       break;
+		case Node.PROCESSING_INSTRUCTION_NODE: nodeType = "PROCESSING_INSTRUCTION_NODE"; break;
+		case Node.TEXT_NODE:                   nodeType = "TEXT_NODE";                   break;
+		default: nodeType = "Unknown node";	break;
 		}
 		System.out.println(tab + nodeName + " " + nodeValue + " " + nodeType);
 		if (nodeXML.hasAttributes()) {
@@ -119,12 +97,12 @@ public class MTree extends MANode {
 	}
 
 	public MTree() {
-		Document doc = XmlUtils.createXmlDocument("TestTree");
+		Document doc = XmlUtils.createXmlDocument("TesTree");
         Node root = doc.getDocumentElement();
+		mPath = root.getNodeName();
  
         Element fstEl = doc.createElement("First");
         fstEl.setTextContent("First text content");
-        fstEl.setNodeValue("First node value");
         fstEl.setAttribute("ID", "First id");
         fstEl.setAttribute("type", "type text");
         root.appendChild(fstEl);
@@ -139,9 +117,9 @@ public class MTree extends MANode {
         sndEl2.setAttribute("type", "type text");
         fstEl.appendChild(sndEl2);
 
-        unGordius((Node) doc, this, "");
+        unGordius(root, this, "");
         
-        XmlUtils.saveDocument(doc);
+        XmlUtils.saveDocument(doc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
 	}
 	
 	public MTree(final int levels, final int rows) {

@@ -19,10 +19,9 @@ public class MXMLNode extends MANode implements Comparable<MXMLNode> {
 	
 	public Object getData(String key) {
 		if (mData == null) return mPath;
-		if (key.equals("all")) return mData.values();
 		if (mData.containsKey(key))
 			return (String) mData.get(key);
-		return "";
+		return mData.values();
 	}
 	
 	@Override
@@ -49,7 +48,7 @@ public class MXMLNode extends MANode implements Comparable<MXMLNode> {
 	public String toString() {
 		if (mData == null) return mPath;
 		if (mData.containsKey("xmlNodeName"))
-				return mData.get("xmlNodeName").toString();
+			return mData.get("xmlNodeName").toString();
 		if (mData.containsKey("ID"))
 			return mData.get("ID").toString();
 		return mData.keySet().toString();

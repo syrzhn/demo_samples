@@ -17,9 +17,9 @@ public class SourceController {
 	private Model mModel;
 	
 	public SourceController(Viewer viewer) {
-		//mModel = new Model(3, 3);
-		//mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\BookCatalogue.xml");
 		mModel = new Model();
+		//mModel = new Model(3, 3);
+		//mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\input.xml");
 		mViewer = viewer;
 	}
 	

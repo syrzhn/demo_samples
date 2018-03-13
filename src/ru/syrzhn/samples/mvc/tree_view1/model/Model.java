@@ -35,14 +35,17 @@ public class Model {
 	
 	public Model(final int levels, final int rows) {
 		mDataTree = new MTree(levels, rows);
+		"".toCharArray();
 	}
 	
 	public Model (final String fileName) {
 		mDataTree = new MTree(fileName);
+		"".toCharArray();
 	}
 	
 	public Model() {
 		mDataTree = new MTree();
+		"".toCharArray();
 	}
 
 	public MXMLNode[] getDataTreeData(MANode parent) {
@@ -101,18 +104,18 @@ class XmlUtils {
 		
 		} catch (Exception e) {}
 		return null;
-	}
-	 
+	}	 
     /**
-     * Save document into file "outer.xml"
+     * Save xml <b>document</b> into file <b>fileName</b>
      * @param document
+     * @param fileName
      * @throws TransformerFactoryConfigurationError
      */
-    public static void saveDocument(Document document) throws TransformerFactoryConfigurationError {
+    public static void saveDocument(Document document, String fileName) throws TransformerFactoryConfigurationError {
         try {
             Transformer tr = TransformerFactory.newInstance().newTransformer();
             DOMSource source = new DOMSource(document);
-            FileOutputStream fos = new FileOutputStream("outer.xml");
+            FileOutputStream fos = new FileOutputStream(fileName);
             StreamResult result = new StreamResult(fos);
             tr.transform(source, result);
         } catch (TransformerException | IOException e) {

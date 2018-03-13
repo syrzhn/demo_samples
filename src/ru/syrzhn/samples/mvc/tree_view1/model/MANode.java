@@ -5,7 +5,7 @@ import java.util.Stack;
 
 public abstract class MANode {
 	public int mRow;
-	public String mPath, mType = "Abstract node";
+	public String mPath;
 	public Stack<MANode> mChildren, mAncestors;
 
 	public Stack<MANode> getDescendants(Stack<MANode> descendants) {

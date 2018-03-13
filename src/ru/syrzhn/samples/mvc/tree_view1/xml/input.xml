@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TesTree id="0">
+	<Level id="1" name="level 1">
+		<Element id="2" name="element 1">
+			<Title>Text element 1</Title>
+		</Element>
+		<Element id="3" name="element 2">
+			<Title>Text element 2</Title>
+		</Element>
+	</Level>
+</TesTree>
