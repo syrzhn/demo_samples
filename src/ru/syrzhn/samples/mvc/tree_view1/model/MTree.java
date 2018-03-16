@@ -1,14 +1,9 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 import java.util.Stack;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -16,7 +11,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /** @author syrzhn */
 public class MTree extends MANode {
@@ -27,21 +21,7 @@ public class MTree extends MANode {
 		File xmlFile = new File(fileName);
 		mPath = xmlFile.getName();
 
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setValidating(false);
-		dbf.setNamespaceAware(true);
-		dbf.setIgnoringElementContentWhitespace(true);
-
-		Document document = null;
-		try {
-			DocumentBuilder builder = dbf.newDocumentBuilder();
-			document = builder.parse(fileName);
-		} catch (ParserConfigurationException | SAXException | IOException ex) {
-			ex.printStackTrace();
-		}
-		Node rootXML = document.getDocumentElement();
-		rootXML.normalize();
-		unGordius((Node) document, this, "");
+		unGordius((Node) XmlUtils.loadFromFile(fileName), this, "");
 	}
 	
 	public MTree (final Document document) {
@@ -60,7 +40,7 @@ public class MTree extends MANode {
 		case Node.ELEMENT_NODE:
 			nodeType  = "ELEMENT_NODE";
 			nodeName  = nodeXML.getNodeName();
-			nodeValue = nodeXML.getTextContent();
+			nodeValue = nodeXML.getNodeValue();
 			nodeTree  = new MXMLNode(nodeParent)
 					.putData("xmlNodeName",  nodeName)
 					.putData("xmlNodeValue", nodeValue)
@@ -99,6 +79,7 @@ public class MTree extends MANode {
 	public MTree() {
 		Document doc = XmlUtils.createXmlDocument("TesTree");
         Node root = doc.getDocumentElement();
+        root.setTextContent("root");
 		mPath = root.getNodeName();
  
         Element fstEl = doc.createElement("First");
@@ -117,9 +98,9 @@ public class MTree extends MANode {
         sndEl2.setAttribute("type", "type text");
         fstEl.appendChild(sndEl2);
 
-        unGordius(root, this, "");
+        unGordius(doc, this, "");
         
-        XmlUtils.saveDocument(doc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
+        XmlUtils.saveToFile(doc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
 	}
 	
 	public MTree(final int levels, final int rows) {

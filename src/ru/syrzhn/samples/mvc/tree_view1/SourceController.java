@@ -18,8 +18,8 @@ public class SourceController {
 	
 	public SourceController(Viewer viewer) {
 		mModel = new Model();
-		//mModel = new Model(3, 3);
 		//mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\input.xml");
+		//mModel = new Model(3, 3);
 		mViewer = viewer;
 	}
 	
