@@ -163,116 +163,126 @@ class XmlUtils {
 }
 
 class DumpXmlDOM {
+	public int mAllNodesCount;
+	
+	public void dump(Document doc, MANode treeParent) { dumpLoop((Node) doc, treeParent, ""); }
 
-	public static void dump(Document doc) {	dumpLoop((Node) doc, null, ""); }
-
-	public static void dumpLoop(Node node, MANode treeParent, String shift) {
-		MANode nodeTree = treeParent;
+	public void dumpLoop(Node node, MANode treeParent, String shift) {
 		switch (node.getNodeType()) {
-		case Node.ATTRIBUTE_NODE:              dumpAttributeNode             ((Attr) node, shift); break;
-		case Node.CDATA_SECTION_NODE:          dumpCDATASectionNode          ((CDATASection) node, shift); break;
-		case Node.COMMENT_NODE:	               dumpCommentNode               ((Comment) node, shift); break;
-		case Node.DOCUMENT_NODE:               dumpDocument                  ((Document) node, shift);	break;
-		case Node.DOCUMENT_FRAGMENT_NODE:      dumpDocumentFragment          ((DocumentFragment) node, shift); break;
-		case Node.DOCUMENT_TYPE_NODE:          dumpDocumentType              ((DocumentType) node, shift); break;
-		case Node.ELEMENT_NODE:	               dumpElement                   ((Element) node, shift); break;
-		case Node.ENTITY_NODE:                 dumpEntityNode                ((Entity) node, shift);	break;
-		case Node.ENTITY_REFERENCE_NODE:       dumpEntityReferenceNode       ((EntityReference) node, shift); break;
-		case Node.NOTATION_NODE: 		       dumpNotationNode              ((Notation) node, shift);	break;
-		case Node.PROCESSING_INSTRUCTION_NODE: dumpProcessingInstructionNode ((ProcessingInstruction) node, shift); break;
-		case Node.TEXT_NODE:                   dumpTextNode                  ((Text) node, shift);	break;
+		case Node.ATTRIBUTE_NODE:              dumpAttributeNode             ((Attr)                  node, treeParent, shift); break;
+		case Node.CDATA_SECTION_NODE:          dumpCDATASectionNode          ((CDATASection)          node, treeParent, shift); break;
+		case Node.COMMENT_NODE:	               dumpCommentNode               ((Comment)               node, treeParent, shift); break;
+		case Node.DOCUMENT_NODE:               dumpDocument                  ((Document)              node, treeParent, shift);	break;
+		case Node.DOCUMENT_FRAGMENT_NODE:      dumpDocumentFragment          ((DocumentFragment)      node, treeParent, shift); break;
+		case Node.DOCUMENT_TYPE_NODE:          dumpDocumentType              ((DocumentType)          node, treeParent, shift); break;
+		case Node.ELEMENT_NODE:	               dumpElement                   ((Element)               node, treeParent, shift); break;
+		case Node.ENTITY_NODE:                 dumpEntityNode                ((Entity)                node, treeParent, shift); break;
+		case Node.ENTITY_REFERENCE_NODE:       dumpEntityReferenceNode       ((EntityReference)       node, treeParent, shift); break;
+		case Node.NOTATION_NODE: 		       dumpNotationNode              ((Notation)              node, treeParent, shift); break;
+		case Node.PROCESSING_INSTRUCTION_NODE: dumpProcessingInstructionNode ((ProcessingInstruction) node, treeParent, shift); break;
+		case Node.TEXT_NODE:                   dumpTextNode                  ((Text)                  node, treeParent, shift); break;
 		default:  System.out.println(shift + "Unknown node"); break;
 		}
 		NodeList list = node.getChildNodes();
 		for (int i = 0; i < list.getLength(); i++)
 			dumpLoop(list.item(i), treeParent, shift.concat("\t"));
 	}
-
-	/** Display the contents of a ATTRIBUTE_NODE */
-	private static void dumpAttributeNode(Attr node, String indent) {
-		System.out.println(indent + "ATTRIBUTE " + node.getName() + "=\"" + node.getValue() + "\"");
+	/** Plays the contents of a ATTRIBUTE_NODE */
+	private void dumpAttributeNode(Attr node, MANode treeParent, String shift) {
+		System.out.println(shift + "ATTRIBUTE " + node.getName() + "=\"" + node.getValue() + "\"");
+		new MXMLNode(treeParent)
+		.putData("xmlNodeName",  node.getName())
+		.putData("xmlNodeValue", node.getValue())
+		.putData("xmlNodeType",  "ATTRIBUTE_NODE");
 	}
-
-	/** Display the contents of a CDATA_SECTION_NODE */
-	private static void dumpCDATASectionNode(CDATASection node, String indent) {
-		System.out.println(indent + "CDATA SECTION length=" + node.getLength());
-		System.out.println(indent + "\"" + node.getData() + "\"");
+	/** Plays the contents of a CDATA_SECTION_NODE */
+	private void dumpCDATASectionNode(CDATASection node, MANode treeParent, String shift) {
+		System.out.println(shift + "CDATA SECTION length=" + node.getLength());
+		System.out.println(shift + "\"" + node.getData() + "\"");
 	}
-
-	/** Display the contents of a COMMENT_NODE */
-	private static void dumpCommentNode(Comment node, String indent) {
-		System.out.println(indent + "COMMENT length=" + node.getLength());
-		System.out.println(indent + "  " + node.getData());
+	/** Plays the contents of a COMMENT_NODE */
+	private void dumpCommentNode(Comment node, MANode treeParent, String shift) {
+		System.out.println(shift + "COMMENT length=" + node.getLength());
+		System.out.println(shift + "  " + node.getData());
 	}
-
-	/** Display the contents of a DOCUMENT_NODE */
-	private static void dumpDocument(Document node, String indent) {
-		System.out.println(indent + "DOCUMENT");
+	/** Plays the contents of a DOCUMENT_NODE */
+	private void dumpDocument(Document node, MANode treeParent, String shift) {
+		System.out.println(shift + "DOCUMENT");
 	}
-
-	/** Display the contents of a DOCUMENT_FRAGMENT_NODE */
-	private static void dumpDocumentFragment(DocumentFragment node, String indent) {
-		System.out.println(indent + "DOCUMENT FRAGMENT");
+	/** Plays the contents of a DOCUMENT_FRAGMENT_NODE */
+	private void dumpDocumentFragment(DocumentFragment node, MANode treeParent, String shift) {
+		System.out.println(shift + "DOCUMENT FRAGMENT");
 	}
-
-	/** Display the contents of a DOCUMENT_TYPE_NODE */
-	private static void dumpDocumentType(DocumentType node, String indent) {
-		System.out.println(indent + "DOCUMENT_TYPE: " + node.getName());
-		if (node.getPublicId() != null)
-			System.out.println(indent + " Public ID: " + node.getPublicId());
-		if (node.getSystemId() != null)
-			System.out.println(indent + " System ID: " + node.getSystemId());
+	/** Plays the contents of a DOCUMENT_TYPE_NODE */
+	private void dumpDocumentType(DocumentType node, MANode treeParent, String shift) {
+		System.out.println(shift + "DOCUMENT_TYPE: " + node.getName());
+		String nodeValue = null;
+		if (node.getPublicId() != null) {
+			System.out.println(shift + " Public ID: " + node.getPublicId());
+			nodeValue  = node.getPublicId();
+		}
+		if (node.getSystemId() != null) {
+			System.out.println(shift + " System ID: " + node.getSystemId());
+			nodeValue = node.getSystemId();
+		}
+		MXMLNode nodeTree = new MXMLNode(treeParent)
+				.putData("xmlNodeName",  node.getName())
+				.putData("xmlNodeValue", nodeValue)
+				.putData("xmlNodeType",  "DOCUMENT_TYPE_NODE");
+		mAllNodesCount++;
 		NamedNodeMap entities = node.getEntities();
 		if (entities.getLength() > 0) {
+			treeParent = nodeTree;
 			for (int i = 0; i < entities.getLength(); i++) {
-				dumpLoop(entities.item(i), indent + "  ");
+				dumpLoop(entities.item(i), nodeTree, shift + "\t");
 			}
 		}
 		NamedNodeMap notations = node.getNotations();
 		if (notations.getLength() > 0) {
+			treeParent = nodeTree;
 			for (int i = 0; i < notations.getLength(); i++)
-				dumpLoop(notations.item(i), indent + "  ");
+				dumpLoop(notations.item(i), nodeTree, shift + "\t");
 		}
 	}
-
-	/** Display the contents of a ELEMENT_NODE */
-	private static void dumpElement(Element node, String indent) {
-		System.out.println(indent + "ELEMENT: " + node.getTagName());
+	/** Plays the contents of a ELEMENT_NODE */
+	private void dumpElement(Element node, MANode treeParent, String shift) {
+		System.out.println(shift + "ELEMENT: " + node.getTagName());
+		MXMLNode nodeTree = new MXMLNode(treeParent)
+				.putData("xmlNodeName",  node.getTagName())
+				.putData("xmlNodeValue", node.getTextContent())
+				.putData("xmlNodeType",  "ELEMENT_NODE");
+		mAllNodesCount++;
 		NamedNodeMap nm = node.getAttributes();
+		treeParent = nodeTree;
 		for (int i = 0; i < nm.getLength(); i++)
-			dumpLoop(nm.item(i), indent + "  ");
+			dumpLoop(nm.item(i), nodeTree, shift + "\t");
 	}
-
-	/** Display the contents of a ENTITY_NODE */
-	private static void dumpEntityNode(Entity node, String indent) {
-		System.out.println(indent + "ENTITY: " + node.getNodeName());
+	/** Plays the contents of a ENTITY_NODE */
+	private void dumpEntityNode(Entity node, MANode treeParent, String shift) {
+		System.out.println(shift + "ENTITY: " + node.getNodeName());
 	}
-
-	/** Display the contents of a ENTITY_REFERENCE_NODE */
-	private static void dumpEntityReferenceNode(EntityReference node, String indent) {
-		System.out.println(indent + "ENTITY REFERENCE: " + node.getNodeName());
+	/** Plays the contents of a ENTITY_REFERENCE_NODE */
+	private void dumpEntityReferenceNode(EntityReference node, MANode treeParent, String shift) {
+		System.out.println(shift + "ENTITY REFERENCE: " + node.getNodeName());
 	}
-
-	/** Display the contents of a NOTATION_NODE */
-	private static void dumpNotationNode(Notation node, String indent) {
-		System.out.println(indent + "NOTATION");
-		System.out.print(indent + "  " + node.getNodeName() + "=");
+	/** Plays the contents of a NOTATION_NODE */
+	private void dumpNotationNode(Notation node, MANode treeParent, String shift) {
+		System.out.println(shift + "NOTATION");
+		System.out.print(shift + "  " + node.getNodeName() + "=");
 		if (node.getPublicId() != null)
 			System.out.println(node.getPublicId());
 		else
 			System.out.println(node.getSystemId());
 	}
-
-	/** Display the contents of a PROCESSING_INSTRUCTION_NODE */
-	private static void dumpProcessingInstructionNode(ProcessingInstruction node, String indent) {
-		System.out.println(indent + "PI: target=" + node.getTarget());
-		System.out.println(indent + "  " + node.getData());
+	/** Plays the contents of a PROCESSING_INSTRUCTION_NODE */
+	private  void dumpProcessingInstructionNode(ProcessingInstruction node, MANode treeParent, String shift) {
+		System.out.println(shift + "PI: target=" + node.getTarget());
+		System.out.println(shift + "  " + node.getData());
 	}
-
-	/** Display the contents of a TEXT_NODE */
-	private static void dumpTextNode(Text node, String indent) {
-		System.out.println(indent + "TEXT length=" + node.getLength());
-		System.out.println(indent + "  " + node.getData());
+	/** Plays the contents of a TEXT_NODE */
+	private void dumpTextNode(Text node, MANode treeParent, String shift) {
+		System.out.println(shift + "TEXT length=" + node.getLength());
+		System.out.println(shift + "  " + node.getData());
 	}
 }
 

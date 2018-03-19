@@ -5,12 +5,9 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 import java.util.Stack;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /** @author syrzhn */
 public class MTree extends MANode {
@@ -21,61 +18,16 @@ public class MTree extends MANode {
 		File xmlFile = new File(fileName);
 		mPath = xmlFile.getName();
 
-		unGordius((Node) XmlUtils.loadFromFile(fileName), this, "");
+		DumpXmlDOM p = new DumpXmlDOM();
+		p.dump(XmlUtils.loadFromFile(fileName), this);
 	}
 	
-	public MTree (final Document document) {
-		unGordius((Node) document, this, "");		
+	public MTree (final Document doc) {
+		DumpXmlDOM p = new DumpXmlDOM();
+		p.dump(doc, this);
+        
 	}
 	
-	private void unGordius(Node nodeXML, MANode nodeParent, String tab) {
-		String nodeName = "", nodeValue = "", nodeType = "";
-		MANode nodeTree = nodeParent;
-		switch (nodeXML.getNodeType()) {
-		case Node.CDATA_SECTION_NODE: nodeType = "CDATA_SECTION_NODE"; break;
-		case Node.COMMENT_NODE:       nodeType = "COMMENT_NODE";       break;
-		case Node.DOCUMENT_FRAGMENT_NODE: nodeType = "DOCUMENT_FRAGMENT_NODE"; break;
-		case Node.DOCUMENT_NODE:          nodeType = "DOCUMENT_NODE";          break;
-		case Node.DOCUMENT_TYPE_NODE:     nodeType = "DOCUMENT_TYPE_NODE";     break;
-		case Node.ELEMENT_NODE:
-			nodeType  = "ELEMENT_NODE";
-			nodeName  = nodeXML.getNodeName();
-			nodeValue = nodeXML.getNodeValue();
-			nodeTree  = new MXMLNode(nodeParent)
-					.putData("xmlNodeName",  nodeName)
-					.putData("xmlNodeValue", nodeValue)
-					.putData("xmlNodeType",  nodeType);
-			mAllNodesCount++;
-			break;
-		case Node.ENTITY_NODE:                 nodeType = "ENTITY_NODE";           break;
-		case Node.ENTITY_REFERENCE_NODE:       nodeType = "ENTITY_REFERENCE_NODE"; break;
-		case Node.NOTATION_NODE:               nodeType = "NOTATION_NODE";	       break;
-		case Node.PROCESSING_INSTRUCTION_NODE: nodeType = "PROCESSING_INSTRUCTION_NODE"; break;
-		case Node.TEXT_NODE:                   nodeType = "TEXT_NODE";                   break;
-		default: nodeType = "Unknown node";	break;
-		}
-		System.out.println(tab + nodeName + " " + nodeValue + " " + nodeType);
-		if (nodeXML.hasAttributes()) {
-			NamedNodeMap attributes = nodeXML.getAttributes();
-			for (int i = 0; i < attributes.getLength(); i++) {
-				Attr attrXML = (Attr) attributes.item(i);
-				nodeName  = attrXML.getName();
-				nodeValue = attrXML.getValue();
-				nodeType  = "ATTRIBUTE_NODE";
-				new MXMLNode(nodeTree)
-						.putData("xmlNodeName",  nodeName)
-						.putData("xmlNodeValue", nodeValue)
-						.putData("xmlNodeType",  nodeType);
-				System.out.println(tab + '\t' + nodeName + " " + nodeValue + " " + nodeType);
-				mAllNodesCount++;
-			}
-		}
-		if (!nodeXML.hasChildNodes()) return;
-		NodeList xmlNodesList = nodeXML.getChildNodes();
-		for (int i = 0; i < xmlNodesList.getLength(); i++)
-			unGordius(xmlNodesList.item(i), nodeTree, tab.concat("\t"));
-	}
-
 	public MTree() {
 		Document doc = XmlUtils.createXmlDocument("TesTree");
         Node root = doc.getDocumentElement();
@@ -98,7 +50,8 @@ public class MTree extends MANode {
         sndEl2.setAttribute("type", "type text");
         fstEl.appendChild(sndEl2);
 
-        unGordius(doc, this, "");
+		DumpXmlDOM p = new DumpXmlDOM();
+		p.dump(doc, this);
         
         XmlUtils.saveToFile(doc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
 	}
