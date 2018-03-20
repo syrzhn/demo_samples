@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<TesTree id="0">
-	<Level id="1" name="level 1">
-		<Element id="2" name="element 1.1">
-			<Title>Text element 1</Title>
-		</Element>
-		<Element id="3" name="element 1.2">
-			<Title>Text element 2</Title>
-		</Element>
-		<Level id="4" name="level 1.2">
-			<Element id="5" name="element 1.2.1">
-				<Title>Text element 1</Title>
-			</Element>
-			<Element id="6" name="element 1.2.2">
-				<Title>Text element 2</Title>
-			</Element>
-		</Level>
-	</Level>
-</TesTree>
+<?xml version="1.0" standalone="yes"?>
+
+<!-- This document is both well formed and valid -->
+
+<!DOCTYPE folks [
+<!ELEMENT folks (person)*>
+<!ELEMENT person (name, phone, email)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT phone (#PCDATA)>
+<!ELEMENT email (#PCDATA)>
+]>
+
+<folks>
+    <person>
+        <name>B D</name>
+        <phone>999 555-8888</phone>
+        <email>b@xyz.net</email>
+    </person>
+</folks>

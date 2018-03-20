@@ -5,55 +5,22 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 import java.util.Stack;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 /** @author syrzhn */
 public class MTree extends MANode {
 	
 	public int mAllNodesCount;
 	
 	public MTree(final String fileName) {
+		DumpXmlDOM p = new DumpXmlDOM();
+		p.dumpLoop(XmlUtils.loadFromFile(fileName), this, "");
 		File xmlFile = new File(fileName);
 		mPath = xmlFile.getName();
-
-		DumpXmlDOM p = new DumpXmlDOM();
-		p.dump(XmlUtils.loadFromFile(fileName), this);
-	}
-	
-	public MTree (final Document doc) {
-		DumpXmlDOM p = new DumpXmlDOM();
-		p.dump(doc, this);
-        
 	}
 	
 	public MTree() {
-		Document doc = XmlUtils.createXmlDocument("TesTree");
-        Node root = doc.getDocumentElement();
-        root.setTextContent("root");
-		mPath = root.getNodeName();
- 
-        Element fstEl = doc.createElement("First");
-        fstEl.setTextContent("First text content");
-        fstEl.setAttribute("ID", "First id");
-        fstEl.setAttribute("type", "type text");
-        root.appendChild(fstEl);
-        
-        Element sndEl1 = doc.createElement("SecondOne");
-        sndEl1.setTextContent("Second 1 text content");
-        sndEl1.setAttribute("ID", "Second 1 id");
-        fstEl.appendChild(sndEl1);
-
-        Element sndEl2 = doc.createElement("SecondTwo");
-        sndEl2.setAttribute("ID", "Second 2 id");
-        sndEl2.setAttribute("type", "type text");
-        fstEl.appendChild(sndEl2);
-
 		DumpXmlDOM p = new DumpXmlDOM();
-		p.dump(doc, this);
-        
-        XmlUtils.saveToFile(doc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
+		p.dumpLoop(XmlUtils.createXmlDocument(), this, "");
+		mPath = "tesTree";
 	}
 	
 	public MTree(final int levels, final int rows) {
