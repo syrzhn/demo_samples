@@ -20,6 +20,40 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 public class MainForm implements Viewer.IForm {
 
+	/**
+	 * Launch the application.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		try {
+			MainForm window = new MainForm();
+			window.open();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Open the window.
+	 */
+	public void open() {
+		display = Display.getDefault();
+		
+		viewer = new Viewer(this); 
+
+		createContents();
+		
+		viewer.getItemsFromMTree(tree);
+		
+		shlMainForm.open();
+		shlMainForm.layout();
+		while (!shlMainForm.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+	}
+	
 	public Shell shlMainForm;
 	public Tree tree;
 	
@@ -76,42 +110,8 @@ public class MainForm implements Viewer.IForm {
 		return comboSearch.getText().trim();
 	}
 
-	/**
-	 * Launch the application.
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			MainForm window = new MainForm();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	private Combo comboSearch;
 
-	/**
-	 * Open the window.
-	 */
-	public void open() {
-		display = Display.getDefault();
-		
-		viewer = new Viewer(this); 
-
-		createContents();
-		
-		viewer.getItemsFromMTree(tree);
-		
-		shlMainForm.open();
-		shlMainForm.layout();
-		while (!shlMainForm.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
-	}
-	
 	/**
 	 * Create contents of the window.
 	 */
