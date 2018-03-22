@@ -17,16 +17,12 @@ public class SourceController {
 	private Model mModel;
 	
 	public SourceController(Viewer viewer) {
-		mModel = new Model();
 		//mModel = new Model("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\input.xml");
 		//mModel = new Model(3, 3);
+		mModel = new Model();
 		mViewer = viewer;
 	}
 	
-	public void setViewer(Viewer viewer) {
-		mViewer = viewer;
-	}	
-
 	public void setState(TreeItem item) {
 		MXMLNode node = (MXMLNode) item.getData();
 		node.putData("TreeItem", item);
