@@ -29,6 +29,7 @@ public class Viewer {
 		void updateState(States state, Object o);
 		String getSearch();
 		Display getDisplay();
+		Object getData();
 		enum States { 
 			CAPTION, 
 			TREE_ITEM 

@@ -1,15 +1,14 @@
 package ru.syrzhn.tests;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import ru.syrzhn.samples.mvc.tree_view1.MainForm;
-
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 
 public class TestUnitForm1 {
 
@@ -57,7 +56,7 @@ public class TestUnitForm1 {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					MainForm window = new MainForm();
+					MainForm window = new MainForm(shell, SWT.APPLICATION_MODAL, null);
 					window.open();
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -65,7 +64,6 @@ public class TestUnitForm1 {
 			}
 		});
 		btnRunTestTree.setText("Run test tree");
-
 	}
 
 }

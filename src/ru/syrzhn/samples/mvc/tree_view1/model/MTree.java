@@ -11,15 +11,13 @@ public class MTree extends MANode {
 	public int mAllNodesCount;
 	
 	public MTree(final String fileName) {
-		DumpXmlDOM p = new DumpXmlDOM();
-		p.dumpLoop(XmlUtils.loadFromFile(fileName), this, "");
+		XmlUtils.parseXml(this, XmlUtils.loadFromFile(fileName));
 		File xmlFile = new File(fileName);
 		mPath = xmlFile.getName();
 	}
 	
-	public MTree() {
-		DumpXmlDOM p = new DumpXmlDOM();
-		p.dumpLoop(XmlUtils.createXmlDocument(), this, "");
+	public MTree(Object doc) {
+		XmlUtils.parseXml(this, doc);
 		mPath = "tesTree";
 	}
 	

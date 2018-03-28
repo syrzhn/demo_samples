@@ -7,6 +7,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -18,21 +19,15 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-public class MainForm implements Viewer.IForm {
-
-	/**
-	 * Launch the application.
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			MainForm window = new MainForm();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+public class MainForm extends Dialog implements Viewer.IForm {
 	
+	private Object mTarget;
+	public MainForm(Shell parent, int style, Object target) {
+		super(parent, style);
+		setText("Список исключаемых из отчёта узлов");
+		mTarget = target;
+	}
+
 	/**
 	 * Open the window.
 	 */
@@ -60,6 +55,11 @@ public class MainForm implements Viewer.IForm {
 	private Viewer viewer;
 	private Display display;
 
+	@Override
+	public Object getData() {
+		return mTarget;
+	}
+	
 	@Override
 	public void updateState(States state, Object o) {
 		switch (state) {
@@ -117,7 +117,7 @@ public class MainForm implements Viewer.IForm {
 	 */
 	protected void createContents() {
 		shlMainForm = new Shell();
-		shlMainForm.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/tree1.png"));
+		shlMainForm.setImage(SWTResourceManager.getImage(MainForm.class, "/com/LANIT/reports/Specification/images/specific.png"));
 		shlMainForm.setSize(1280, 720);
 		shlMainForm.setText("Tree sample");
 		shlMainForm.setLayout(new GridLayout(3, false));
@@ -127,10 +127,10 @@ public class MainForm implements Viewer.IForm {
 		
 		ToolItem tltmNewItem = new ToolItem(toolBar, SWT.NONE);
 		tltmNewItem.addSelectionListener(viewer.getNewItemSelectionAdapter());
-		tltmNewItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/new1.png"));
+		tltmNewItem.setImage(SWTResourceManager.getImage(MainForm.class, "/com/LANIT/reports/Specification/images/new1.png"));
 		
 		ToolItem tltmDeleteItem = new ToolItem(toolBar, SWT.NONE);
-		tltmDeleteItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
+		tltmDeleteItem.setImage(SWTResourceManager.getImage(MainForm.class, "/com/LANIT/reports/Specification/images/delete1.png"));
 		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
 		
 		comboSearch = new Combo(shlMainForm, SWT.NONE);
@@ -145,7 +145,7 @@ public class MainForm implements Viewer.IForm {
 		
 		ToolItem tltmGo = new ToolItem(toolBarSearch, SWT.NONE);
 		tltmGo.addSelectionListener(viewer.getSearchSelectionAdapter());
-		tltmGo.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/search1.png"));
+		tltmGo.setImage(SWTResourceManager.getImage(MainForm.class, "/com/LANIT/reports/Specification/images/search1.png"));
 		
 		TabFolder tabFolder = new TabFolder(shlMainForm, SWT.NONE);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
