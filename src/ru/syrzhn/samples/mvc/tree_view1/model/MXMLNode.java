@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class MXMLNode extends MANode implements Comparable<MXMLNode> {
 
-	public Map<String, Object> mData;
+	private Map<String, Object> mData;
 	
 	public MXMLNode(MANode nodeParent) { super(nodeParent); }
 
@@ -21,7 +21,7 @@ public class MXMLNode extends MANode implements Comparable<MXMLNode> {
 		if (mData == null) return mPath;
 		if (mData.containsKey(key))
 			return (String) mData.get(key);
-		return mData.values();
+		return "8-0DEADMEAT:-0";//mData.values();
 	}
 	
 	@Override

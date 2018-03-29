@@ -148,8 +148,6 @@ public class Viewer {
 							SourceController c = mController;
 							TreeItem item = c.searchByPath(str);
 							if (item == null) return;
-//							TreeItem items[] = c.getAncestors(item);
-//							expandTreeItems(items);
 							if (item != null) {
 								item.setChecked(true);
 								item.getParent().setSelection(item); 
@@ -169,11 +167,6 @@ public class Viewer {
 		}
 	}
 	
-//	private void expandTreeItems(TreeItem items[]) {
-//		for (TreeItem item : items) 
-//			item.setExpanded(true);
-//	}
-	
 	public SelectionAdapter getNewItemSelectionAdapter() {
 		return new SelectionAdapter() {
 			@Override
@@ -189,7 +182,7 @@ public class Viewer {
 						mForm.getDisplay().asyncExec(() -> {
 								TreeItem newItem = new TreeItem(mCurrentItem, 0);
 								Object newNode = source.getData();
-								newItem.setText(mController.parseDataToItemColumns(newNode));
+								newItem.setText(mController.getTextDataFromTreeNode(newNode));
 								newItem.setData(newNode);
 								mController.setState(newItem);
 								mCurrentItem.setExpanded(true);
@@ -217,7 +210,7 @@ public class Viewer {
 								mCurrentItem.dispose();
 								for (TreeItem item : items) {
 									Object o = item.getData();
-									item.setText(mController.parseDataToItemColumns(o));
+									item.setText(mController.getTextDataFromTreeNode(o));
 									item.setChecked(true);
 									item.setData(o);
 								}
@@ -246,16 +239,18 @@ public class Viewer {
 	public void getItemsFromMTree(Object parent) {
 		abstract class GetItemsFromMTreeTask extends Task {
 			public GetItemsFromMTreeTask(String name) { super(name); }
-			protected void getData(final TreeItem item, ISource source) {
+			protected void getChildren(final TreeItem item, ISource source) {
 				ISource children[] = source.getChildren(source);
 				mForm.getDisplay().asyncExec(() -> {
 						for (ISource child : children) {
 							TreeItem childItem = new TreeItem(item, 0);
 							Object o = child.getData();
-							childItem.setText(mController.parseDataToItemColumns(o));
+							childItem.setText(mController.getTextDataFromTreeNode(o));
+							if (mController.getSelectFromTreeNode(o))
+								childItem.getParent().setSelection(childItem);
 							childItem.setData(o);
 							mController.setState(childItem);
-							getData(childItem, child);
+							getChildren(childItem, child);
 						}
 					}
 				);				
@@ -278,10 +273,12 @@ public class Viewer {
 						for (ISource child : children) {
 							TreeItem childItem = parent instanceof TreeItem ? new TreeItem((TreeItem) parent, 0) : new TreeItem((Tree) parent, 0);
 							Object o = child.getData();
-							childItem.setText(mController.parseDataToItemColumns(o));
+							childItem.setText(mController.getTextDataFromTreeNode(o));
+							if (mController.getSelectFromTreeNode(o))
+								childItem.getParent().setSelection(childItem);
 							childItem.setData(o);
 							mController.setState(childItem);
-							getData(childItem, child);
+							getChildren(childItem, child);
 						}
 					}
 				);

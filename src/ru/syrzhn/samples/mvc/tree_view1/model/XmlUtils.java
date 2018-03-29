@@ -135,6 +135,7 @@ public class XmlUtils {
 		new MXMLNode(treeParent).putData("xmlNodeName",  node.getName())
 								.putData("xmlNodeValue", node.getValue())
 								.putData("xmlNodeType",  "ATTRIBUTE_NODE");
+		((MXMLNode)treeParent).putData(node.getName(), node.getValue());
 	}
 	/** Plays the contents of a CDATA_SECTION_NODE */
 	private static void dumpCDATASectionNode(CDATASection node, MANode treeParent, String shift) {

@@ -23,7 +23,7 @@ public class SourceController {
 		mModel = new Model();
 	}
 	
-	public String[] parseDataToItemColumns(Object data) {
+	public String[] getTextDataFromTreeNode(Object data) {
 		MXMLNode node = (MXMLNode) data;
 		return new String[] { 
 				node.getData("xmlNodeName").toString(), 
@@ -32,6 +32,12 @@ public class SourceController {
 				node.getData("xmlNodeType").toString(), 
 				node.mAncestors.toString() 
 		};
+	}
+
+	public boolean getSelectFromTreeNode(Object o) {
+		MXMLNode node = (MXMLNode) o;
+		boolean expanded = node.getData("tree_actions").toString().indexOf("select") > -1;
+		return expanded;
 	}
 
 	public void setState(TreeItem item) {
@@ -113,7 +119,7 @@ public class SourceController {
 	public TreeItem searchByPath(String path) {
 		MXMLNode node = mModel.mDataTree.findNodeByPath(path);
 		if (node == null) return null;
-		return (TreeItem) node.mData.get("TreeItem");
+		return (TreeItem) node.getData("TreeItem");
 	}
 
 	public TreeItem[] getAncestors(TreeItem item) {
@@ -122,7 +128,7 @@ public class SourceController {
 		int size = ancestors.size();
 		TreeItem items[] = new TreeItem[size - 1];
 		for (int i = 1; i < size; i++) {
-			Object data = ((MXMLNode) ancestors.get(i)).mData.get("TreeItem");
+			Object data = ((MXMLNode) ancestors.get(i)).getData("TreeItem");
 			if (data == null) continue;
 			items[i - 1] = (TreeItem) data;
 		}
@@ -136,7 +142,7 @@ public class SourceController {
 		TreeItem items[] = new TreeItem[descendants.size()];
 		int i = 0;
 		for (MANode descendant : descendants) {
-			Object data = ((MXMLNode) descendant).mData.get("TreeItem");
+			Object data = ((MXMLNode) descendant).getData("TreeItem");
 			if (data == null) continue;
 			items[i++] = (TreeItem) data;
 		}
@@ -167,7 +173,7 @@ public class SourceController {
 		TreeItem items[] = new TreeItem[dependents.size()];
 		int i = 0;
 		for (MANode depend : dependents) {
-			Object data = ((MXMLNode) depend).mData.get("TreeItem");
+			Object data = ((MXMLNode) depend).getData("TreeItem");
 			if (data == null) continue;
 			items[i++] = (TreeItem) data;
 		}
