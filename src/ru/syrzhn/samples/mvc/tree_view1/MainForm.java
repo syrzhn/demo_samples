@@ -35,11 +35,9 @@ public class MainForm extends Dialog implements Viewer.IForm {
 		display = Display.getDefault();
 		
 		viewer = new Viewer(this); 
-
 		createContents();
-		
 		viewer.getItemsFromMTree(tree);
-		
+		"".toCharArray();
 		shlMainForm.open();
 		shlMainForm.layout();
 		while (!shlMainForm.isDisposed()) {
@@ -117,7 +115,7 @@ public class MainForm extends Dialog implements Viewer.IForm {
 	 */
 	protected void createContents() {
 		shlMainForm = new Shell();
-		shlMainForm.setImage(SWTResourceManager.getImage(MainForm.class, "/com/LANIT/reports/Specification/images/specific.png"));
+		shlMainForm.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/tree1.png"));
 		shlMainForm.setSize(1280, 720);
 		shlMainForm.setText("Tree sample");
 		shlMainForm.setLayout(new GridLayout(3, false));
@@ -127,10 +125,10 @@ public class MainForm extends Dialog implements Viewer.IForm {
 		
 		ToolItem tltmNewItem = new ToolItem(toolBar, SWT.NONE);
 		tltmNewItem.addSelectionListener(viewer.getNewItemSelectionAdapter());
-		tltmNewItem.setImage(SWTResourceManager.getImage(MainForm.class, "/com/LANIT/reports/Specification/images/new1.png"));
+		tltmNewItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/new1.png"));
 		
 		ToolItem tltmDeleteItem = new ToolItem(toolBar, SWT.NONE);
-		tltmDeleteItem.setImage(SWTResourceManager.getImage(MainForm.class, "/com/LANIT/reports/Specification/images/delete1.png"));
+		tltmDeleteItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
 		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
 		
 		comboSearch = new Combo(shlMainForm, SWT.NONE);
@@ -145,7 +143,7 @@ public class MainForm extends Dialog implements Viewer.IForm {
 		
 		ToolItem tltmGo = new ToolItem(toolBarSearch, SWT.NONE);
 		tltmGo.addSelectionListener(viewer.getSearchSelectionAdapter());
-		tltmGo.setImage(SWTResourceManager.getImage(MainForm.class, "/com/LANIT/reports/Specification/images/search1.png"));
+		tltmGo.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/search1.png"));
 		
 		TabFolder tabFolder = new TabFolder(shlMainForm, SWT.NONE);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
@@ -191,15 +189,6 @@ public class MainForm extends Dialog implements Viewer.IForm {
 		tbtmHtml.setText("HTML");
 		
 		Browser browser = new Browser(tabFolder, SWT.NONE);
-		browser.setText("<html>"
-				+ "<head>" 
-				+ "<base href=\"http://www.eclipse.org/swt/\" >"
-				+ "<title>HTML Test</title>"
-				+ "</head>"
-				+ "<body>"
-				+ "<a href=\"faq.php\">local link</a>"
-				+ "</body>"
-				+ "</html>");
 		tbtmHtml.setControl(browser);
 	}
 }

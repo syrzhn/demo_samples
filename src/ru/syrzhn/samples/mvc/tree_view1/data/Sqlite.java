@@ -1,5 +1,8 @@
 package ru.syrzhn.samples.mvc.tree_view1.data;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +15,30 @@ import org.w3c.dom.Element;
 import ru.syrzhn.samples.mvc.tree_view1.model.XmlUtils;
 
 public class Sqlite {
+	
+	 /** Connect to a sample database */
+    public static void connect() {
+        Connection conn = null;
+        try {
+            // db parameters
+            String url = "jdbc:sqlite:src/ru/syrzhn/samples/mvc/tree_view1/data/chinook.db";
+            // create a connection to the database
+            conn = DriverManager.getConnection(url);
+            
+            System.out.println("Connection to SQLite has been established.");
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
 
 	public Stack<String> messages;
 	public int progress;
@@ -53,6 +80,7 @@ public class Sqlite {
 	}
 
 	public Document getDocument() {
+		connect();
 		mDoc = XmlUtils.createXmlDocument();
 		Element root = mDoc.getDocumentElement();
 		Element fstEl = createRow("main row");
@@ -67,7 +95,7 @@ public class Sqlite {
 			Element rowI = mChildren[i].createRow(i + "");
 			fstEl.appendChild(rowI);
 		}
-		XmlUtils.saveToFile(mDoc, "C:\\temp\\output.xml");
+		XmlUtils.saveToFile(mDoc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
 		
 		return mDoc;
 	}

@@ -43,7 +43,9 @@ public class SourceController {
 	public void setState(TreeItem item) {
 		MXMLNode node = (MXMLNode) item.getData();
 		node.putData("TreeItem", item);
-	}
+	}	
+
+	public Object getHTML() { return mModel.html; }
 	
 	public interface ISource {
 		ISource[] getChildren(ISource parent);
