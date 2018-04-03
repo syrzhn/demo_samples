@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import ru.syrzhn.samples.mvc.tree_view1.SourceController.ISource;
+import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 
 public class Viewer {
 	

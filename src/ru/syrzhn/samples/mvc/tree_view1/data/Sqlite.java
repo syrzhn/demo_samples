@@ -1,5 +1,6 @@
 package ru.syrzhn.samples.mvc.tree_view1.data;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,26 +10,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 import ru.syrzhn.samples.mvc.tree_view1.model.XmlUtils;
 
-public class Sqlite {
-	public Stack<String> messages;
+public class Sqlite implements ISource {
+	public List<String> messages;
 	public int progress;	
-	public Stack<Sqlite> mChildren;
+	private List<Sqlite> mChildren;
 	public List<Map<String, String>> mXmlNodeData;
-	public Document mDoc;
+	private Document mDoc;
+	private String mDatabaseName;
 	
 	/** Connect to a database */
 	public void connect(String dbName) {
-		// load the sqlite-JDBC driver using the current class loader
-		try { // it is not necessary in this version of lib - "sqlite-jdbc-3.21.0.jar"
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) { e.printStackTrace(); }
 		Connection conn = null;
 		try {
 			// db parameters
@@ -56,19 +54,20 @@ public class Sqlite {
 
 	public Sqlite(Object data) {
 		mXmlNodeData = new ArrayList<Map<String, String>>();
-		mChildren    = new Stack<Sqlite>();
+		mChildren    = new ArrayList<Sqlite>();
 		if (data instanceof String) {
-			String name = data.toString();
-			HashMap<String, String> tagID = new HashMap<String, String>();
-			tagID.put("tagName", "database_name");
-			tagID.put("tagValue", "chinook.db");
-			tagID.put("tagType", "text");
-			mXmlNodeData.add(tagID);
+			mDatabaseName = data.toString();
+			File file = new File(mDatabaseName);
 			HashMap<String, String> tagName = new HashMap<String, String>();
-			tagName.put("tagName", "database_path");
-			tagName.put("tagValue", name);
+			tagName.put("tagName", "database_name");
+			tagName.put("tagValue", file.getName());
 			tagName.put("tagType", "text");
 			mXmlNodeData.add(tagName);
+			HashMap<String, String> tagPath = new HashMap<String, String>();
+			tagPath.put("tagName", "database_path");
+			tagPath.put("tagValue", file.getAbsolutePath());
+			tagPath.put("tagType", "text");
+			mXmlNodeData.add(tagPath);
 		} else if (data instanceof ResultSet) {
 			ResultSet resultSet = (ResultSet)data;
 			try {
@@ -106,13 +105,13 @@ public class Sqlite {
 		return elRow;
 	}
 
-	public Document getDocument() {
-		connect("src/ru/syrzhn/samples/mvc/tree_view1/data/chinook.db");
+	private Document getDocument() {
 		mDoc = XmlUtils.createXmlDocument();
 		Element root = mDoc.getDocumentElement();
 		Element fstEl = createRow("main row");
 		fstEl.setAttribute("tree_actions", "select");
 		root.appendChild(fstEl);
+		connect(mDatabaseName);
 		int size = mChildren.size();
 		for (int i = 0; i < size; i++) {
 			mChildren.get(i).mDoc = mDoc;
@@ -122,5 +121,17 @@ public class Sqlite {
 		XmlUtils.saveToFile(mDoc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
 		
 		return mDoc;
+	}
+
+	@Override
+	public ISource[] getChildren(ISource parent) {
+		Sqlite arg[] = new Sqlite[mChildren.size()];
+		mChildren.toArray(arg);
+		return arg;
+	}
+
+	@Override
+	public Object getData() {
+		return getDocument();
 	}
 }

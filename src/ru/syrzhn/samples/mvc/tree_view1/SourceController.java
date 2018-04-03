@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm.States;
 import ru.syrzhn.samples.mvc.tree_view1.data.Sqlite;
+import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 import ru.syrzhn.samples.mvc.tree_view1.model.MANode;
 import ru.syrzhn.samples.mvc.tree_view1.model.MXMLNode;
 import ru.syrzhn.samples.mvc.tree_view1.model.Model;
@@ -15,7 +16,7 @@ public class SourceController {
 	
 	private Viewer mViewer;	
 	private Model mModel;
-	private Sqlite mDatabaseData;
+	private ISource mDatabaseData;
 	
 	public SourceController(Viewer viewer) {
 		mViewer = viewer;
@@ -28,7 +29,7 @@ public class SourceController {
 		return new String[] { 
 				node.getData("xmlNodeName").toString(), 
 				node.mPath, 
-				node.getData("xmlNodeValue").toString(),
+				node.getData("xmlNodeValue", "row_number").toString(),
 				node.getData("xmlNodeType").toString(), 
 				node.mAncestors.toString() 
 		};
@@ -47,17 +48,12 @@ public class SourceController {
 
 	public Object getHTML() { return mModel.html; }
 	
-	public interface ISource {
-		ISource[] getChildren(ISource parent);
-		Object getData();
-	}
-	
 	public ISource[] getSource(Object node) {
 		ISource[] s = null;
 		if (node == null)
 			s = new TreeSource().getBeginDataSet();
 		else
-			s = new TreeSource((MXMLNode) node).getBeginDataSet();
+			s = new TreeSource((MXMLNode)node).getBeginDataSet();
 		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return s;
 	}
@@ -67,10 +63,9 @@ public class SourceController {
 		private MXMLNode mSource;
 		
 		public TreeSource() {
-			//mModel.createData();
 			//mModel.createData("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\input.xml");
 			//mModel.createData(3, 3);
-			mModel.createData(mDatabaseData.getDocument());
+			mModel.createData(mDatabaseData.getData());
 			mChildren = mModel.getDataFromTree(null);
 		}
 		

@@ -28,9 +28,7 @@ public class MainForm extends Dialog implements Viewer.IForm {
 		mTarget = target;
 	}
 
-	/**
-	 * Open the window.
-	 */
+	/** Open the window */
 	public void open() {
 		display = Display.getDefault();
 		

@@ -17,10 +17,11 @@ public class MXMLNode extends MANode implements Comparable<MXMLNode> {
 		return this;
 	}
 	
-	public Object getData(String key) {
+	public Object getData(String ...key) {
 		if (mData == null) return mPath;
-		if (mData.containsKey(key))
-			return (String) mData.get(key);
+		for (int i = 0; i < key.length; i++)
+			if (mData.containsKey(key[i]))
+				return (String) mData.get(key[i]);
 		return "8-0DEADMEAT:-0";//mData.values();
 	}
 	
