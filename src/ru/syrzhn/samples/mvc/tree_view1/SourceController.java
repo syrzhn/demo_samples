@@ -6,7 +6,6 @@ import java.util.Stack;
 import org.eclipse.swt.widgets.TreeItem;
 
 import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm.States;
-import ru.syrzhn.samples.mvc.tree_view1.data.Sqlite;
 import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 import ru.syrzhn.samples.mvc.tree_view1.model.MANode;
 import ru.syrzhn.samples.mvc.tree_view1.model.MXMLNode;
@@ -20,7 +19,7 @@ public class SourceController {
 	
 	public SourceController(Viewer viewer) {
 		mViewer = viewer;
-		mDatabaseData = new Sqlite(mViewer.mForm.getData());
+		mDatabaseData = (ISource) mViewer.mForm.getData();
 		mModel = new Model();
 	}
 	
@@ -63,7 +62,6 @@ public class SourceController {
 		private MXMLNode mSource;
 		
 		public TreeSource() {
-			//mModel.createData("src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\input.xml");
 			//mModel.createData(3, 3);
 			mModel.createData(mDatabaseData.getData());
 			mChildren = mModel.getDataFromTree(null);

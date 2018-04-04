@@ -1,6 +1,5 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
-import java.io.File;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 import java.util.Stack;
@@ -9,12 +8,6 @@ import java.util.Stack;
 public class MTree extends MANode {
 	
 	public int mAllNodesCount;
-	
-	public MTree(final String fileName) {
-		XmlUtils.parseXml(this, XmlUtils.loadFromFile(fileName));
-		File xmlFile = new File(fileName);
-		mPath = xmlFile.getName();
-	}
 	
 	public MTree(Object doc) {
 		XmlUtils.parseXml(this, doc);

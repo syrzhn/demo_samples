@@ -19,7 +19,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-public class MainForm extends Dialog implements Viewer.IForm {
+import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm;
+
+public class MainForm extends Dialog implements IForm {
 	
 	private Object mTarget;
 	public MainForm(Shell parent, int style, Object target) {

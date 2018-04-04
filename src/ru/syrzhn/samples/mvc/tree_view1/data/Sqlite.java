@@ -25,33 +25,6 @@ public class Sqlite implements ISource {
 	private Document mDoc;
 	private String mDatabaseName;
 	
-	/** Connect to a database */
-	public void connect(String dbName) {
-		Connection conn = null;
-		try {
-			// db parameters
-			String url = "jdbc:sqlite:" + dbName;
-			// create a connection to the database
-			conn = DriverManager.getConnection(url);
-			Statement statement = conn.createStatement();
-			statement.setQueryTimeout(30);  // set timeout to 30 sec.
-			ResultSet resultSet = statement.executeQuery("select * from sqlite_master where type = 'table'");
-			while (resultSet.next()) { // iterate & read the result set
-				mChildren.add(new Sqlite(resultSet));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		}
-	}
-
 	public Sqlite(Object data) {
 		mXmlNodeData = new ArrayList<Map<String, String>>();
 		mChildren    = new ArrayList<Sqlite>();
@@ -92,6 +65,7 @@ public class Sqlite implements ISource {
 	
 	private Element createRow(final String row_number) {
 		Element elRow  = mDoc.createElement("row");
+		elRow.setAttribute("row_number", row_number);
 		for (Map<String, String> map : mXmlNodeData) {
 			Element el = mDoc.createElement(map.get("tagName"));
 			elRow.appendChild(el);
@@ -101,7 +75,6 @@ public class Sqlite implements ISource {
 				el.setAttribute(key, map.get(key));
 			}
 		}
-		elRow.setAttribute("row_number", row_number);
 		return elRow;
 	}
 
@@ -121,6 +94,33 @@ public class Sqlite implements ISource {
 		XmlUtils.saveToFile(mDoc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
 		
 		return mDoc;
+	}
+
+	/** Connect to a database */
+	public void connect(String dbName) {
+		Connection conn = null;
+		try {
+			// db parameters
+			String url = "jdbc:sqlite:" + dbName;
+			// create a connection to the database
+			conn = DriverManager.getConnection(url);
+			Statement statement = conn.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet resultSet = statement.executeQuery("select * from sqlite_master where type = 'table'");
+			while (resultSet.next()) { // iterate & read the result set
+				mChildren.add(new Sqlite(resultSet));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	@Override
