@@ -1,9 +1,9 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,18 +20,17 @@ import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 public class Viewer {
 	
 	public interface IForm {
+		void printMessage(Object m);
 		void showMessage(String msg);
-		void printMessage(String msg);
-		void printMessage(String[] msgs);
-		void printMessage(List<String> msgs);
-		void updateState(States state, Object o);
-		String getSearch();
 		Display getDisplay();
 		Object getData();
+		String getSearch();
+		Browser getBrowser();
 		enum States { 
 			CAPTION, 
 			TREE_ITEM 
-		};
+		}
+		void updateState(States state, Object o);
 	}
 	
 	public IForm mForm;
@@ -50,19 +49,16 @@ public class Viewer {
 			public GetItemsFromMTreeTask(String name) { super(name); }
 			protected void getChildren(final TreeItem item, ISource source) {
 				ISource children[] = source.getChildren(source);
-				mForm.getDisplay().asyncExec(() -> {
-						for (ISource child : children) {
-							TreeItem childItem = new TreeItem(item, 0);
-							Object o = child.getData();
-							childItem.setText(mController.getTextDataFromTreeNode(o));
-							if (mController.getSelectFromTreeNode(o))
-								childItem.getParent().setSelection(childItem);
-							childItem.setData(o);
-							mController.setState(childItem);
-							getChildren(childItem, child);
-						}
-					}
-				);				
+				for (ISource child : children) {
+					TreeItem childItem = new TreeItem(item, 0);
+					Object o = child.getData();
+					childItem.setText(mController.getTextDataFromTreeNode(o));
+					if (mController.getSelectFromTreeNode(o))
+						childItem.getParent().setSelection(childItem);
+					childItem.setData(o);
+					mController.setState(childItem);
+					getChildren(childItem, child);
+				}
 			}
 		}
 		final boolean kindOfParentIsItem = parent instanceof TreeItem; 
@@ -85,6 +81,7 @@ public class Viewer {
 							mController.setState(childItem);
 							getChildren(childItem, child);
 						}
+						mForm.getBrowser().setText(Viewer.this.toString());
 					}
 				);
 			}			
@@ -142,7 +139,6 @@ public class Viewer {
 								for (TreeItem item : items) {
 									Object o = item.getData();
 									item.setText(mController.getTextDataFromTreeNode(o));
-									item.setChecked(true);
 									item.setData(o);
 								}
 							}

@@ -22,7 +22,7 @@ public class HTMLViewer {
 	
 	@Override
 	public String toString() {
-		return "<html>"
+		return    "<html>"
 				+ "<head>" 
 				+ "<base href=\"http://www.eclipse.org/swt/\" >"
 				+ "<title>HTML Test</title>"

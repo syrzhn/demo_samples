@@ -12,6 +12,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import ru.syrzhn.samples.mvc.tree_view1.MainForm;
 import ru.syrzhn.samples.mvc.tree_view1.data.Sqlite;
+import ru.syrzhn.samples.mvc.tree_view1.data.TestData;
 import ru.syrzhn.samples.mvc.tree_view1.data.XmlFile;
 
 public class TestUnitForm1 {
@@ -49,9 +50,9 @@ public class TestUnitForm1 {
 		shell.setText("SWT Application");
 		shell.setLayout(new GridLayout(1, false));
 		
-		Button btnRunSqlite = new Button(shell, SWT.NONE);
+		Button btnRunSqlite = new Button(shell, SWT.CENTER);
 		GridData gd_btnRunSqlite = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
-		gd_btnRunSqlite.heightHint = 44;
+		gd_btnRunSqlite.heightHint = 55;
 		gd_btnRunSqlite.widthHint = 533;
 		btnRunSqlite.setLayoutData(gd_btnRunSqlite);
 		btnRunSqlite.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
@@ -78,9 +79,25 @@ public class TestUnitForm1 {
 				window.open();
 			}
 		});
-		btnRunXmlFile.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		GridData gd_btnRunXmlFile = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
+		gd_btnRunXmlFile.heightHint = 58;
+		btnRunXmlFile.setLayoutData(gd_btnRunXmlFile);
 		btnRunXmlFile.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		btnRunXmlFile.setText("Run the\r\n \"src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\input.xml\"");
+		
+		Button btnRunTest = new Button(shell, SWT.FLAT | SWT.CENTER);
+		btnRunTest.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				MainForm window = new MainForm(shell, SWT.APPLICATION_MODAL, new TestData(3, 4));
+				window.open();
+			}
+		});
+		btnRunTest.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
+		GridData gd_btnRunTest = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gd_btnRunTest.heightHint = 55;
+		btnRunTest.setLayoutData(gd_btnRunTest);
+		btnRunTest.setText("Run test");
 	}
 
 }

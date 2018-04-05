@@ -13,14 +13,16 @@ public class MTree extends MANode {
 		XmlUtils.parseXml(this, doc);
 		mPath = "tesTree";
 	}
-	
+	/**test constructor is for performance evaluation and other*/
 	public MTree(final int levels, final int rows) {
 		mPath = "tesTree";
 		Stack<MXMLNode> level = new Stack<MXMLNode>(),
 				nodesI = new Stack<MXMLNode>();
 		for (int i = 0; i < rows; i++) {
 			MXMLNode newNode = new MXMLNode(this);
-			newNode.putData("ID", newNode.mPath.concat(" - ").concat(Model.currentTime()));
+			newNode.putData("xmlNodeName", newNode.mPath);
+			newNode.putData("xmlNodeValue", newNode.mPath.concat(" - ").concat(Model.currentTime()));
+			newNode.putData("xmlNodeType", "text");
 			level.push(newNode);
 			mAllNodesCount++;
 		}
@@ -34,7 +36,9 @@ public class MTree extends MANode {
 				MXMLNode node = level.pop(); // add new level
 				for (int i = 0; i < rows; i++) {
 					MXMLNode newNode = new MXMLNode(node);
-					newNode.putData("ID", newNode.mPath.concat(" - ").concat(Model.currentTime()));
+					newNode.putData("xmlNodeName", newNode.mPath);
+					newNode.putData("xmlNodeValue", newNode.mPath.concat(" - ").concat(Model.currentTime()));
+					newNode.putData("xmlNodeType", "text");
 					nodesI.push(newNode);
 					mAllNodesCount++;
 				}

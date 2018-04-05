@@ -62,7 +62,6 @@ public class SourceController {
 		private MXMLNode mSource;
 		
 		public TreeSource() {
-			//mModel.createData(3, 3);
 			mModel.createData(mDatabaseData.getData());
 			mChildren = mModel.getDataFromTree(null);
 		}
@@ -73,7 +72,7 @@ public class SourceController {
 			mChildren = mModel.getDataFromTree(mSource);
 		}
 		
-		public MXMLNode getData() {return mSource;}
+		public MXMLNode getData() { return mSource; }
 		
 		public ISource[] getBeginDataSet() {
 			TreeSource arg[] = new TreeSource[mChildren.length];

@@ -21,8 +21,8 @@ public class MXMLNode extends MANode implements Comparable<MXMLNode> {
 		if (mData == null) return mPath;
 		for (int i = 0; i < key.length; i++)
 			if (mData.containsKey(key[i]))
-				return (String) mData.get(key[i]);
-		return "8-0DEADMEAT:-0";//mData.values();
+				return mData.get(key[i]);
+		return "8-0DEADMEAT:-/";//mData.values();
 	}
 	
 	@Override

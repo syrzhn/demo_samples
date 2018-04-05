@@ -23,22 +23,16 @@ public class Model {
 	}
 	
 	public void createData(Object doc) {
-		mDataTree = new MTree(doc);
+		if (doc instanceof int[]) {
+			int a[] = (int[])doc;
+			mDataTree = new MTree(a[0], a[1]);
+		}
+		else
+			mDataTree = new MTree(doc);
 		html = new HTMLViewer();
 		"".toCharArray();
 	}
 
-	public void createData (final String fileName) {
-		mDataTree = new MTree(fileName);
-		html = new HTMLViewer();
-		"".toCharArray();
-	}
-	
-	public void createData(final int levels, final int rows) {
-		mDataTree = new MTree(levels, rows);
-		html = new HTMLViewer();
-		"".toCharArray();
-	}
 	
 	public MXMLNode[] getDataFromTree(MANode parent) {
 		MXMLNode arg[] = null;

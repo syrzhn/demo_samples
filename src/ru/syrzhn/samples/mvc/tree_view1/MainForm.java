@@ -34,7 +34,8 @@ public class MainForm extends Dialog implements IForm {
 	public void open() {
 		display = Display.getDefault();
 		
-		viewer = new Viewer(this); 
+		viewer = new Viewer(this);
+		html   = new HTMLViewer();
 		createContents();
 		viewer.getItemsFromMTree(tree);
 		"".toCharArray();
@@ -47,10 +48,12 @@ public class MainForm extends Dialog implements IForm {
 		}
 	}
 	
-	public Shell shlMainForm;
-	public Tree tree;
+	private Shell shlMainForm;
+	private Tree tree;
+	private Browser browser;
 	
 	private Viewer viewer;
+	public HTMLViewer html;
 	private Display display;
 
 	@Override
@@ -81,32 +84,30 @@ public class MainForm extends Dialog implements IForm {
 	}
 
 	@Override
-	public void printMessage(String[] msgs) {
-		for (String msg : msgs)
-			System.out.println(msg);
+	public void printMessage(Object m) {
+		if (m instanceof String)
+			System.out.println(m);
+		else if (m instanceof String[]) {
+			String msgs[] = (String[]) m; 
+			for (String msg : msgs)
+				System.out.println(msg);
+		}
+		else if (m instanceof List) {
+			List<?> msgs = (List<?>) m;
+			for (Object msg : msgs)
+				System.out.println(msg);
+			msgs.clear();
+		}
 	}
 
 	@Override
-	public void printMessage(List<String> msgs) {
-		for (String msg : msgs)
-			System.out.println(msg);
-		msgs.clear();
-	}
-
-	@Override
-	public void printMessage(String msg) {
-		System.out.println(msg);
-	}
-
-	@Override
-	public Display getDisplay() {
-		return display;
-	}
+	public Display getDisplay() { return display; }
 	
 	@Override
-	public String getSearch() {
-		return comboSearch.getText().trim();
-	}
+	public String getSearch() { return comboSearch.getText().trim(); }
+	
+	@Override
+	public Browser getBrowser() { return browser; }
 
 	private Combo comboSearch;
 
@@ -188,7 +189,7 @@ public class MainForm extends Dialog implements IForm {
 		TabItem tbtmHtml = new TabItem(tabFolder, SWT.NONE);
 		tbtmHtml.setText("HTML");
 		
-		Browser browser = new Browser(tabFolder, SWT.NONE);
+		browser = new Browser(tabFolder, SWT.NONE);
 		tbtmHtml.setControl(browser);
 	}
 }
