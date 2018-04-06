@@ -89,7 +89,7 @@ public class TestUnitForm1 {
 		btnRunTest.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				MainForm window = new MainForm(shell, SWT.APPLICATION_MODAL, new TestData(3, 4));
+				MainForm window = new MainForm(shell, SWT.APPLICATION_MODAL, new TestData(3, 3));
 				window.open();
 			}
 		});

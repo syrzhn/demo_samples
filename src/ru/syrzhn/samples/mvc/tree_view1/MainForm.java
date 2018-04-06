@@ -34,8 +34,9 @@ public class MainForm extends Dialog implements IForm {
 	public void open() {
 		display = Display.getDefault();
 		
-		viewer = new Viewer(this);
-		html   = new HTMLViewer();
+		mController = new SourceController(this);
+		viewer      = new Viewer(this);
+		html        = new HTMLViewer();
 		createContents();
 		viewer.getItemsFromMTree(tree);
 		"".toCharArray();
@@ -55,6 +56,12 @@ public class MainForm extends Dialog implements IForm {
 	private Viewer viewer;
 	public HTMLViewer html;
 	private Display display;
+	SourceController mController;
+	
+	@Override
+	public SourceController getSourceController() {
+		return mController;
+	}
 
 	@Override
 	public Object getData() {

@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import org.eclipse.swt.widgets.TreeItem;
 
+import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm;
 import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm.States;
 import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 import ru.syrzhn.samples.mvc.tree_view1.model.MANode;
@@ -13,13 +14,13 @@ import ru.syrzhn.samples.mvc.tree_view1.model.Model;
 
 public class SourceController {
 	
-	private Viewer mViewer;	
+	private IForm mForm;	
 	private Model mModel;
 	private ISource mDatabaseData;
 	
-	public SourceController(Viewer viewer) {
-		mViewer = viewer;
-		mDatabaseData = (ISource) mViewer.mForm.getData();
+	public SourceController(IForm form) {
+		mForm = form;
+		mDatabaseData = (ISource) mForm.getData();
 		mModel = new Model();
 	}
 	
@@ -53,26 +54,26 @@ public class SourceController {
 			s = new TreeSource().getBeginDataSet();
 		else
 			s = new TreeSource((MXMLNode)node).getBeginDataSet();
-		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
+		mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return s;
 	}
 	
 	public class TreeSource implements ISource {
-		private MXMLNode mChildren[];
-		private MXMLNode mSource;
+		private MANode mChildren[];
+		private MANode mSource;
 		
 		public TreeSource() {
 			mModel.createData(mDatabaseData.getData());
 			mChildren = mModel.getDataFromTree(null);
 		}
 		
-		public TreeSource(MXMLNode node) {
+		public TreeSource(MANode node) {
 			if (node == null) throw new RuntimeException("Empty node!");
 			mSource = node;
 			mChildren = mModel.getDataFromTree(mSource);
 		}
 		
-		public MXMLNode getData() { return mSource; }
+		public MANode getData() { return mSource; }
 		
 		public ISource[] getBeginDataSet() {
 			TreeSource arg[] = new TreeSource[mChildren.length];
@@ -100,7 +101,7 @@ public class SourceController {
 			if (mChildren == null || mChildren.length == 0) return s;
 			s = s.concat(" and children: ");
 			for (int i = 0; i < mChildren.length; i++) {
-				MXMLNode child = mChildren[i];
+				MANode child = mChildren[i];
 				if (i == 0)
 					s.concat(child.toString());
 				else
@@ -148,10 +149,10 @@ public class SourceController {
 		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(o.toString()));
 		String str = o.toString();
-		mViewer.mForm.printMessage("Adding new node to ".concat(str));
+		mForm.printMessage("Adding new node to ".concat(str));
 		MXMLNode node = mModel.mDataTree.addNode(parentNode); 
-		mViewer.mForm.printMessage(Model.messBuff);
-		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
+		mForm.printMessage(Model.messBuff);
+		mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return new TreeSource(node);
 	}
 
@@ -160,10 +161,10 @@ public class SourceController {
 		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(o.toString()));
 		String str = o.toString();
-		mViewer.mForm.printMessage("Disposing the node ".concat(str));
+		mForm.printMessage("Disposing the node ".concat(str));
 		Stack<MANode> dependents = mModel.mDataTree.disposeNode(parentNode);
-		mViewer.mForm.printMessage(Model.messBuff);
-		mViewer.mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
+		mForm.printMessage(Model.messBuff);
+		mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		TreeItem items[] = new TreeItem[dependents.size()];
 		int i = 0;
 		for (MANode depend : dependents) {
@@ -174,23 +175,25 @@ public class SourceController {
 		return items;
 	}
 
-	public void setDataOnCollapse() {
-		String str = mViewer.mCurrentItem.toString() + " was collapsed";
-		mViewer.mForm.printMessage(str);
+	public void setDataOnCollapse(Object data) {
+		String str = data.toString() + " was collapsed";
+		mForm.printMessage(str);
 	}
 
-	public void setDataOnExpand() {
-		String str = mViewer.mCurrentItem.toString() + " was expanded";
-		mViewer.mForm.printMessage(str);
+	public void setDataOnExpand(Object data) {
+		String str = data.toString() + " was expanded";
+		mForm.printMessage(str);
 	}
 
-	public void setDataOnSelection() {
-		String str = mViewer.mCurrentItem.toString() + " was selected";
-		mViewer.mForm.printMessage(str);
+	public void setDataOnSelection(Object data) {
+		String str = data.toString() + " was selected";
+		mForm.printMessage(str);
 	}
 
-	public void setDataOnCheck() {
-		String str = mViewer.mCurrentItem.toString() + (mViewer.mCurrentItem.getChecked() ? " was checked" : " was unchecked");
-		mViewer.mForm.printMessage(str);
+	public void setDataOnCheck(Object data) {
+		MXMLNode node = (MXMLNode) data;
+		TreeItem item = (TreeItem) node.getData("TreeItem");
+		String str = data.toString() + (item.getChecked() ? " was checked" : " was unchecked");
+		mForm.printMessage(str);
 	}
 }

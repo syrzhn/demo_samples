@@ -20,6 +20,7 @@ import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 public class Viewer {
 	
 	public interface IForm {
+		SourceController getSourceController();
 		void printMessage(Object m);
 		void showMessage(String msg);
 		Display getDisplay();
@@ -41,7 +42,7 @@ public class Viewer {
 	public Viewer(IForm form) {
 		mForm = form;
 		comboSearchHandler = new ComboSearchHandler();
-		mController = new SourceController(this);
+		mController = mForm.getSourceController();
 	}
 	
 	public Viewer getItemsFromMTree(Object parent) {
@@ -86,13 +87,6 @@ public class Viewer {
 				);
 			}			
 		}; t.start(); return this;
-	}
-	
-	@Override
-	public String toString() {
-		String h = mController.getHTML().toString();
-		"".toCharArray();
-		return h;
 	}
 	
 	public SelectionAdapter getNewItemSelectionAdapter() {
@@ -172,18 +166,19 @@ public class Viewer {
 			public void handleEvent(Event event) {
 				if (isBusy) return;
 				mCurrentItem = (TreeItem) event.item;
+				Object data = mCurrentItem.getData();
 				switch (mEventType) {
 				case SWT.Collapse:
-					mController.setDataOnCollapse();
+					mController.setDataOnCollapse(data);
 					break;
 				case SWT.Expand:
-					mController.setDataOnExpand();
+					mController.setDataOnExpand(data);
 					break;
 				case SWT.Selection:
 					if (event.detail == SWT.CHECK) 
-						mController.setDataOnCheck();
+						mController.setDataOnCheck(data);
 					else
-						mController.setDataOnSelection();
+						mController.setDataOnSelection(data);
 					break;
 				}
 			}		
@@ -281,5 +276,12 @@ public class Viewer {
 				if (str.equals(item)) return;
 			sourceWidget.add(str);
 		}
+	}
+	
+	@Override
+	public String toString() {
+		String h = mController.getHTML().toString();
+		"".toCharArray();
+		return h;
 	}
 }
