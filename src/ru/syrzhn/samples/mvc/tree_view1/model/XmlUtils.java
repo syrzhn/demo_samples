@@ -135,7 +135,10 @@ public class XmlUtils {
 		new MXMLNode(treeParent).putData("xmlNodeName",  node.getName())
 								.putData("xmlNodeValue", node.getValue())
 								.putData("xmlNodeType",  "ATTRIBUTE_NODE");
-		((MXMLNode)treeParent).putData(node.getName(), node.getValue());
+		MXMLNode parent = ((MXMLNode)treeParent); 
+		MTree tree = (MTree) parent.mAncestors.get(0);
+		tree.mAllNodesCount++;
+		parent.putData(node.getName(), node.getValue());
 	}
 	/** Plays the contents of a CDATA_SECTION_NODE */
 	private static void dumpCDATASectionNode(CDATASection node, MANode treeParent, String shift) {
@@ -173,6 +176,8 @@ public class XmlUtils {
 		MXMLNode treeNode = new MXMLNode(treeParent).putData("xmlNodeName",  node.getName())
 													.putData("xmlNodeValue", nodeValue)
 													.putData("xmlNodeType",  "DOCUMENT_TYPE_NODE");
+		((MTree)treeNode.mAncestors.get(0)).mAllNodesCount++;
+
 		NamedNodeMap entities = node.getEntities();
 		if (entities.getLength() > 0) {
 			for (int i = 0; i < entities.getLength(); i++) {
@@ -193,6 +198,8 @@ public class XmlUtils {
 		System.out.println(shift + "ELEMENT: " + node.getTagName());
 		MXMLNode treeNode = new MXMLNode(treeParent).putData("xmlNodeName",  node.getTagName())
 													.putData("xmlNodeType",  "ELEMENT_NODE");
+		((MTree)treeNode.mAncestors.get(0)).mAllNodesCount++;
+
 		NamedNodeMap nm = node.getAttributes();
 		for (int i = 0; i < nm.getLength(); i++)
 			dumpLoop(nm.item(i), treeNode, shift + "\t");

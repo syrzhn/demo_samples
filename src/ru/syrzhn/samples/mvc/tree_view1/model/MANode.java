@@ -8,15 +8,6 @@ public abstract class MANode {
 	public String mPath;
 	public Stack<MANode> mChildren, mAncestors;
 
-	public Stack<MANode> getDescendants(Stack<MANode> descendants) {
-		if (descendants == null) 
-			descendants = new Stack<MANode>();		
-		descendants.addAll(mChildren);
-		for (MANode child : mChildren) 
-			child.getDescendants(descendants);
-		return descendants;
-	}
-	
 	public MANode() {
 		mChildren = new Stack<MANode>();
 		mAncestors = new Stack<MANode>();
@@ -53,6 +44,15 @@ public abstract class MANode {
 	
 	public int getLevel() {
 		return mAncestors.size() - 1;
+	}
+	
+	public Stack<MANode> getDescendants(Stack<MANode> descendants) {
+		if (descendants == null) 
+			descendants = new Stack<MANode>();		
+		descendants.addAll(mChildren);
+		for (MANode child : mChildren) 
+			child.getDescendants(descendants);
+		return descendants;
 	}
 	
 	public Stack<MANode> getYoungerBrothers() {

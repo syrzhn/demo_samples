@@ -48,7 +48,7 @@ public class MTree extends MANode {
 		}
 	}	
 	
-	public MXMLNode findNodeByPath(String pathToFind) {
+	public MANode findNodeByPath(String pathToFind) {
 		class Path {
 			private final static String levelSymbols = Model.ALPHABET;//"abcdefghijklmnopqrstuvwxyz";
 			private final static String   rowSymbols = "0123456789";
@@ -56,9 +56,7 @@ public class MTree extends MANode {
 			public String mLevel;
 			public int      mRow;
 			public Stack<Path> mPaths;
-			public Path() {
-				mPaths = new Stack<Path>();
-			}
+			public Path() {	mPaths = new Stack<Path>(); }
 			public Path(String path, Stack<Path> paths) {
 				mLevel = path.substring(0, 1);
 				if (levelSymbols.indexOf(mLevel) < 0) throw new UnsupportedCharsetException("Illegal symbol - \"".concat(mLevel).concat( "\" in path of tree node!" ));
@@ -107,7 +105,7 @@ public class MTree extends MANode {
 		return null;
 	}	
 
-	public Stack<MANode> disposeNode(MXMLNode node) {
+	public Stack<MANode> disposeNode(MANode node) {
 		Stack<MANode> brothers = null, dependents = null;
 		brothers = node.mAncestors.peek().mChildren;
 		int nodeRow = node.mRow;
@@ -115,7 +113,7 @@ public class MTree extends MANode {
 		node.leave(Model.messBuff);
 		mAllNodesCount = mAllNodesCount - Model.messBuff.size();
 		for (int i = nodeRow + 1; i < brothers.size(); i++) {
-			MXMLNode n = (MXMLNode) brothers.get(i);
+			MANode n = brothers.get(i);
 			--n.mRow;
 			n.setPath();
 		}
@@ -123,12 +121,7 @@ public class MTree extends MANode {
 		return dependents;
 	}
 	
-	public Stack<MANode> getDescendants(MXMLNode node) {
-		Stack<MANode> descendants = new Stack<MANode>();
-		return node.getDescendants(descendants);
-	}
-	
-	public MXMLNode addNode(MXMLNode ancestor) {
+	public MANode addNode(MANode ancestor) {
 		MXMLNode newNode = new MXMLNode(ancestor);
 		Model.messBuff.add( newNode.toString().concat(" has appeared in the tree") );
 		mAllNodesCount++;

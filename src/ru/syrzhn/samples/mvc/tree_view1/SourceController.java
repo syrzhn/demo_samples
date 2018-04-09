@@ -112,45 +112,18 @@ public class SourceController {
 	}
 
 	public TreeItem searchByPath(String path) {
-		MXMLNode node = mModel.mDataTree.findNodeByPath(path);
+		MXMLNode node = (MXMLNode) mModel.mDataTree.findNodeByPath(path);
 		if (node == null) return null;
 		return (TreeItem) node.getData("TreeItem");
 	}
 
-	public TreeItem[] getAncestors(TreeItem item) {
-		MXMLNode node = (MXMLNode) item.getData();
-		Stack<MANode> ancestors = node.mAncestors;
-		int size = ancestors.size();
-		TreeItem items[] = new TreeItem[size - 1];
-		for (int i = 1; i < size; i++) {
-			Object data = ((MXMLNode) ancestors.get(i)).getData("TreeItem");
-			if (data == null) continue;
-			items[i - 1] = (TreeItem) data;
-		}
-		return items;
-	}
-	
-	public TreeItem[] getDescendants(TreeItem item) {
-		MXMLNode node = (MXMLNode) item.getData();
-		Stack<MANode> descendants = new Stack<MANode>();
-		descendants = node.getDescendants(descendants);
-		TreeItem items[] = new TreeItem[descendants.size()];
-		int i = 0;
-		for (MANode descendant : descendants) {
-			Object data = ((MXMLNode) descendant).getData("TreeItem");
-			if (data == null) continue;
-			items[i++] = (TreeItem) data;
-		}
-		return items;
-	}
-	
 	public ISource addNewData(Object o) {
 		MXMLNode parentNode = (MXMLNode) o;
 		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(o.toString()));
 		String str = o.toString();
 		mForm.printMessage("Adding new node to ".concat(str));
-		MXMLNode node = mModel.mDataTree.addNode(parentNode); 
+		MANode node = mModel.mDataTree.addNode(parentNode); 
 		mForm.printMessage(Model.messBuff);
 		mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return new TreeSource(node);
