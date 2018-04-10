@@ -28,20 +28,20 @@ public class Model {
 			mDataTree = new MTree(a[0], a[1]);
 		}
 		else
-			mDataTree = new MTree(doc);
+			mDataTree = new MXmlTree(doc);
 		html = new HTMLViewer();
 		"".toCharArray();
 	}
 
 	
-	public MXMLNode[] getDataFromTree(MANode parent) {
-		MXMLNode arg[] = null;
+	public MANode[] getDataFromTree(MANode parent) {
+		MXmlNode arg[] = null;
 		List<MANode> level = null;
 		if (parent != null) 
 			level = parent.mChildren;
 		else
 			level = mDataTree.mChildren;
-		arg = new MXMLNode[level.size()];
+		arg = new MXmlNode[level.size()];
 		level.toArray(arg);
 		return arg;
 	}

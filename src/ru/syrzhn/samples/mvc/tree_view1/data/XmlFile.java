@@ -3,7 +3,7 @@ package ru.syrzhn.samples.mvc.tree_view1.data;
 import org.w3c.dom.Document;
 
 import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
-import ru.syrzhn.samples.mvc.tree_view1.model.XmlUtils;
+import ru.syrzhn.samples.mvc.tree_view1.model.MXmlUtils;
 
 public class XmlFile implements ISource {
 	
@@ -15,7 +15,7 @@ public class XmlFile implements ISource {
 	}
 	
 	private Document getDocument() {
-		mDoc = XmlUtils.loadFromFile(mFileName);
+		mDoc = MXmlUtils.loadFromFile(mFileName);
 		return mDoc;
 	}
 

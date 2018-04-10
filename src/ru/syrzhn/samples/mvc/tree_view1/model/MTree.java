@@ -8,18 +8,16 @@ import java.util.Stack;
 public class MTree extends MANode {
 	
 	public int mAllNodesCount;
+	public volatile boolean isBusy;
 	
-	public MTree(Object doc) {
-		XmlUtils.parseXml(this, doc);
-		mPath = "tesTree";
-	}
+	public MTree() { mPath = "theTree";	}
 	/**test constructor is for performance evaluation and other*/
 	public MTree(final int levels, final int rows) {
-		mPath = "tesTree";
-		Stack<MXMLNode> level = new Stack<MXMLNode>(),
-				nodesI = new Stack<MXMLNode>();
+		mPath = "tesTree"; isBusy = true;
+		Stack<MXmlNode> level = new Stack<MXmlNode>(),
+				nodesI = new Stack<MXmlNode>();
 		for (int i = 0; i < rows; i++) {
-			MXMLNode newNode = new MXMLNode(this);
+			MXmlNode newNode = new MXmlNode(this);
 			newNode.putData("xmlNodeName", newNode.mPath);
 			newNode.putData("xmlNodeValue", newNode.mPath.concat(" - ").concat(Model.currentTime()));
 			newNode.putData("xmlNodeType", "text");
@@ -33,9 +31,9 @@ public class MTree extends MANode {
 				// where denominator and first member are 
 				// equivalent rows count.
 				// L(l) = L1*(rows^(l-1)) & L1 = rows => L(l) = rows^l;
-				MXMLNode node = level.pop(); // add new level
+				MXmlNode node = level.pop(); // add new level
 				for (int i = 0; i < rows; i++) {
-					MXMLNode newNode = new MXMLNode(node);
+					MXmlNode newNode = new MXmlNode(node);
 					newNode.putData("xmlNodeName", newNode.mPath);
 					newNode.putData("xmlNodeValue", newNode.mPath.concat(" - ").concat(Model.currentTime()));
 					newNode.putData("xmlNodeType", "text");
@@ -46,6 +44,7 @@ public class MTree extends MANode {
 			level.addAll(nodesI);
 			nodesI.clear();
 		}
+		isBusy = false;
 	}	
 	
 	public MANode findNodeByPath(String pathToFind) {
@@ -88,7 +87,7 @@ public class MTree extends MANode {
 		}
 		
 		List<Path> path = new Path().parse(pathToFind);
-		MXMLNode node = null; int n = path.size();
+		MXmlNode node = null; int n = path.size();
 		for (int i = 0; i < n; i++) {
 			int row = path.get(i).mRow;
 			List<MANode> children = null;
@@ -97,7 +96,7 @@ public class MTree extends MANode {
 			else 
 				children = node.mChildren;
 			if (row > -1 && row < children.size())
-				node = (MXMLNode) children.get(row);
+				node = (MXmlNode) children.get(row);
 			else
 				return null;
 			if ( i == n - 1 && node.mPath.equals(pathToFind) ) return node;
@@ -122,7 +121,7 @@ public class MTree extends MANode {
 	}
 	
 	public MANode addNode(MANode ancestor) {
-		MXMLNode newNode = new MXMLNode(ancestor);
+		MXmlNode newNode = new MXmlNode(ancestor);
 		Model.messBuff.add( newNode.toString().concat(" has appeared in the tree") );
 		mAllNodesCount++;
 		return newNode;

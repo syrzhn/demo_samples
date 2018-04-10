@@ -26,7 +26,7 @@ public abstract class MANode {
 	}
 
 	public MANode setPath() {
-		mPath = (mAncestors.size() > 1) ? ((MXMLNode) mAncestors.peek()).mPath : "";
+		mPath = (mAncestors.size() > 1) ? ((MXmlNode) mAncestors.peek()).mPath : "";
 		mPath = mPath.concat(Model.getLevelName( getLevel() )).concat( String.valueOf(mRow) );
 		for (MANode child : mChildren)
 			child.setPath();

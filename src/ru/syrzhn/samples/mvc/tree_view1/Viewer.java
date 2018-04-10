@@ -3,13 +3,11 @@ package ru.syrzhn.samples.mvc.tree_view1;
 import java.util.NoSuchElementException;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
@@ -19,27 +17,12 @@ import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 
 public class Viewer {
 	
-	public interface IForm {
-		SourceController getSourceController();
-		void printMessage(Object m);
-		void showMessage(String msg);
-		Display getDisplay();
-		Object getData();
-		String getSearch();
-		Browser getBrowser();
-		enum States { 
-			CAPTION, 
-			TREE_ITEM 
-		}
-		void updateState(States state, Object o);
-	}
-	
-	public IForm mForm;
+	public IController mForm;
 	public TreeItem mCurrentItem;
 	private volatile boolean isBusy;
 	private SourceController mController;
 
-	public Viewer(IForm form) {
+	public Viewer(IController form) {
 		mForm = form;
 		comboSearchHandler = new ComboSearchHandler();
 		mController = mForm.getSourceController();

@@ -19,9 +19,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm;
-
-public class MainForm extends Dialog implements IForm {
+public class MainForm extends Dialog implements IController {
 	
 	private Object mTarget;
 	public MainForm(Shell parent, int style, Object target) {
@@ -34,11 +32,11 @@ public class MainForm extends Dialog implements IForm {
 	public void open() {
 		display = Display.getDefault();
 		
-		mController = new SourceController(this);
-		viewer      = new Viewer(this);
-		html        = new HTMLViewer();
+		mSource = new SourceController(this);
+		mViewer = new Viewer(this);
+		mHtml   = new HTMLViewer();
 		createContents();
-		viewer.getItemsFromMTree(tree);
+		mViewer.getItemsFromMTree(tree);
 		"".toCharArray();
 		shlMainForm.open();
 		shlMainForm.layout();
@@ -53,14 +51,14 @@ public class MainForm extends Dialog implements IForm {
 	private Tree tree;
 	private Browser browser;
 	
-	private Viewer viewer;
-	public HTMLViewer html;
+	private Viewer mViewer;
+	public HTMLViewer mHtml;
 	private Display display;
-	SourceController mController;
+	SourceController mSource;
 	
 	@Override
 	public SourceController getSourceController() {
-		return mController;
+		return mSource;
 	}
 
 	@Override
@@ -132,16 +130,16 @@ public class MainForm extends Dialog implements IForm {
 		toolBar.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		
 		ToolItem tltmNewItem = new ToolItem(toolBar, SWT.NONE);
-		tltmNewItem.addSelectionListener(viewer.getNewItemSelectionAdapter());
+		tltmNewItem.addSelectionListener(mViewer.getNewItemSelectionAdapter());
 		tltmNewItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/new1.png"));
 		
 		ToolItem tltmDeleteItem = new ToolItem(toolBar, SWT.NONE);
 		tltmDeleteItem.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/delete1.png"));
-		tltmDeleteItem.addSelectionListener(viewer.getDeleteItemSelectionAdapter());
+		tltmDeleteItem.addSelectionListener(mViewer.getDeleteItemSelectionAdapter());
 		
 		comboSearch = new Combo(shlMainForm, SWT.NONE);
-		comboSearch.addKeyListener(viewer.comboSearchHandler.getKeyAdapter());
-		comboSearch.addSelectionListener(viewer.comboSearchHandler.getSelectionAdapter());
+		comboSearch.addKeyListener(mViewer.comboSearchHandler.getKeyAdapter());
+		comboSearch.addSelectionListener(mViewer.comboSearchHandler.getSelectionAdapter());
 		comboSearch.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		GridData gd_comboSearch = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_comboSearch.heightHint = 35;
@@ -150,7 +148,7 @@ public class MainForm extends Dialog implements IForm {
 		ToolBar toolBarSearch = new ToolBar(shlMainForm, SWT.FLAT | SWT.RIGHT);
 		
 		ToolItem tltmGo = new ToolItem(toolBarSearch, SWT.NONE);
-		tltmGo.addSelectionListener(viewer.getSearchSelectionAdapter());
+		tltmGo.addSelectionListener(mViewer.getSearchSelectionAdapter());
 		tltmGo.setImage(SWTResourceManager.getImage(MainForm.class, "/ru/syrzhn/samples/mvc/tree_view1/res/search1.png"));
 		
 		TabFolder tabFolder = new TabFolder(shlMainForm, SWT.NONE);
@@ -163,10 +161,10 @@ public class MainForm extends Dialog implements IForm {
 		tbtmTree.setControl(tree);
 		tree.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		tree.setHeaderVisible(true);
-		tree.addListener(SWT.Collapse, viewer.getTableEventListener(SWT.Collapse));
-		tree.addListener(SWT.Expand, viewer.getTableEventListener(SWT.Expand));
+		tree.addListener(SWT.Collapse, mViewer.getTableEventListener(SWT.Collapse));
+		tree.addListener(SWT.Expand, mViewer.getTableEventListener(SWT.Expand));
 		//tree.addListener(SWT.CHECK, viewer.getTableEventListener(SWT.CHECK));
-		tree.addListener(SWT.Selection, viewer.getTableEventListener(SWT.Selection));
+		tree.addListener(SWT.Selection, mViewer.getTableEventListener(SWT.Selection));
 		
 		TreeColumn trclmnId = new TreeColumn(tree, SWT.NONE);
 		trclmnId.setMoveable(true);

@@ -3,13 +3,13 @@ package ru.syrzhn.samples.mvc.tree_view1.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MXMLNode extends MANode implements Comparable<MXMLNode> {
+public class MXmlNode extends MANode implements Comparable<MXmlNode> {
 
 	private Map<String, Object> mData;
 	
-	public MXMLNode(MANode nodeParent) { super(nodeParent); }
+	public MXmlNode(MANode nodeParent) { super(nodeParent); }
 
-	public MXMLNode putData(String key, Object data) {
+	public MXmlNode putData(String key, Object data) {
 		if (mData == null) 
 			mData = new HashMap<>();
 		if (data != null)
@@ -26,7 +26,7 @@ public class MXMLNode extends MANode implements Comparable<MXMLNode> {
 	}
 	
 	@Override
-	public int compareTo(MXMLNode arg0) {
+	public int compareTo(MXmlNode arg0) {
 		if (this.mPath.equals(arg0.mPath))
 			return 0;
 		else {
@@ -35,8 +35,8 @@ public class MXMLNode extends MANode implements Comparable<MXMLNode> {
 			if (l != 0)
 				return l;
 			else {
-				MXMLNode p1 = (MXMLNode) this.mAncestors.peek(),
-					  p2 = (MXMLNode) arg0.mAncestors.peek();
+				MXmlNode p1 = (MXmlNode) this.mAncestors.peek(),
+					  p2 = (MXmlNode) arg0.mAncestors.peek();
 				if (p1.equals(p2))
 					return this.mRow - arg0.mRow;
 				else

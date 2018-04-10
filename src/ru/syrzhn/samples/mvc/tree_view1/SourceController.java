@@ -5,27 +5,26 @@ import java.util.Stack;
 
 import org.eclipse.swt.widgets.TreeItem;
 
-import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm;
-import ru.syrzhn.samples.mvc.tree_view1.Viewer.IForm.States;
+import ru.syrzhn.samples.mvc.tree_view1.IController.States;
 import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 import ru.syrzhn.samples.mvc.tree_view1.model.MANode;
-import ru.syrzhn.samples.mvc.tree_view1.model.MXMLNode;
+import ru.syrzhn.samples.mvc.tree_view1.model.MXmlNode;
 import ru.syrzhn.samples.mvc.tree_view1.model.Model;
 
 public class SourceController {
 	
-	private IForm mForm;	
+	private IController mForm;	
 	private Model mModel;
 	private ISource mDatabaseData;
 	
-	public SourceController(IForm form) {
+	public SourceController(IController form) {
 		mForm = form;
 		mDatabaseData = (ISource) mForm.getData();
 		mModel = new Model();
 	}
 	
 	public String[] getTextDataFromTreeNode(Object data) {
-		MXMLNode node = (MXMLNode) data;
+		MXmlNode node = (MXmlNode) data;
 		return new String[] { 
 				node.getData("xmlNodeName").toString(), 
 				node.mPath, 
@@ -36,13 +35,13 @@ public class SourceController {
 	}
 
 	public boolean getSelectFromTreeNode(Object o) {
-		MXMLNode node = (MXMLNode) o;
+		MXmlNode node = (MXmlNode) o;
 		boolean expanded = node.getData("tree_actions").toString().indexOf("select") > -1;
 		return expanded;
 	}
 
 	public void setState(TreeItem item) {
-		MXMLNode node = (MXMLNode) item.getData();
+		MXmlNode node = (MXmlNode) item.getData();
 		node.putData("TreeItem", item);
 	}	
 
@@ -53,7 +52,7 @@ public class SourceController {
 		if (node == null)
 			s = new TreeSource().getBeginDataSet();
 		else
-			s = new TreeSource((MXMLNode)node).getBeginDataSet();
+			s = new TreeSource((MXmlNode)node).getBeginDataSet();
 		mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return s;
 	}
@@ -85,7 +84,7 @@ public class SourceController {
 		
 		@Override
 		public ISource[] getChildren(ISource parent) {
-			MXMLNode node = (MXMLNode) parent.getData();
+			MXmlNode node = (MXmlNode) parent.getData();
 			if (node == null) return null;
 			mChildren = mModel.getDataFromTree(node);
 			TreeSource ret[] = new TreeSource[mChildren.length];
@@ -112,13 +111,13 @@ public class SourceController {
 	}
 
 	public TreeItem searchByPath(String path) {
-		MXMLNode node = (MXMLNode) mModel.mDataTree.findNodeByPath(path);
+		MXmlNode node = (MXmlNode) mModel.mDataTree.findNodeByPath(path);
 		if (node == null) return null;
 		return (TreeItem) node.getData("TreeItem");
 	}
 
 	public ISource addNewData(Object o) {
-		MXMLNode parentNode = (MXMLNode) o;
+		MXmlNode parentNode = (MXmlNode) o;
 		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(o.toString()));
 		String str = o.toString();
@@ -130,7 +129,7 @@ public class SourceController {
 	}
 
 	public TreeItem[] disposeData(Object o) {
-		MXMLNode parentNode = (MXMLNode) o;
+		MXmlNode parentNode = (MXmlNode) o;
 		if (parentNode == null) 
 			throw new NoSuchElementException("Empty data in the item ".concat(o.toString()));
 		String str = o.toString();
@@ -141,7 +140,7 @@ public class SourceController {
 		TreeItem items[] = new TreeItem[dependents.size()];
 		int i = 0;
 		for (MANode depend : dependents) {
-			Object data = ((MXMLNode) depend).getData("TreeItem");
+			Object data = ((MXmlNode) depend).getData("TreeItem");
 			if (data == null) continue;
 			items[i++] = (TreeItem) data;
 		}
@@ -164,7 +163,7 @@ public class SourceController {
 	}
 
 	public void setDataOnCheck(Object data) {
-		MXMLNode node = (MXMLNode) data;
+		MXmlNode node = (MXmlNode) data;
 		TreeItem item = (TreeItem) node.getData("TreeItem");
 		String str = data.toString() + (item.getChecked() ? " was checked" : " was unchecked");
 		mForm.printMessage(str);

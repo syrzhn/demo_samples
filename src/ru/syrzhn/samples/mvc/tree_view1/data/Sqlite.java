@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
-import ru.syrzhn.samples.mvc.tree_view1.model.XmlUtils;
+import ru.syrzhn.samples.mvc.tree_view1.model.MXmlUtils;
 
 public class Sqlite implements ISource {
 	public List<String> messages;
@@ -79,7 +79,7 @@ public class Sqlite implements ISource {
 	}
 
 	private Document getDocument() {
-		mDoc = XmlUtils.createXmlDocument();
+		mDoc = MXmlUtils.createXmlDocument();
 		Element root = mDoc.getDocumentElement();
 		Element fstEl = createRow("main row");
 		fstEl.setAttribute("tree_actions", "select");
@@ -91,7 +91,7 @@ public class Sqlite implements ISource {
 			Element rowI = mChildren.get(i).createRow(i + "");
 			fstEl.appendChild(rowI);
 		}
-		XmlUtils.saveToFile(mDoc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
+		MXmlUtils.saveToFile(mDoc, "src\\ru\\syrzhn\\samples\\mvc\\tree_view1\\xml\\output.xml");
 		
 		return mDoc;
 	}
