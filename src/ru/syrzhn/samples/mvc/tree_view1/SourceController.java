@@ -45,8 +45,6 @@ public class SourceController {
 		node.putData("TreeItem", item);
 	}	
 
-	public Object getHTML() { return mModel.html; }
-	
 	public ISource[] getSource(Object node) {
 		ISource[] s = null;
 		if (node == null)
@@ -56,13 +54,21 @@ public class SourceController {
 		mForm.updateState(States.CAPTION, String.valueOf(mModel.mDataTree.mAllNodesCount).concat(" nodes in the tree"));
 		return s;
 	}
+
+	public Thread writeDataToMTree() {
+		return new Task("Connecting & reading the data", mForm) {
+			@Override
+			protected void doTask() {
+				mModel.createData(mDatabaseData.getData());
+			}
+		};
+	}
 	
 	public class TreeSource implements ISource {
 		private MANode mChildren[];
 		private MANode mSource;
 		
 		public TreeSource() {
-			mModel.createData(mDatabaseData.getData());
 			mChildren = mModel.getDataFromTree(null);
 		}
 		
@@ -110,6 +116,8 @@ public class SourceController {
 		}
 	}
 
+	public Object getHTML() { return mModel.html; }
+	
 	public TreeItem searchByPath(String path) {
 		MXmlNode node = (MXmlNode) mModel.mDataTree.findNodeByPath(path);
 		if (node == null) return null;

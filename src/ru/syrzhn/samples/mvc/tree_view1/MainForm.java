@@ -22,6 +22,9 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class MainForm extends Dialog implements IController {
 	
 	private Object mTarget;
+	private volatile boolean isBusy;
+	private Thread mRead, mWrite;
+	
 	public MainForm(Shell parent, int style, Object target) {
 		super(parent, style);
 		setText("Список исключаемых из отчёта узлов");
@@ -33,10 +36,13 @@ public class MainForm extends Dialog implements IController {
 		display = Display.getDefault();
 		
 		mSource = new SourceController(this);
+		mWrite  = mSource.writeDataToMTree();
+		mWrite.start();
 		mViewer = new Viewer(this);
 		mHtml   = new HTMLViewer();
 		createContents();
-		mViewer.getItemsFromMTree(tree);
+		mRead = mViewer.getItemsFromMTree(tree);
+		mRead.start();
 		"".toCharArray();
 		shlMainForm.open();
 		shlMainForm.layout();
@@ -57,14 +63,10 @@ public class MainForm extends Dialog implements IController {
 	SourceController mSource;
 	
 	@Override
-	public SourceController getSourceController() {
-		return mSource;
-	}
+	public SourceController getSourceController() {	return mSource;	}
 
 	@Override
-	public Object getData() {
-		return mTarget;
-	}
+	public Object getData() { return mTarget; }
 	
 	@Override
 	public void updateState(States state, Object o) {
@@ -86,6 +88,16 @@ public class MainForm extends Dialog implements IController {
 				msgBox.open();	
 			}
 		);
+	}
+	
+	@Override
+	public void setBusy(boolean busy) {
+		isBusy = busy;
+	}
+
+	@Override
+	public boolean getBusy() {
+		return isBusy;
 	}
 
 	@Override
@@ -112,7 +124,15 @@ public class MainForm extends Dialog implements IController {
 	public String getSearch() { return comboSearch.getText().trim(); }
 	
 	@Override
-	public Browser getBrowser() { return browser; }
+	public void setBrowser(String html) { 
+		browser.setText(html); 
+	}
+	
+	@Override
+	public Thread getWriteThread() {return mWrite; }
+
+	@Override
+	public Thread getReadThread() {return mRead; }
 
 	private Combo comboSearch;
 

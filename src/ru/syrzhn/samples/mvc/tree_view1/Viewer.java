@@ -19,7 +19,6 @@ public class Viewer {
 	
 	public IController mForm;
 	public TreeItem mCurrentItem;
-	private volatile boolean isBusy;
 	private SourceController mController;
 
 	public Viewer(IController form) {
@@ -28,9 +27,9 @@ public class Viewer {
 		mController = mForm.getSourceController();
 	}
 	
-	public Viewer getItemsFromMTree(Object parent) {
+	public Thread getItemsFromMTree(Object parent) {
 		abstract class GetItemsFromMTreeTask extends Task {
-			public GetItemsFromMTreeTask(String name) { super(name); }
+			public GetItemsFromMTreeTask(String name, IController form) { super(name, form); }
 			protected void getChildren(final TreeItem item, ISource source) {
 				ISource children[] = source.getChildren(source);
 				for (ISource child : children) {
@@ -46,13 +45,20 @@ public class Viewer {
 			}
 		}
 		final boolean kindOfParentIsItem = parent instanceof TreeItem; 
-		String taskName = "filling the ", name = "tree";
+		String taskName = "Filling the ", name = "tree";
 		if (kindOfParentIsItem) name = "item - ".concat(parent.toString());  
 		taskName = taskName.concat(name);			
 		final Object data = kindOfParentIsItem ? ((TreeItem) parent).getData() : null;
-		Task t = new GetItemsFromMTreeTask(taskName) {
+		return new GetItemsFromMTreeTask(taskName, mForm) {
 			@Override
 			protected void doTask() {
+				Thread tWrite = mForm.getWriteThread();
+				if (tWrite != null && tWrite.isAlive())
+					try {
+						tWrite.join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				ISource children[] = mController.getSource(data);
 				mForm.getDisplay().asyncExec(() -> {
 						for (ISource child : children) {
@@ -65,22 +71,22 @@ public class Viewer {
 							mController.setState(childItem);
 							getChildren(childItem, child);
 						}
-						mForm.getBrowser().setText(Viewer.this.toString());
+						mForm.setBrowser(Viewer.this.toString());
 					}
 				);
 			}			
-		}; t.start(); return this;
+		};
 	}
 	
 	public SelectionAdapter getNewItemSelectionAdapter() {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				if (isBusy || mCurrentItem == null) return;
+				if (mCurrentItem == null) return;
 				Object parentNode = mCurrentItem.getData();
 				if (parentNode == null)	throw new NoSuchElementException();
 				String taskName = "inserting the item - ".concat(mCurrentItem.toString());
-				Task t = new Task(taskName) {
+				Task t = new Task(taskName, mForm) {
 					@Override
 					protected void doTask() {
 						ISource source = mController.addNewData(parentNode);
@@ -103,11 +109,11 @@ public class Viewer {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				if (isBusy || mCurrentItem == null) return;
+				if (mCurrentItem == null) return;
 				Object parentNode = mCurrentItem.getData();
 				if (parentNode == null)	throw new NoSuchElementException();
 				String taskName = "deleting the item - ".concat(mCurrentItem.toString());
-				Task t = new Task(taskName) {
+				Task t = new Task(taskName, mForm) {
 					@Override
 					protected void doTask() {
 						TreeItem[] items = mController.disposeData(parentNode);
@@ -126,20 +132,6 @@ public class Viewer {
 		};
 	}
 	
-	private abstract class Task extends Thread {
-		private String mName;
-		protected abstract void doTask();
-		public Task(String name) { mName = name; }
-		public void run() {
-			isBusy = true;
-			long start = System.currentTimeMillis();
-			doTask();
-			long end = System.currentTimeMillis();
-			mForm.printMessage("Time to execute the task \"".concat(mName).concat("\" in millis: ").concat(String.valueOf(end - start)));
-			isBusy = false;
-		}
-	}
-
 	public Listener getTableEventListener(final int eventType) {
 		return new Listener() {
 
@@ -147,7 +139,7 @@ public class Viewer {
 			
 			@Override
 			public void handleEvent(Event event) {
-				if (isBusy) return;
+				if (mForm.getBusy()) return;
 				mCurrentItem = (TreeItem) event.item;
 				Object data = mCurrentItem.getData();
 				switch (mEventType) {
@@ -172,7 +164,7 @@ public class Viewer {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				if (isBusy) return;
+				if (mForm.getBusy()) return;
 				String s = mForm.getSearch();
 				comboSearchHandler.searchAndCheckItem(s);
 			}
@@ -207,7 +199,7 @@ public class Viewer {
 				
 				@Override
 				public void keyReleased(KeyEvent keyevent) {
-					if (isBusy) return;
+					if (mForm.getBusy()) return;
 					if (!isValid(keyevent))	return;
 					sourceWidget = (Combo) keyevent.getSource();
 					String str = sourceWidget.getText();
@@ -225,7 +217,7 @@ public class Viewer {
 				public void widgetDefaultSelected(SelectionEvent event) { search(event); }
 				
 				private void search(SelectionEvent event) {
-					if (isBusy) return;
+					if (mForm.getBusy()) return;
 					sourceWidget = (Combo) event.widget;
 					String str = sourceWidget.getText();
 					if (str.length() < 3) return;
@@ -235,7 +227,7 @@ public class Viewer {
 		}
 		
 		public void searchAndCheckItem(String str) {
-			Task t = new Task("searching the item - ".concat(str)) {
+			Task t = new Task("searching the item - ".concat(str), mForm) {
 				@Override
 				protected void doTask() {
 					mForm.getDisplay().asyncExec(() -> {
