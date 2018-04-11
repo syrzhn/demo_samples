@@ -11,13 +11,13 @@ import ru.syrzhn.samples.mvc.tree_view1.model.MANode;
 import ru.syrzhn.samples.mvc.tree_view1.model.MXmlNode;
 import ru.syrzhn.samples.mvc.tree_view1.model.Model;
 
-public class SourceController {
+public class SourceAdapter {
 	
 	private IController mForm;	
 	private Model mModel;
 	private ISource mDatabaseData;
 	
-	public SourceController(IController form) {
+	public SourceAdapter(IController form) {
 		mForm = form;
 		mDatabaseData = (ISource) mForm.getData();
 		mModel = new Model();
@@ -116,8 +116,6 @@ public class SourceController {
 		}
 	}
 
-	public Object getHTML() { return mModel.html; }
-	
 	public TreeItem searchByPath(String path) {
 		MXmlNode node = (MXmlNode) mModel.mDataTree.findNodeByPath(path);
 		if (node == null) return null;

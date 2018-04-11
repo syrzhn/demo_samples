@@ -3,13 +3,12 @@ package ru.syrzhn.samples.mvc.tree_view1;
 import org.eclipse.swt.widgets.Display;
 
 public interface IController {
-	SourceController getSourceController();
+	SourceAdapter getSourceAdapter();
 	void printMessage(Object m);
 	void showMessage(String msg);
 	void setBusy(boolean busy);
 	boolean getBusy();
-	Thread getWriteThread();
-	Thread getReadThread();
+	void waitForWritingToMTree(Thread t);
 	Display getDisplay();
 	Object getData();
 	String getSearch();

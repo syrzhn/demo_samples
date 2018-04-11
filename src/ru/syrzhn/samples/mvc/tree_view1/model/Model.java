@@ -7,12 +7,9 @@ import java.util.Locale;
 import java.util.Stack;
 import java.util.TimeZone;
 
-import ru.syrzhn.samples.mvc.tree_view1.HTMLViewer;
-
 public class Model {
 	
 	final static String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
-	public HTMLViewer html;
 	
 	public static String getLevelName(int level) {
 		return String.valueOf( ALPHABET.charAt(level) );
@@ -29,7 +26,6 @@ public class Model {
 		}
 		else
 			mDataTree = new MXmlTree(doc);
-		html = new HTMLViewer();
 		"".toCharArray();
 	}
 

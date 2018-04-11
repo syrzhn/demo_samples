@@ -1,6 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
 import java.util.List;
+import java.util.Stack;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -23,26 +24,30 @@ public class MainForm extends Dialog implements IController {
 	
 	private Object mTarget;
 	private volatile boolean isBusy;
-	private Thread mRead, mWrite;
+	private Thread mReadDataFromSource;
+	private List<Thread> mDataReaders;
 	
 	public MainForm(Shell parent, int style, Object target) {
 		super(parent, style);
 		setText("Список исключаемых из отчёта узлов");
 		mTarget = target;
+		mDataReaders = new Stack<Thread>();
 	}
 
 	/** Open the window */
 	public void open() {
 		display = Display.getDefault();
 		
-		mSource = new SourceController(this);
-		mWrite  = mSource.writeDataToMTree();
-		mWrite.start();
-		mViewer = new Viewer(this);
-		mHtml   = new HTMLViewer();
+		mSource = new SourceAdapter(this);
+		mReadDataFromSource = mSource.writeDataToMTree();
+		mReadDataFromSource.start();
+		mViewer = new SwtTreeViewer(this);
+		mHtml   = new HTMLViewer(this);
 		createContents();
-		mRead = mViewer.getItemsFromMTree(tree);
-		mRead.start();
+		mDataReaders.add(mViewer.getItemsFromMTree(tree));
+		mDataReaders.add(mHtml  .getRowsFromMTree ()    );
+		for (Thread t : mDataReaders) 
+			t.start();
 		"".toCharArray();
 		shlMainForm.open();
 		shlMainForm.layout();
@@ -57,13 +62,13 @@ public class MainForm extends Dialog implements IController {
 	private Tree tree;
 	private Browser browser;
 	
-	private Viewer mViewer;
+	private SwtTreeViewer mViewer;
 	public HTMLViewer mHtml;
 	private Display display;
-	SourceController mSource;
+	SourceAdapter mSource;
 	
 	@Override
-	public SourceController getSourceController() {	return mSource;	}
+	public SourceAdapter getSourceAdapter() { return mSource; }
 
 	@Override
 	public Object getData() { return mTarget; }
@@ -125,15 +130,23 @@ public class MainForm extends Dialog implements IController {
 	
 	@Override
 	public void setBrowser(String html) { 
-		browser.setText(html); 
+			display.asyncExec(() -> {
+					browser.setText(html); 
+			}
+		);
 	}
 	
 	@Override
-	public Thread getWriteThread() {return mWrite; }
-
-	@Override
-	public Thread getReadThread() {return mRead; }
-
+	public void waitForWritingToMTree(Thread t) {
+		if (mReadDataFromSource != null && mReadDataFromSource.isAlive()) {
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private Combo comboSearch;
 
 	/**

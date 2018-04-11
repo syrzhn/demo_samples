@@ -15,16 +15,16 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import ru.syrzhn.samples.mvc.tree_view1.model.ISource;
 
-public class Viewer {
+public class SwtTreeViewer {
 	
 	public IController mForm;
 	public TreeItem mCurrentItem;
-	private SourceController mController;
+	private SourceAdapter mAdapter;
 
-	public Viewer(IController form) {
+	public SwtTreeViewer(IController form) {
 		mForm = form;
 		comboSearchHandler = new ComboSearchHandler();
-		mController = mForm.getSourceController();
+		mAdapter = mForm.getSourceAdapter();
 	}
 	
 	public Thread getItemsFromMTree(Object parent) {
@@ -35,11 +35,11 @@ public class Viewer {
 				for (ISource child : children) {
 					TreeItem childItem = new TreeItem(item, 0);
 					Object o = child.getData();
-					childItem.setText(mController.getTextDataFromTreeNode(o));
-					if (mController.getSelectFromTreeNode(o))
+					childItem.setText(mAdapter.getTextDataFromTreeNode(o));
+					if (mAdapter.getSelectFromTreeNode(o))
 						childItem.getParent().setSelection(childItem);
 					childItem.setData(o);
-					mController.setState(childItem);
+					mAdapter.setState(childItem);
 					getChildren(childItem, child);
 				}
 			}
@@ -52,26 +52,19 @@ public class Viewer {
 		return new GetItemsFromMTreeTask(taskName, mForm) {
 			@Override
 			protected void doTask() {
-				Thread tWrite = mForm.getWriteThread();
-				if (tWrite != null && tWrite.isAlive())
-					try {
-						tWrite.join();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				ISource children[] = mController.getSource(data);
+				mForm.waitForWritingToMTree(this);
+				ISource children[] = mAdapter.getSource(data);
 				mForm.getDisplay().asyncExec(() -> {
 						for (ISource child : children) {
 							TreeItem childItem = kindOfParentIsItem ? new TreeItem((TreeItem) parent, 0) : new TreeItem((Tree) parent, 0);
 							Object o = child.getData();
-							childItem.setText(mController.getTextDataFromTreeNode(o));
-							if (mController.getSelectFromTreeNode(o))
+							childItem.setText(mAdapter.getTextDataFromTreeNode(o));
+							if (mAdapter.getSelectFromTreeNode(o))
 								childItem.getParent().setSelection(childItem);
 							childItem.setData(o);
-							mController.setState(childItem);
+							mAdapter.setState(childItem);
 							getChildren(childItem, child);
 						}
-						mForm.setBrowser(Viewer.this.toString());
 					}
 				);
 			}			
@@ -89,13 +82,13 @@ public class Viewer {
 				Task t = new Task(taskName, mForm) {
 					@Override
 					protected void doTask() {
-						ISource source = mController.addNewData(parentNode);
+						ISource source = mAdapter.addNewData(parentNode);
 						mForm.getDisplay().asyncExec(() -> {
 								TreeItem newItem = new TreeItem(mCurrentItem, 0);
 								Object newNode = source.getData();
-								newItem.setText(mController.getTextDataFromTreeNode(newNode));
+								newItem.setText(mAdapter.getTextDataFromTreeNode(newNode));
 								newItem.setData(newNode);
-								mController.setState(newItem);
+								mAdapter.setState(newItem);
 								mCurrentItem.setExpanded(true);
 							}
 						);
@@ -116,12 +109,12 @@ public class Viewer {
 				Task t = new Task(taskName, mForm) {
 					@Override
 					protected void doTask() {
-						TreeItem[] items = mController.disposeData(parentNode);
+						TreeItem[] items = mAdapter.disposeData(parentNode);
 						mForm.getDisplay().asyncExec(() -> {
 								mCurrentItem.dispose();
 								for (TreeItem item : items) {
 									Object o = item.getData();
-									item.setText(mController.getTextDataFromTreeNode(o));
+									item.setText(mAdapter.getTextDataFromTreeNode(o));
 									item.setData(o);
 								}
 							}
@@ -144,16 +137,16 @@ public class Viewer {
 				Object data = mCurrentItem.getData();
 				switch (mEventType) {
 				case SWT.Collapse:
-					mController.setDataOnCollapse(data);
+					mAdapter.setDataOnCollapse(data);
 					break;
 				case SWT.Expand:
-					mController.setDataOnExpand(data);
+					mAdapter.setDataOnExpand(data);
 					break;
 				case SWT.Selection:
 					if (event.detail == SWT.CHECK) 
-						mController.setDataOnCheck(data);
+						mAdapter.setDataOnCheck(data);
 					else
-						mController.setDataOnSelection(data);
+						mAdapter.setDataOnSelection(data);
 					break;
 				}
 			}		
@@ -231,7 +224,7 @@ public class Viewer {
 				@Override
 				protected void doTask() {
 					mForm.getDisplay().asyncExec(() -> {
-							SourceController c = mController;
+							SourceAdapter c = mAdapter;
 							TreeItem item = c.searchByPath(str);
 							if (item == null) return;
 							if (item != null) {
@@ -255,8 +248,6 @@ public class Viewer {
 	
 	@Override
 	public String toString() {
-		String h = mController.getHTML().toString();
-		"".toCharArray();
-		return h;
+		return "Viewer";
 	}
 }
