@@ -17,6 +17,8 @@ public class SourceAdapter {
 	private Model mModel;
 	private ISource mDatabaseData;
 	
+	public volatile boolean isLoaded;
+	
 	public SourceAdapter(IController form) {
 		mForm = form;
 		mDatabaseData = (ISource) mForm.getData();
@@ -59,7 +61,8 @@ public class SourceAdapter {
 		return new Task("Connecting & reading the data", mForm) {
 			@Override
 			protected void doTask() {
-				mModel.createData(mDatabaseData.getData());
+				isLoaded = mModel.createData(mDatabaseData.getData());
+				"".toCharArray();
 			}
 		};
 	}

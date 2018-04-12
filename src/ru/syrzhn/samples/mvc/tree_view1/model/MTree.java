@@ -8,7 +8,7 @@ import java.util.Stack;
 public class MTree extends MANode {
 	
 	public int mAllNodesCount;
-	public volatile boolean isBusy;
+	public volatile boolean isBusy, isLoaded;
 	
 	public MTree() { mPath = "theTree";	}
 	/**test constructor is for performance evaluation and other*/
@@ -44,7 +44,7 @@ public class MTree extends MANode {
 			level.addAll(nodesI);
 			nodesI.clear();
 		}
-		isBusy = false;
+		isBusy = false; isLoaded = true;
 	}	
 	
 	public MANode findNodeByPath(String pathToFind) {

@@ -19,7 +19,7 @@ public class Model {
 		return String.valueOf( ALPHABET.indexOf(name.charAt(0)) );
 	}
 	
-	public void createData(Object doc) {
+	public synchronized boolean createData(Object doc) {
 		if (doc instanceof int[]) {
 			int a[] = (int[])doc;
 			mDataTree = new MTree(a[0], a[1]);
@@ -27,8 +27,8 @@ public class Model {
 		else
 			mDataTree = new MXmlTree(doc);
 		"".toCharArray();
+		return mDataTree.isLoaded;
 	}
-
 	
 	public MANode[] getDataFromTree(MANode parent) {
 		MXmlNode arg[] = null;

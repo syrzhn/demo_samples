@@ -1,5 +1,7 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
+import java.util.List;
+
 import org.eclipse.swt.widgets.Display;
 
 public interface IController {
@@ -8,7 +10,9 @@ public interface IController {
 	void showMessage(String msg);
 	void setBusy(boolean busy);
 	boolean getBusy();
-	void waitForWritingToMTree(Thread t);
+	void waitForWritingToMTree();
+	Thread getWritingThread();
+	List<Thread> getReadingThreads();
 	Display getDisplay();
 	Object getData();
 	String getSearch();

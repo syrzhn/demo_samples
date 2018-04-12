@@ -34,7 +34,7 @@ public class HTMLViewer {
 			int i;
 			@Override
 			protected void doTask() {
-				mForm.waitForWritingToMTree(this);
+				mForm.waitForWritingToMTree(); 
 				ISource children[] = mAdapter.getSource(null);
 				for (ISource child : children) {
 					Object o = child.getData();

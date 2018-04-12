@@ -52,7 +52,16 @@ public class SwtTreeViewer {
 		return new GetItemsFromMTreeTask(taskName, mForm) {
 			@Override
 			protected void doTask() {
-				mForm.waitForWritingToMTree(this);
+				//mForm.waitForWritingToMTree();
+				Thread t = mForm.getWritingThread();
+				if (!mAdapter.isLoaded) {
+					t.start();
+					try {
+						t.join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 				ISource children[] = mAdapter.getSource(data);
 				mForm.getDisplay().asyncExec(() -> {
 						for (ISource child : children) {

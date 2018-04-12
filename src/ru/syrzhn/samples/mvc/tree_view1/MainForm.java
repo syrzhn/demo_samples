@@ -24,7 +24,7 @@ public class MainForm extends Dialog implements IController {
 	
 	private Object mTarget;
 	private volatile boolean isBusy;
-	private Thread mReadDataFromSource;
+	public volatile Thread mReadDataFromSource;
 	private List<Thread> mDataReaders;
 	
 	public MainForm(Shell parent, int style, Object target) {
@@ -40,9 +40,9 @@ public class MainForm extends Dialog implements IController {
 		
 		mSource = new SourceAdapter(this);
 		mReadDataFromSource = mSource.writeDataToMTree();
-		mReadDataFromSource.start();
+		//mReadDataFromSource.start();
 		mViewer = new SwtTreeViewer(this);
-		mHtml   = new HTMLViewer(this);
+		mHtml   = new HTMLViewer   (this);
 		createContents();
 		mDataReaders.add(mViewer.getItemsFromMTree(tree));
 		mDataReaders.add(mHtml  .getRowsFromMTree ()    );
@@ -57,6 +57,24 @@ public class MainForm extends Dialog implements IController {
 			}
 		}
 	}
+	
+	@Override
+	public void waitForWritingToMTree() {
+		Thread t = getWritingThread();
+		if (t != null && t.isAlive()) {
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@Override
+	public Thread getWritingThread() { return mReadDataFromSource; }
+	
+	@Override
+	public List<Thread> getReadingThreads() { return mDataReaders; }
 	
 	private Shell shlMainForm;
 	private Tree tree;
@@ -96,14 +114,10 @@ public class MainForm extends Dialog implements IController {
 	}
 	
 	@Override
-	public void setBusy(boolean busy) {
-		isBusy = busy;
-	}
+	public void setBusy(boolean busy) {	isBusy = busy; }
 
 	@Override
-	public boolean getBusy() {
-		return isBusy;
-	}
+	public boolean getBusy() { return isBusy; }
 
 	@Override
 	public void printMessage(Object m) {
@@ -134,17 +148,6 @@ public class MainForm extends Dialog implements IController {
 					browser.setText(html); 
 			}
 		);
-	}
-	
-	@Override
-	public void waitForWritingToMTree(Thread t) {
-		if (mReadDataFromSource != null && mReadDataFromSource.isAlive()) {
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 	
 	private Combo comboSearch;

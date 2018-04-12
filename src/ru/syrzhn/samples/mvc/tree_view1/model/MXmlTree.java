@@ -21,7 +21,7 @@ public class MXmlTree extends MTree {
 		isBusy = true;
 		mPath = "xmlDocument";
 		parseXml(doc);
-		isBusy = false;
+		isBusy = false; isLoaded = true;
 	}
     public void parseXml(Object doc) {
     	dumpLoop((Node) doc, this, "");
