@@ -12,7 +12,6 @@ public abstract class Task extends Thread {
 	}
 	
 	public void run() {
-		if (mContr.getBusy()) return;
 		mContr.setBusy(true);
 		long start = System.currentTimeMillis();
 		doTask();
