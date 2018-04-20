@@ -46,9 +46,7 @@ public class HTMLViewer {
 		};
 	}
 	
-	public void addRow(String s) {
-		((Stack<String>)body).push(s);
-	}
+	public void addRow(String s) { ((Stack<String>)body).push(s); }
 	
 	private String bodyBuild() {
 		StringBuilder sb = new StringBuilder();

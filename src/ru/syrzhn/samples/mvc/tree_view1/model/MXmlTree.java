@@ -18,10 +18,9 @@ import org.w3c.dom.Text;
 
 public class MXmlTree extends MTree {
 	public MXmlTree(Object doc) {
-		isBusy = true;
 		mPath = "xmlDocument";
 		parseXml(doc);
-		isBusy = false; isLoaded = true;
+		isLoaded = true;
 	}
     public void parseXml(Object doc) {
     	dumpLoop((Node) doc, this, "");

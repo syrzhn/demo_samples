@@ -24,7 +24,7 @@ public class MainForm extends Dialog implements IController {
 	
 	private Object mTarget;
 	private volatile boolean isBusy;
-	public volatile Thread mReadDataFromSource;
+	public Thread mReadDataFromSource;
 	private List<Thread> mDataReaders;
 	
 	public MainForm(Shell parent, int style, Object target) {
@@ -40,7 +40,7 @@ public class MainForm extends Dialog implements IController {
 		
 		mSource = new SourceAdapter(this);
 		mReadDataFromSource = mSource.writeDataToMTree();
-		//mReadDataFromSource.start();
+		mReadDataFromSource.start();
 		mViewer = new SwtTreeViewer(this);
 		mHtml   = new HTMLViewer   (this);
 		createContents();
@@ -61,7 +61,7 @@ public class MainForm extends Dialog implements IController {
 	@Override
 	public void waitForWritingToMTree() {
 		Thread t = getWritingThread();
-		if (t != null && t.isAlive()) {
+		if (t != null) {
 			try {
 				t.join();
 			} catch (InterruptedException e) {
@@ -70,27 +70,24 @@ public class MainForm extends Dialog implements IController {
 		}
 	}
 	
-	@Override
-	public Thread getWritingThread() { return mReadDataFromSource; }
-	
-	@Override
-	public List<Thread> getReadingThreads() { return mDataReaders; }
-	
 	private Shell shlMainForm;
 	private Tree tree;
 	private Browser browser;
-	
-	private SwtTreeViewer mViewer;
-	public HTMLViewer mHtml;
 	private Display display;
-	SourceAdapter mSource;
+	private Combo comboSearch;
 	
+	protected SwtTreeViewer mViewer;
+	protected HTMLViewer mHtml;
+	protected SourceAdapter mSource;
+	
+	@Override
+	public Thread getWritingThread() { return mReadDataFromSource; }	
+	@Override
+	public List<Thread> getReadingThreads() { return mDataReaders; }	
 	@Override
 	public SourceAdapter getSourceAdapter() { return mSource; }
-
 	@Override
-	public Object getData() { return mTarget; }
-	
+	public Object getData() { return mTarget; }	
 	@Override
 	public void updateState(States state, Object o) {
 		switch (state) {
@@ -101,7 +98,6 @@ public class MainForm extends Dialog implements IController {
 			break;
 		}
 	}
-
 	@Override
 	public void showMessage(String msg) {
 		display.asyncExec(() -> {
@@ -111,14 +107,11 @@ public class MainForm extends Dialog implements IController {
 				msgBox.open();	
 			}
 		);
-	}
-	
+	}	
 	@Override
 	public void setBusy(boolean busy) {	isBusy = busy; }
-
 	@Override
 	public boolean getBusy() { return isBusy; }
-
 	@Override
 	public void printMessage(Object m) {
 		if (m instanceof String)
@@ -135,23 +128,13 @@ public class MainForm extends Dialog implements IController {
 			msgs.clear();
 		}
 	}
-
 	@Override
-	public Display getDisplay() { return display; }
-	
+	public Display getDisplay() { return display; }	
 	@Override
-	public String getSearch() { return comboSearch.getText().trim(); }
-	
+	public String getSearch() { return comboSearch.getText().trim(); }	
 	@Override
-	public void setBrowser(String html) { 
-			display.asyncExec(() -> {
-					browser.setText(html); 
-			}
-		);
-	}
+	public void setBrowser(String html) { display.asyncExec(() -> {	browser.setText(html); } ); }
 	
-	private Combo comboSearch;
-
 	/**
 	 * Create contents of the window.
 	 */

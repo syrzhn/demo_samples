@@ -41,7 +41,8 @@ public class Sqlite implements ISource {
 			tagPath.put("tagValue", file.getAbsolutePath());
 			tagPath.put("tagType", "text");
 			mXmlNodeData.add(tagPath);
-		} else if (data instanceof ResultSet) {
+		} 
+		else if (data instanceof ResultSet) {
 			ResultSet resultSet = (ResultSet)data;
 			try {
 				HashMap<String, String> tagTabName = new HashMap<String, String>();

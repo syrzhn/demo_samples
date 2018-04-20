@@ -8,12 +8,12 @@ import java.util.Stack;
 public class MTree extends MANode {
 	
 	public int mAllNodesCount;
-	public volatile boolean isBusy, isLoaded;
+	public volatile boolean isLoaded;
 	
 	public MTree() { mPath = "theTree";	}
 	/**test constructor is for performance evaluation and other*/
 	public MTree(final int levels, final int rows) {
-		mPath = "tesTree"; isBusy = true;
+		mPath = "tesTree";
 		Stack<MXmlNode> level = new Stack<MXmlNode>(),
 				nodesI = new Stack<MXmlNode>();
 		for (int i = 0; i < rows; i++) {
@@ -44,7 +44,7 @@ public class MTree extends MANode {
 			level.addAll(nodesI);
 			nodesI.clear();
 		}
-		isBusy = false; isLoaded = true;
+		isLoaded = true;
 	}	
 	
 	public MANode findNodeByPath(String pathToFind) {
