@@ -43,7 +43,6 @@ public class MXmlUtils {
 		document.appendChild(root);
 		return document;
 	}
-
 	/**
 	 * Load xml <b>document</b> from file <b>fileName</b>
 	 * @param fileName

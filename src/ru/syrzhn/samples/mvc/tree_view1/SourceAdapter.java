@@ -36,14 +36,24 @@ public class SourceAdapter {
 		};
 	}
 
+	public String getHtmlDataFromTreeNode(Object data) {
+		MXmlNode node = (MXmlNode) data;
+		return node.getData("html").toString(); 
+	}
+
+	public String getData(Object data, String key) {
+		MXmlNode node = (MXmlNode) data;
+		return node.getData(key).toString(); 
+	}
+
 	public boolean getSelectFromTreeNode(Object o) {
 		MXmlNode node = (MXmlNode) o;
-		boolean expanded = node.getData("tree_actions").toString().indexOf("select") > -1;
+		boolean expanded = node.getData("swt_actions").toString().indexOf("select") > -1;
 		return expanded;
 	}
 
 	public void setState(TreeItem item) {
-		MXmlNode node = (MXmlNode) item.getData();
+		MXmlNode node = (MXmlNode)item.getData();
 		node.putData("TreeItem", item);
 	}	
 

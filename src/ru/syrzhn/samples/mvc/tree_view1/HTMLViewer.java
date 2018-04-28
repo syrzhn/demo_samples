@@ -1,5 +1,8 @@
 package ru.syrzhn.samples.mvc.tree_view1;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.List;
 import java.util.Stack;
 
@@ -18,30 +21,39 @@ public class HTMLViewer {
 	
 	public Thread getRowsFromMTree() {
 		abstract class GetItemsFromMTreeTask extends Task {
-			int i;
 			public GetItemsFromMTreeTask(String name, IController form) { super(name, form); }
 			protected void getChildren(ISource source) {
 				ISource children[] = source.getChildren(source);
 				for (ISource child : children) {
 					Object o = child.getData();
-					addRow("" + i++);
+					String s = mAdapter.getHtmlDataFromTreeNode(o);
+					if (s.equals("table_row"))
+						addRow("<tr>");
+					if (s.equals("table_cell"))
+						addRow("<td>" + mAdapter.getData(o, "xmlNodeValue") + "</td>");
 					getChildren(child);
+					if (s.equals("table_row"))
+						addRow("</tr>");
 				}
 			}
 		}
 		String taskName = "Filling the HTML view";
 		return new GetItemsFromMTreeTask(taskName, mForm) {
-			int i;
 			@Override
 			protected void doTask() {
 				mForm.waitForWritingToMTree(); 
 				ISource children[] = mAdapter.getSource(null);
 				for (ISource child : children) {
 					Object o = child.getData();
-					addRow("" + i++);
+					String s = mAdapter.getHtmlDataFromTreeNode(o);
+					if (s.equals("table_row"))
+						addRow("<tr>");
+					if (s.equals("table_cell"))
+						addRow("<td>" + mAdapter.getData(o, "xmlNodeValue") + "</td>");
 					getChildren(child);
-				}
-				print();
+					if (s.equals("table_row"))
+						addRow("</tr>");
+				} print();
 			}
 		};
 	}
@@ -56,19 +68,45 @@ public class HTMLViewer {
 	}
 	
 	public void print() {
-		mForm.setBrowser(this.toString());
+		String theString = this.toString();
+		StringSelection selection = new StringSelection(theString);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(selection, selection);
+		mForm.setBrowser(theString);
 	}
 	
 	@Override
 	public String toString() {
 		return    "<html>"
 				+ "<head>" 
-				+ "<base href=\"http://www.eclipse.org/swt/\" >"
 				+ "<title>HTML Test</title>"
 				+ "</head>"
 				+ "<body>"
+				+ "<table>"
 				+ bodyBuild()
+				+ "</table>"
 				+ "</body>"
 				+ "</html>";
 	}
 }
+//
+//class Html {
+//	private boolean rowStarted;
+//	public String table_row(List<String> cells) {
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("<tr>");
+//		for (String s : cells) 
+//			sb.append(table_cell(s));
+//		sb.append("</tr>");
+//		return sb.toString();
+//	}
+//
+//	private String table_cell(String cell) {
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("<td>");
+//		sb.append(cell);
+//		sb.append("</td>");
+//		return sb.toString();
+//	}
+//}
+//

@@ -43,6 +43,21 @@ public class MXmlTree extends MTree {
 		default:  System.out.println(shift + "Unknown node"); break;
 		}
 	}
+	/** Plays the contents of a ELEMENT_NODE */
+	private void dumpElement(Element node, MANode treeParent, String shift) {
+		System.out.println(shift + "ELEMENT: " + node.getTagName());
+		MXmlNode treeNode = new MXmlNode(treeParent).putData("xmlNodeName",  node.getTagName())
+													.putData("xmlNodeType",  "ELEMENT_NODE");
+		((MTree)treeNode.mAncestors.get(0)).mAllNodesCount++;
+
+		NamedNodeMap nm = node.getAttributes();
+		for (int i = 0; i < nm.getLength(); i++)
+			dumpLoop(nm.item(i), treeNode, shift + "\t");
+		if (!node.hasChildNodes()) return;
+		NodeList list = node.getChildNodes();
+		for (int i = 0; i < list.getLength(); i++)
+			dumpLoop(list.item(i), treeNode, shift + "\t");
+	}
 	/** Plays the contents of a ATTRIBUTE_NODE */
 	private void dumpAttributeNode(Attr node, MANode treeParent, String shift) {
 		System.out.println(shift + "ATTRIBUTE " + node.getName() + "=\"" + node.getValue() + "\"");
@@ -53,27 +68,6 @@ public class MXmlTree extends MTree {
 		MTree tree = (MTree) parent.mAncestors.get(0);
 		tree.mAllNodesCount++;
 		parent.putData(node.getName(), node.getValue());
-	}
-	/** Plays the contents of a CDATA_SECTION_NODE */
-	private void dumpCDATASectionNode(CDATASection node, MANode treeParent, String shift) {
-		System.out.println(shift + "CDATA SECTION length=" + node.getLength());
-		System.out.println(shift + "\"" + node.getData() + "\"");
-	}
-	/** Plays the contents of a COMMENT_NODE */
-	private void dumpCommentNode(Comment node, MANode treeParent, String shift) {
-		System.out.println(shift + "COMMENT length=" + node.getLength());
-		System.out.println(shift + node.getData());
-	}
-	/** Plays the contents of a DOCUMENT_NODE */
-	private void dumpDocument(Document node, MANode treeParent, String shift) {
-		System.out.println(shift + "DOCUMENT");
-		NodeList list = node.getChildNodes();
-		for (int i = 0; i < list.getLength(); i++)
-			dumpLoop(list.item(i), treeParent, shift + "\t");
-	}
-	/** Plays the contents of a DOCUMENT_FRAGMENT_NODE */
-	private void dumpDocumentFragment(DocumentFragment node, MANode treeParent, String shift) {
-		System.out.println(shift + "DOCUMENT FRAGMENT");
 	}
 	/** Plays the contents of a DOCUMENT_TYPE_NODE */
 	private void dumpDocumentType(DocumentType node, MANode treeParent, String shift) {
@@ -107,20 +101,26 @@ public class MXmlTree extends MTree {
 		for (int i = 0; i < list.getLength(); i++)
 			dumpLoop(list.item(i), treeParent, shift + "\t");
 	}
-	/** Plays the contents of a ELEMENT_NODE */
-	private void dumpElement(Element node, MANode treeParent, String shift) {
-		System.out.println(shift + "ELEMENT: " + node.getTagName());
-		MXmlNode treeNode = new MXmlNode(treeParent).putData("xmlNodeName",  node.getTagName())
-													.putData("xmlNodeType",  "ELEMENT_NODE");
-		((MTree)treeNode.mAncestors.get(0)).mAllNodesCount++;
-
-		NamedNodeMap nm = node.getAttributes();
-		for (int i = 0; i < nm.getLength(); i++)
-			dumpLoop(nm.item(i), treeNode, shift + "\t");
-		if (!node.hasChildNodes()) return;
+	/** Plays the contents of a CDATA_SECTION_NODE */
+	private void dumpCDATASectionNode(CDATASection node, MANode treeParent, String shift) {
+		System.out.println(shift + "CDATA SECTION length=" + node.getLength());
+		System.out.println(shift + "\"" + node.getData() + "\"");
+	}
+	/** Plays the contents of a COMMENT_NODE */
+	private void dumpCommentNode(Comment node, MANode treeParent, String shift) {
+		System.out.println(shift + "COMMENT length=" + node.getLength());
+		System.out.println(shift + node.getData());
+	}
+	/** Plays the contents of a DOCUMENT_NODE */
+	private void dumpDocument(Document node, MANode treeParent, String shift) {
+		System.out.println(shift + "DOCUMENT");
 		NodeList list = node.getChildNodes();
 		for (int i = 0; i < list.getLength(); i++)
-			dumpLoop(list.item(i), treeNode, shift + "\t");
+			dumpLoop(list.item(i), treeParent, shift + "\t");
+	}
+	/** Plays the contents of a DOCUMENT_FRAGMENT_NODE */
+	private void dumpDocumentFragment(DocumentFragment node, MANode treeParent, String shift) {
+		System.out.println(shift + "DOCUMENT FRAGMENT");
 	}
 	/** Plays the contents of a ENTITY_NODE */
 	private void dumpEntityNode(Entity node, MANode treeParent, String shift) {
@@ -151,3 +151,4 @@ public class MXmlTree extends MTree {
 		((MXmlNode)treeParent).putData("xmlNodeValue", node.getData());
 	}
 }
+
