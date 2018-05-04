@@ -151,21 +151,13 @@ public class TceData implements ISource {
 	
 	private TceData[] mChildren;
 
-	public List<Map<String, String>> mXmlNodeAttribtes;
-	public Document mDoc;
+	public List<Map<String, String>> mXmlNodeAttributes;
+	public Document mXmlDoc;
+	public Element mXmlElement;
 	
 	public TceData(Object data) {
-		mXmlNodeAttribtes = new ArrayList<Map<String, String>>();
+		mXmlNodeAttributes = new ArrayList<Map<String, String>>();
 		if (data == null) return;
-		if (data instanceof String) {
-			HashMap<String, String> tagID = new HashMap<String, String>();			
-			tagID.put("tagName", "ID");
-			tagID.put("tagValue", data.toString());
-			tagID.put("html", "table_row");
-			tagID.put("html", "table_cell");
-			mXmlNodeAttribtes.add(tagID);
-			return;
-		}
 		mBOMLine = (TCComponentBOMLine)data;
 		try {
 			mItemRevision     = mBOMLine.getItemRevision();
@@ -178,33 +170,55 @@ public class TceData implements ISource {
 		}
 	}
 	
-	private void setLine() {
+	private TceData setLine() {
 		mTceDataLine = new TceDataLine(this);
 		HashMap<String, String> tagID = new HashMap<String, String>();
 		tagID.put("tagName", "ID");
 		tagID.put("tagValue", mTceDataLine.get("Идентификатор"));
 		tagID.put("html", "table_cell");
-		mXmlNodeAttribtes.add(tagID);
+		mXmlNodeAttributes.add(tagID);
 		HashMap<String, String> tagName = new HashMap<String, String>();
 		tagName.put("tagName", "name");
 		tagName.put("tagValue", mTceDataLine.get("Наименование"));
 		tagName.put("html", "table_cell");
-		mXmlNodeAttribtes.add(tagName);
+		mXmlNodeAttributes.add(tagName);
 		HashMap<String, String> tagType = new HashMap<String, String>();
 		tagType.put("tagName", "type");
 		tagType.put("tagValue", mTceDataLine.get("Тип"));
 		tagType.put("html", "table_cell");
-		mXmlNodeAttribtes.add(tagType);
+		mXmlNodeAttributes.add(tagType);
+		mType = mTceDataLine.get("Тип");
+		return this;
 	}
 	
-	private Element createRow(final String row_number) {
-		Element elRow = mDoc.createElement("row");
-		Element rowNumber = mDoc.createElement("row_number");
-		rowNumber.setTextContent(row_number);
-		rowNumber.setAttribute("html", "table_cell");
-		elRow.appendChild(rowNumber);
-		for (Map<String, String> map : mXmlNodeAttribtes) {
-			Element el = mDoc.createElement(map.get("tagName"));
+	private TceData setLine(String[] str) {
+		HashMap<String, String> tagID = new HashMap<String, String>();			
+		tagID.put("tagName", "ID");
+		tagID.put("tagValue", str[0]);
+		mXmlNodeAttributes.add(tagID);
+		HashMap<String, String> tagName = new HashMap<String, String>();
+		tagName.put("tagName", "name");
+		tagName.put("tagValue", str[1]);
+		tagName.put("html", "table_cell");
+		mXmlNodeAttributes.add(tagName);
+		HashMap<String, String> tagType = new HashMap<String, String>();
+		tagType.put("tagName", "type");
+		tagType.put("tagValue", str[2]);
+		mXmlNodeAttributes.add(tagType);
+		mType = str[0];
+		return this;
+	}
+	
+	private Element createRowXmlNode(final String row_number) {
+		Element elRow = mXmlDoc.createElement("row");
+		if (row_number != null && row_number.length() > 0) {
+			Element rowNumber = mXmlDoc.createElement("row_number");
+			rowNumber.setTextContent(row_number);
+			rowNumber.setAttribute("html", "table_cell");
+			elRow.appendChild(rowNumber);
+		}
+		for (Map<String, String> map : mXmlNodeAttributes) {
+			Element el = mXmlDoc.createElement(map.get("tagName"));
 			elRow.appendChild(el);
 			el.setTextContent(map.get("tagValue"));
 			for (String key : map.keySet()) {
@@ -213,23 +227,29 @@ public class TceData implements ISource {
 			}
 		}
 		elRow.setAttribute("html", "table_row");
+		mXmlElement = elRow;
 		return elRow;
 	}
 	
 	public Document getDocument() {
 		setLine();
-		mDoc = MXmlUtils.createXmlDocument();
-		Element root = mDoc.getDocumentElement();
-		Element fstEl = createRow("main row");
+		mXmlDoc = MXmlUtils.createXmlDocument();
+		Element root = mXmlDoc.getDocumentElement();
+		Element fstEl = createRowXmlNode("main row");
 		fstEl.setAttribute("swt_actions", "select");
 		root.appendChild(fstEl);
 		
-		TceData tceDoc= new TceData("Документация");
-		tceDoc.mDoc = mDoc;
-		Element elDoc = tceDoc.createRow("documents");
-		fstEl.appendChild(elDoc);
+		TceData[] chapters = new TceData[] {
+				new TceData(null).setLine(new String[] {"aDocument", "Документация",      "оглавление"}),
+				new TceData(null).setLine(new String[] {"aSE",       "Сборочные единицы", "оглавление"}),
+				new TceData(null).setLine(new String[] {"aDetal",    "Детали",            "оглавление"})						
+		};
+		for (TceData d : chapters) {
+			d.mXmlDoc = mXmlDoc;
+			fstEl.appendChild(d.createRowXmlNode(null));
+		}
 
-		if (!mBOMLine.hasChildren()) return mDoc;
+		if (!mBOMLine.hasChildren()) return mXmlDoc;
 		AIFComponentContext[] children = null;
 		try {
 			children = mBOMLine.getChildren();
@@ -242,13 +262,23 @@ public class TceData implements ISource {
 		for (int i = 0; i < size; i++) {
 			mChildren[i] = new TceData(children[i].getComponent());
 			mChildren[i].setLine();
-			mChildren[i].mDoc = mDoc;
-			Element rowI = mChildren[i].createRow(i + "");
-			fstEl.appendChild(rowI);
+			mChildren[i].mXmlDoc = mXmlDoc;
+			Element rowI = mChildren[i].createRowXmlNode(i + "");
+			Element chapter = mChildren[i].findChapter(chapters);
+			chapter = chapter == null ? fstEl : chapter;
+			chapter.appendChild(rowI);
 		}
-		MXmlUtils.saveToFile(mDoc, "C:\\temp\\output.xml");
+		MXmlUtils.saveToFile(mXmlDoc, "C:\\temp\\output.xml");
 		
-		return mDoc;
+		return mXmlDoc;
+	}
+	public String mType;
+
+	private Element findChapter(TceData[] chapters) {
+		for (TceData d : chapters) 
+			if (mType.equals(d.mType))
+				return d.mXmlElement;
+		return null;
 	}
 
 	private void errorMessage(String string) { messages.push(string); }
@@ -261,23 +291,20 @@ public class TceData implements ISource {
 }
 
 public class TceDataLine {
-	public int mNumber;
-	public int mSize;
-	public Map<String, TceDataCell> mRusIndexCells;
-	public Map<String, TceDataCell> mTceIndexCells;
+	public Map<String, TceDataCell> mRusIndexCells, mTceIndexCells;
 	public TceDataLine(TceData dataSource) {
 		mRusIndexCells = new HashMap<String, TceDataCell>();
 		mTceIndexCells = new HashMap<String, TceDataCell>();
-		mCells = new ArrayList<TceDataCell>();
-		mCells.add(new TceDataCell("Наименование",  "avid_DSE_NAME", TcePropertyStorePlace.ItemForm).set(dataSource));
-		mCells.add(new TceDataCell("Идентификатор", "avid_DSE_ID",   TcePropertyStorePlace.ItemForm).set(dataSource));
-		mCells.add(new TceDataCell("Тип",           "object_type",   TcePropertyStorePlace.Item)    .set(dataSource));
-		for(TceDataCell cell : mCells) {
+		TceDataCell[] aCells = {
+				new TceDataCell("Наименование",  "avid_DSE_NAME", TcePropertyStorePlace.ItemForm).set(dataSource),
+				new TceDataCell("Идентификатор", "avid_DSE_ID",   TcePropertyStorePlace.ItemForm).set(dataSource),
+				new TceDataCell("Тип",           "object_type",   TcePropertyStorePlace.Item)    .set(dataSource)
+		};
+		for(TceDataCell cell : aCells) {
 			mRusIndexCells.put(cell.mRusName, cell );
 			mTceIndexCells.put(cell.mTceProprtyName, cell );
 		}		
 	}
-	public List<TceDataCell> mCells;
 	public String get(String key) {
 		if (mRusIndexCells.containsKey(key))
 			return mRusIndexCells.get(key).mValue;
@@ -288,8 +315,7 @@ public class TceDataLine {
 }
 
 class TceDataCell {
-	public String mRusName;
-	public String mTceProprtyName;
+	public String mRusName, mTceProprtyName;
 	public TcePropertyStorePlace mTceStorePlace;
 	public TceDataCell(String rusName, String tcePropertyName, TcePropertyStorePlace place) {
 		mRusName = rusName;
@@ -297,7 +323,7 @@ class TceDataCell {
 		mTceStorePlace = place;
 	}
 	public TceDataCell set(TceData dataSource) {
-		TCComponent source= null; 
+		TCComponent source = null; 
 		try {
 			switch (mTceStorePlace) {
 			case Item: 

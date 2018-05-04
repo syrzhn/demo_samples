@@ -1,5 +1,6 @@
 package ru.syrzhn.samples.mvc.tree_view1.model;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -41,6 +43,25 @@ public class MXmlUtils {
 		document = builder.newDocument();
 		Element root = document.createElement(rootName);
 		document.appendChild(root);
+		return document;
+	}
+	/**
+	 * Load xml <b>document</b> from string <b>xmlString</b>
+	 * @param fileName
+	 * @return the Document
+	 */
+	public static Document loadFromString(final String xmlString) {
+		Document document = null;
+		try {
+			DocumentBuilder builder = getXmlDocumentBuilder();
+			builder.setErrorHandler(new DumpErrorHandler());
+			ByteArrayInputStream bis = new ByteArrayInputStream(xmlString.getBytes());
+			document = builder.parse(bis);
+		} catch (SAXException | IOException e) {
+			e.printStackTrace();
+		}
+		Node root = document.getDocumentElement();
+		root.normalize();
 		return document;
 	}
 	/**
@@ -93,6 +114,20 @@ public class MXmlUtils {
 			tr.transform(source, result);
 		} catch (TransformerException | IOException e) {
 			e.printStackTrace();
+		}
+	}
+	/**
+	 * Gets nodes from <b>xmlString</b>
+	 * @param xmlString
+	 * @return
+	 */
+	public static void importNodesFromString(Element element, final String xmlString) {
+		Document doc = loadFromString(xmlString);
+		Node node = doc.getFirstChild();
+		NodeList nodeList = node.getChildNodes();
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node n = nodeList.item(i);
+			element.appendChild(n);
 		}
 	}
 }
